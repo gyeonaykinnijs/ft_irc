@@ -8,7 +8,7 @@
 class Channel{
 
 public:
-	std::string name;
+
 	std::vector<User &> joinUser;
 
 	Channel();
@@ -20,7 +20,12 @@ public:
 		WAIT,
 		TAKING
 	};
-	
+
+	void setChannelName(const std::string channelName);
+	std::string getChannelName();
+
+private:
+	std::string channelName;
 };
 
 #endif

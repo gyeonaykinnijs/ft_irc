@@ -2,18 +2,20 @@
 #define __ChannelManager_H__
 
 #include "Channel.hpp"
-#include <vector>
+#include <map>
 
 class ChannelManager{
 	
-	public:
-		std::vector<Channel *> channel_list;
-	
+public:
 	ChannelManager();
 	~ChannelManager();
-	void getChannel();
+	Channel getChannel(size_t channelFd);
 	void addChannel();
-	void deleteChannel();
+	void deleteChannel(size_t channelFd);
+
+private:
+	size_t channelCnt;
+	std::map<size_t, Channel *> channel_list;
 };
 
 #endif
