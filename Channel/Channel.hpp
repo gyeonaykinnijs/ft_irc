@@ -26,6 +26,7 @@ public:
 
 private:
 	std::string channelName;
+	size_t channelId;
 };
 
 #endif

@@ -18,7 +18,9 @@ public:
 private:
 	std::string nickName;
 	std::string userName;
-	size_t		userFd;
+	size_t		userId;
+	size_t		participateChannelFd;
+	int		fd;
 	
 };
 
