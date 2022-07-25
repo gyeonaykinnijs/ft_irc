@@ -4,8 +4,9 @@ User::User()
 {
 	this->nickName = "deafult";
 	this->userName = "default";
-	this->userFd = 0;
-	this->participateChannelFd = 0;
+	this->userId = 0;
+	this->participateChannelId = 0;
+	this->fd = 0;
 }
 User::User(const std::string nickname, const std::string userName) : nickName(nickName), userName(userName)
 {
@@ -24,9 +25,14 @@ void User::setUserName(const std::string userName)
 {
 	this->userName = userName;
 }
-void User::setUserFd(const size_t userFd)
+void User::setUserId(const size_t userId)
 {
-	this->userFd = userFd;
+	this->userId = userId;
+}
+
+void User::setFd(const int fd)
+{
+	this->fd = fd;
 }
 
 std::string User::getNickName()
@@ -39,7 +45,12 @@ std::string User::getUserName()
 	return this->userName;
 }
 
-size_t User::getUserFd()
+size_t User::getUserId()
 {
-	return this->userFd;
+	return this->userId;
+}
+
+int User::getFd()
+{
+	return this->fd;
 }

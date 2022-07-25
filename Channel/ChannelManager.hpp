@@ -9,9 +9,9 @@ class ChannelManager{
 public:
 	ChannelManager();
 	~ChannelManager();
-	Channel getChannel(size_t channelFd);
+	Channel getChannel(size_t channelId);
 	void addChannel();
-	void deleteChannel(size_t channelFd);
+	void deleteChannel(size_t channelId);
 
 private:
 	size_t channelCnt;

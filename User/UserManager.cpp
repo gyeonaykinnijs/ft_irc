@@ -5,12 +5,13 @@ UserManager::UserManager()
 UserManager::~UserManager()
 {}
 
-void UserManager::getUser()
-{
 
+User* UserManager::getUser(User user)
+{
+	return userList.at(user.getNickName());
 }
 
-void UserManager::setUser()
+void UserManager::setUser(User user)
 {
-
+	userList.insert(std::pair<std::string, User>(user.getNickName(), user));
 }

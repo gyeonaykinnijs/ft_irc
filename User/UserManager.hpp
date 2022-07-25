@@ -4,16 +4,17 @@
 #include "User.hpp"
 #include <vector>
 #include <map>
+#include <string>
 
 class UserManager{
 
 public:
-	std::map<size_t, User *> userList;
-	
 	UserManager();
 	~UserManager();
-	void getUser();
-	void setUser();
+	User* getUser(User user);
+	void setUser(User user);
+private:
+	std::map<std::string, User *> userList;
 };
 
 #endif

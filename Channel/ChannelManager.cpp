@@ -8,19 +8,19 @@ ChannelManager::ChannelManager()
 ChannelManager::~ChannelManager()
 {}
 
-Channel ChannelManager::getChannel(size_t channelFd)
+Channel ChannelManager::getChannel(size_t channelId)
 {
-	return map.at(channelFd);
+	return channel_list.find(channelId);
 }
 
 void ChannelManager::addChannel()
 {
-	channelCnt++;
+	this->channelCnt++;
 	Channel *channel = new Channel;
-	channel_list.insert(pair<size_t, Channel>(channelCnt, channel));
+	channel_list.insert(std::pair<size_t, Channel>(channelCnt, channel));
 }
 
-void ChannelManager::deleteChannel(size_t channelFd)
+void ChannelManager::deleteChannel(size_t channelId)
 {
-	channel_list.erase(channelFd);
+	channel_list.erase(channelId);
 }
