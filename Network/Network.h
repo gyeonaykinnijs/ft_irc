@@ -15,6 +15,7 @@ class UserManager;
 
 struct commandChunk
 {
+	User& userInfo;
 	std::string prefix;
 	std::string command;
 	std::vector<std::string> parameters;

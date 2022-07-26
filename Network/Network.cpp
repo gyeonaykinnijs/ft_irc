@@ -51,8 +51,6 @@ void Network::init()
 
 bool Network::IOMultiflexing()
 {
-
-
 	if (bind(this->fdServer_, reinterpret_cast<sockaddr*>(&this->addressServer_), sizeof(this->addressServer_)) < 0)
 	{
 		// FIXME: 수정 필요.
