@@ -2,28 +2,29 @@
 #define __User_H__
 #include <string>
 #include <vector>
+using namespace std;
 
-class User{
+class User
+{
 public:
 	User();
-	User(const std::string nickname, const std::string userName);
+	User(const string nickname, const string userName);
 	~User();
 
-	void setNickName(const std::string nickName);
-	void setUserName(const std::string userName);
-	void setUserId(const size_t userId);
+	void setNickname(const string nickName);
+	void setUserName(const string userName);
 	void setFd(const int fd);
-	std::string getNickName();
-	std::string getUserName();
-	size_t getUserId();
+	void setPasswd(const string passwd);
+	string getNickname();
+	string getUserName();
+	string getPasswd();
 	int getFd();
 
 private:
-	std::string nickName_;
-	std::string userName_;
-	size_t		userId_;
-	size_t		participateChannelId_;
-	int			fd_;
+	string nickname;
+	string userName;
+	string passwd;
+	int	fd;
 };
 
 #endif

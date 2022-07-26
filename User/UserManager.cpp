@@ -6,22 +6,23 @@ UserManager::~UserManager()
 {}
 
 
-User* UserManager::getUser(std::string userNickName)
+User* UserManager::getUserByNickname(string nickname)
 {
-	return userList.at(userNickName);
+	return this->userList.at(nickname);
 }
 
-User* UserManager::getFdUser(int fd)
+User* UserManager::getUserByFd(int fd)
 {
-	return findFdUserList.at(fd);
+	return this->findFdUserList.at(fd);
 }
 
-void UserManager::setfdUser(User user)
+std::map<int, User *> UserManager::getAllUser()
 {
-	findFdUserList.insert(std::pair<int, User>(user.getFd(), user));
+	return this->findFdUserList;
 }
 
 void UserManager::setUser(User user)
 {
-	userList.insert(std::pair<std::string, User>(user.getNickName(), user));
+	this->userList.insert(pair<std::string, User>(user.getNickname(), user));
+	this->findFdUserList.insert(pair<int, User>(user.getFd(), user));
 }

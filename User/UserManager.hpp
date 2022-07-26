@@ -5,19 +5,23 @@
 #include <vector>
 #include <map>
 #include <string>
+using namespace std;
 
-class UserManager{
+class UserManager
+{
+
 
 public:
 	UserManager();
 	~UserManager();
-	User* getUser(std::string userNickName);
-	User* getFdUser(int userNickName);
+	User* getUserByNickname(string nickname);
+	User* getUserByFd(int fd);
+	map<int, User *> getAllUser();
 	void setUser(User user);
-	void setfdUser(User user);
+
 private:
-	std::map<std::string, User *> userList_;
-	std::map<int, User *> findFdUserList_;
+	map<std::string, User *> userList;
+	map<int, User *> findFdUserList;
 };
 
 #endif

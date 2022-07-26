@@ -6,7 +6,10 @@
 #include <map>
 #include <./User/User.hpp>
 
-class Channel{
+using namespace std;
+
+class Channel
+{
 
 public:
 	Channel();
@@ -19,18 +22,18 @@ public:
 		TAKING
 	};
 
-	void setChannelName(const std::string channelName);
+	void setChannelName(const string channelName);
 	void setChannelId(size_t channelId);
-	std::string getChannelName();
+	string getChannelName();
 	size_t getChannelId();
 	void addJoinUser(User user);
 	void deleteJoinUser(User user);
-	std::vector<User *> getJoinUser();
+	vector<User *> getJoinUser();
 
 private:
-	std::string channelName_;
-	size_t channelId_;
-	std::map<std::string, User *> joinUser_;
+	string channelName;
+	size_t channelId;
+	map<string, User *> joinUser;
 };
 
 #endif

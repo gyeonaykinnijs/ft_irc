@@ -10,7 +10,7 @@ User::User()
 }
 User::User(const std::string nickname, const std::string userName) : nickName(nickName), userName(userName)
 {
-	
+
 }
 
 User::~User()
@@ -35,7 +35,7 @@ void User::setFd(const int fd)
 	this->fd = fd;
 }
 
-std::string User::getNickName()
+std::string User::getnickname()
 {
 	return this->nickName;
 }

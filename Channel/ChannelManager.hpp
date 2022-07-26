@@ -3,8 +3,10 @@
 
 #include "Channel.hpp"
 #include <map>
+using namespace std;
 
-class ChannelManager{
+class ChannelManager
+{
 	
 public:
 	ChannelManager();
@@ -14,8 +16,8 @@ public:
 	void deleteChannel(size_t channelId);
 
 private:
-	size_t channelCnt_;
-	std::map<size_t, Channel *> channel_list_;
+	size_t channelCnt;
+	map<size_t, Channel *> channel_list;
 };
 
 #endif
