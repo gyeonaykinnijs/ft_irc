@@ -1,5 +1,5 @@
-#ifndef __ChannelManager_H__
-#define __ChannelManager_H__
+#ifndef __CHANNELMANAGER_H__
+#define __CHANNELMANAGER_H__
 
 #include "Channel.hpp"
 #include <map>
@@ -14,8 +14,8 @@ public:
 	void deleteChannel(size_t channelId);
 
 private:
-	size_t channelCnt;
-	std::map<size_t, Channel *> channel_list;
+	size_t channelCnt_;
+	std::map<size_t, Channel *> channel_list_;
 };
 
 #endif

@@ -19,11 +19,11 @@ public:
 	int getFd();
 
 private:
-	std::string nickName;
-	std::string userName;
-	size_t		userId;
-	size_t		participateChannelId;
-	int			fd;
+	std::string nickName_;
+	std::string userName_;
+	size_t		userId_;
+	size_t		participateChannelId_;
+	int			fd_;
 };
 
 #endif

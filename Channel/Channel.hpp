@@ -1,5 +1,5 @@
-#ifndef __Channel_H__
-#define __Channel_H__
+#ifndef __CHANNEL_H__
+#define __CHANNEL_H__
 
 #include <string>
 #include <vector>
@@ -28,10 +28,9 @@ public:
 	std::vector<User *> getJoinUser();
 
 private:
-	std::string channelName;
-	size_t channelId;
-	std::map<std::string, User *> joinUser;
-
+	std::string channelName_;
+	size_t channelId_;
+	std::map<std::string, User *> joinUser_;
 };
 
 #endif
