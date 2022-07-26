@@ -11,7 +11,7 @@ class UserManager{
 public:
 	UserManager();
 	~UserManager();
-	User* getUser(User user);
+	User* getUser(std::string userName);
 	void setUser(User user);
 private:
 	std::map<std::string, User *> userList;

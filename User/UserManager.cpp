@@ -6,9 +6,9 @@ UserManager::~UserManager()
 {}
 
 
-User* UserManager::getUser(User user)
+User* UserManager::getUser(std::string userName)
 {
-	return userList.at(user.getNickName());
+	return userList.at(userName);
 }
 
 void UserManager::setUser(User user)
