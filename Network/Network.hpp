@@ -13,9 +13,9 @@ class User;
 class Channel;
 class UserManager;
 
-struct commandChunk
+struct CommandChunk
 {
-	int userFd;
+	int fd;
 	std::string prefix;
 	std::string command;
 	std::vector<std::string> parameters;
