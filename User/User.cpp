@@ -2,8 +2,8 @@
 
 User::User()
 {
-	this->nickName = "deafult";
-	this->userName = "default";
+	this->nickName = "";
+	this->userName = "";
 	this->userId = 0;
 	this->participateChannelId = 0;
 	this->fd = 0;
