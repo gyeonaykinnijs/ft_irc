@@ -13,9 +13,9 @@ class User;
 class Channel;
 class UserManager;
 
-struct commandChunk
+struct CommandChunk
 {
-	int userFd;
+	int fd;
 	std::string prefix;
 	std::string command;
 	std::vector<std::string> parameters;
@@ -32,7 +32,7 @@ public:
 	bool sendToUser(User& user, const std::string& message);
 	bool sendToChannel(Channel& channel, const std::string& message);
 	bool kick(const std::string& message, User& user);
-	commandChunk getCommand();
+	CommandChunk getCommand();
 private:
 	Network(const Network& other);
 	Network& operator=(const Network& other);
@@ -46,7 +46,7 @@ private:
 	const std::string IP_;
 	const short PORT_;
 	int fdServer_;
-	std::queue<commandChunk> commandQueue_;
+	std::queue<CommandChunk> commandQueue_;
 	std::vector<std::pair<User, std::string> > sendVector_;
 };
 

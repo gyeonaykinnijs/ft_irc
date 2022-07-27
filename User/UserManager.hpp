@@ -20,7 +20,7 @@ public:
 	map<int, User *>& getAllUser();
 	void makeUser(int fd);
 	void addUser(User user);
-	void addUserNickName(User *user)
+	void addUserNickName(User *user);
 
 private:
 	map<string, User *> userListByNickname;
