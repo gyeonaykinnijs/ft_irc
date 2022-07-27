@@ -6,7 +6,7 @@
 class ICommand
 {
 public:
-	virtual void execute(struct commandReq) = 0;
+	virtual void execute(struct commandChunk) = 0;
 	virtual ~ICommand() {}
 };
 
