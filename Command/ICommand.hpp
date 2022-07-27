@@ -2,6 +2,8 @@
 #define __ICOMMAND_H__
 
 #include "../Network/Network.hpp"
+#include "../Channel/ChannelManager.hpp"
+#include "../User/UserManager.hpp"
 
 class ICommand
 {
