@@ -1,5 +1,5 @@
-#ifndef __ICOMMAND_H__
-#define __ICOMMAND_H__
+#ifndef __ICOMMAND_HPP__
+#define __ICOMMAND_HPP__
 
 class ICommand
 {
