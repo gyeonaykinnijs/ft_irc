@@ -4,14 +4,17 @@
 
 #include "Network.h"
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
+#include "User/User.hpp"
+#include "User/UserManager.hpp"
 
 #include <cerrno>
 
-Network::Network(const std::string ip, const short port, const std::string passWord)
-: IP_(ip), PORT_(port), PASSWORD_(passWord)
+Network::Network(const std::string ip, const short port, const std::string passWord, UserManager& userManager)
+: IP_(ip), PORT_(port), PASSWORD_(passWord), userManager_(userManager)
 {
 	memset(&this->addressServer_, 0, sizeof(this->addressServer_));
 };
@@ -75,19 +78,26 @@ bool Network::IOMultiflexing()
 		}
 		else
 		{
+			// FIXME: ref로 변경 필요
+			map<int, User*> users = this->userManager_.getAllUser();
 			// 이미 연결된 유저들과 관련된 동작
-			for()
+			for(std::map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
 			{
 				// FIXME: 추후 user이터레이터 얻고 나서 수정.
-				if (FD_ISSET(iter->fd, &this->rSet_))
+				if (FD_ISSET(iter->first, &this->rSet_))
 				{
-					;
+					// FIXME: 유저 생성시 fd값을 받게.
+					this->userManager_.setUser({});
 				}
 			}
-			for (int i = 0; i < this->sendVector_.size(); i++)
-			{
-				this->sendVector_[i].getFd
-			}
+			// TODO: send작업은 좀 나중에 하기.
+			// for (int i = 0; i < this->sendVector_.size(); i++)
+			// {
+			// 	if (FD_ISSET(this->sendVector_[i].first.getFd(), &this->wSet_))
+			// 	{
+					
+			// 	}
+			// }
 		}
 	}
 }
@@ -96,7 +106,15 @@ bool Network::IOMultiflexing()
 void Network::initFdSets()
 {
 	// rSet모든 유저 돌면서 set에 추가.
+	std::map<int, User*>::iterator iter =  this->userManager_.getAllUser().begin();
+	std::map<int, User*>::iterator iterEnd =  this->userManager_.getAllUser().end();
+	FD_SET(this->fdServer_, &this->rSet_);
+	for (;iter != iterEnd; iter++)
+	{
+		FD_SET(iter->first, &this->rSet_);
+	}
 	// wSet의 경우, queue에 입력된 유저들을 확인하고...? 근데 채널에 보내는 경우는?
+	
 }
 
 // 서버어서 소켓 관련 에러가 났을때 exception을 쓰는게 좋나?

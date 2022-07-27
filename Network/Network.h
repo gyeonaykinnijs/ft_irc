@@ -6,8 +6,6 @@
 #include <queue>
 #include <vector>
 #include <utility>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 class User;
 class Channel;
@@ -25,7 +23,7 @@ struct commandChunk
 class Network
 {
 public:
-	Network(const std::string ip, const short port, const std::string password);
+	Network::Network(const std::string ip, const short port, const std::string passWord, UserManager& userManager);
 	~Network(); //RAII
 	void init();
 	bool IOMultiflexing();
