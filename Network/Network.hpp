@@ -25,7 +25,7 @@ struct CommandChunk
 class Network
 {
 public:
-	Network::Network(const std::string ip, const short port, const std::string passWord, UserManager userManager);
+	Network(const char* ip, const short port, const char* passWord, UserManager& userManager);
 	~Network(); //RAII
 	void init();
 	bool IOMultiflexing();
@@ -38,16 +38,16 @@ private:
 	Network& operator=(const Network& other);
 
 	void initFdSets();
-	UserManager& userManager_;
-	fd_set rSet_;
-	fd_set wSet_;
-	const std::string PASSWORD_;
-	sockaddr_in addressServer_;
-	const std::string IP_;
-	const short PORT_;
-	int fdServer_;
-	std::queue<CommandChunk> commandQueue_;
-	std::vector<std::pair<User, std::string> > sendVector_;
+	UserManager& userManager;
+	fd_set rSet;
+	fd_set wSet;
+	const std::string PASSWORD;
+	sockaddr_in addressServer;
+	const std::string IP;
+	const short PORT;
+	int fdServer;
+	std::queue<CommandChunk> commandQueue;
+	std::vector<std::pair<User, std::string> > sendVector;
 };
 
 #endif

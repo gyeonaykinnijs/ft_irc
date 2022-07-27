@@ -2,14 +2,14 @@
 // Created by 연규준 on 2022/07/24.
 //
 
-#include "Network.h"
+#include "Network.hpp"
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
-#include "User/User.hpp"
-#include "User/UserManager.hpp"
+#include "../User/User.hpp"
+#include "../User/UserManager.hpp"
 
 #include <cerrno>
 
@@ -77,7 +77,7 @@ bool Network::IOMultiflexing()
 		}
 		if (FD_ISSET(this->fdServer, &this->rSet))
 		{
-			int fdClient = ::accept(this->fdServer, )
+			//int fdClient = ::accept(this->fdServer, )
 		}
 		else
 		{
