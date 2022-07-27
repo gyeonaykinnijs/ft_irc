@@ -18,23 +18,22 @@ User* UserManager::getUserByFd(int fd)
 
 map<int, User *> &UserManager::getAllUser()
 {
-	return this->findFdUserList;
+	return this->userListByFd;
 }
 
 void UserManager::addUser(User *user)
 {
-	this->userListByFd.insert(pair<int, User *>(user.getFd(), user));
+	this->userListByFd.insert(pair<int, User *>(user->getFd(), user));
 }
-
 
 void UserManager::addUserNickName(User *user)
 {
-	this->userListByNickname.insert(pair<string, User *>(user.getUserName(), user));
+	this->userListByNickname.insert(pair<string, User *>(user->getUserName(), user));
 }
 
 void UserManager::makeUser(int fd)
 {	
-	User user = new User;
-	user.setFd(fd);
+	User *user = new User;
+	user->setFd(fd);
 	addUser(user);
 }

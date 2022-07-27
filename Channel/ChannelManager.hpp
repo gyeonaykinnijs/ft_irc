@@ -16,8 +16,7 @@ public:
 	void deleteChannel(size_t channelId);
 
 private:
-	size_t channelCnt;
-	map<size_t, Channel *> channel_list;
+	map<string, Channel *> channel_list;
 };
 
 #endif

@@ -19,7 +19,7 @@ public:
 	User* getUserByFd(int fd);
 	map<int, User *>& getAllUser();
 	void makeUser(int fd);
-	void addUser(User user);
+	void addUser(User *user);
 	void addUserNickName(User *user);
 
 private:
