@@ -1,8 +1,6 @@
 #ifndef __USER_HPP__
 #define __USER_HPP__
-#include <string>
-#include <vector>
-using namespace std;
+#include "defines.hpp"
 
 class User
 {
@@ -15,15 +13,21 @@ public:
 	void setUserName(const string userName);
 	void setFd(const int fd);
 	void setPasswd(const string passwd);
-	string getNickname();
-	string getUserName();
-	string getPasswd();
+	void setBuffer(const string buffer);
+	void setIsRegistered(const bool isRegistered);
+	string getNickname() const;
+	string getUserName() const;
+	string getPasswd() const;
+	string getBuffer() const;
+	bool getIsRegistered() const;
 	int getFd();
 
 private:
 	string nickname;
 	string userName;
 	string passwd;
+	string buffer;
+	bool isRegistered;
 	int	fd;
 };
 

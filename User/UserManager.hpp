@@ -1,10 +1,7 @@
 #ifndef __USERMANAGER_HPP__
 #define __USERMANAGER_HPP__
 
-#include "User.hpp"
-#include <vector>
-#include <map>
-#include <string>
+#include "defines.hpp"
 
 using namespace std;
 
