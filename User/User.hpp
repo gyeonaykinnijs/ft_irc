@@ -1,5 +1,5 @@
-#ifndef __User_H__
-#define __User_H__
+#ifndef __USER_HPP__
+#define __USER_HPP__
 #include <string>
 #include <vector>
 using namespace std;
