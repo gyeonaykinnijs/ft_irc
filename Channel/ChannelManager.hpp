@@ -1,9 +1,7 @@
 #ifndef __CHANNELMANAGER_HPP__
 #define __CHANNELMANAGER_HPP__
 
-#include "Channel.hpp"
-#include <map>
-using namespace std;
+#include "defines.hpp"
 
 class ChannelManager
 {
