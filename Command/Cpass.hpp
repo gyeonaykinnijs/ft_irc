@@ -1,13 +1,12 @@
 #ifndef __CPASS_H__
 #define __CPASS_H__
 
-#include "../Network/Network.hpp"
-#include "./ICommand.hpp"
+#include "../defines.hpp"
 
 class Cpass: public ICommand
 {
 public:
-	static void execute(const struct CommandChunk commandChunk);
+	void Cpass::execute(ChannelManager&, UserManager&, Network&, struct CommandChunk);
 };
 
 #endif
