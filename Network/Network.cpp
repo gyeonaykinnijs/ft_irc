@@ -102,13 +102,15 @@ bool Network::IOMultiflexing()
 				{
 					
 					int lenRecv;
+					// TODO: char->string
 					char buffer[BUFFERSIZE];
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
 					//std::cout << "[" << iter->first << "] " << lenRecv << std::endl;
 					//write(1, buffer, lenRecv);
 					if (strnstr(buffer, "\r\n", lenRecv) == NULL)
 					{
-						
+						string left(buffer, 0, lenRecv);
+						this->userManager.getUserByFd(iter->first)->setBuffer(left);
 						//TODO:512내에 CRLF가 안오면, 다음 CRLF까지 들어온 입력을 싹 날려주는 명령. 근데 User에서 가지고 있어야되서 일단 패스.
 						//int errorFlag = false; // 
 						// 유저단에서 버퍼도 가지고 있어야 할거 같은데? ㅋㅋㅋ -> 유저가 보낸 명령르 다 못받을 수도 있어서, 받을때까지 기다려야 하면, 이걸 일단 가지고 있어야한다.
@@ -130,7 +132,7 @@ bool Network::IOMultiflexing()
 						{
 							string temp(buffer, 0, len);
 							cout << "🌟" << temp << "🌟" << endl;
-							if
+							if (lenRecv > len + 2)
 							{
 								lenRecv -= len + 2;
 								if (lenRecv == 0)
