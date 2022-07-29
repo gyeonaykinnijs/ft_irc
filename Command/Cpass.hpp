@@ -1,7 +1,7 @@
-#ifndef __CPASS_H__
-#define __CPASS_H__
+#ifndef __CPASS_HPP__
+#define __CPASS_HPP__
 
-#include "../defines.hpp"
+#include "./ICommand.hpp"
 
 class Cpass: public ICommand
 {

@@ -1,5 +1,5 @@
-#ifndef __CUSER_H__
-#define __CUSER_H__
+#ifndef __CUSER_HPP__
+#define __CUSER_HPP__
 
 #include "../Network/Network.hpp"
 #include "./ICommand.hpp"
