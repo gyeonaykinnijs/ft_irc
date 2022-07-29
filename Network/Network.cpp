@@ -55,9 +55,28 @@ void Network::init()
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 };
 
+bool Network::AcceptUser()
+{
+	sockaddr_in addressClient;
+	socklen_t lenClient = sizeof(addressClient);
+	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
+	if (fdClient < 0)
+	{
+		std::cerr << "[select]" << strerror(errno) <<endl;
+	}
+	this->userManager.makeUser(fdClient);
+	std::cout << fdClient << " user set" << std::endl;
+}
+
+void pushCmdToQueue(string cmd)
+{
+
+}
+
 bool Network::IOMultiflexing()
 {
-	
+	string tempBuffer;
+	char *ptrBufferStart;
 	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
@@ -82,15 +101,7 @@ bool Network::IOMultiflexing()
 		//std::cout << "ssdddd" << std::endl;
 		if (FD_ISSET(this->fdServer, &this->rSet))
 		{
-			sockaddr_in addressClient;
-			socklen_t lenClient = sizeof(addressClient);
-			int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
-			if (fdClient < 0)
-			{
-				std::cerr << "[select]" << strerror(errno) <<endl;
-			}
-			this->userManager.makeUser(fdClient);
-			std::cout << fdClient << " user set" << std::endl;
+			this->AcceptUser();
 		}
 		else
 		{
@@ -100,31 +111,53 @@ bool Network::IOMultiflexing()
 			{
 				// 파싱 조건문 다시.
 				// 우선 recv를 통해서 읽어들인다.
-				// 읽어들인 문자에서 crlf가 없다면 유저별 버퍼에 합치는데
-				// 		1. 총 합이 512보다 길게 된다면, 유저별 버퍼를 싹 비우고, crlf이전까지의 입력을 날리기만 한다.
-				//		2. 총 합이 512보다 짧다면 일단 -> 생각해보니 한번 쭉 받았는데, crlf가 없다면 그냥 이상한 입력 아닌가?
-				// -> 읽어들인 문자열에서 crlf가 없다면 나올때까지의 입력을 싹 무시한다.
+				// 읽어들인 문자에서 crlf가 없다면
+				// 		1. 총 합이 512보다 길게 된다면, 510까지 입력을 커맨드로 처리하고, crlf가 올때까지 입력을 전부 날린다.
+				//		2. 총 합이 512보다 짧다면 유저별 버퍼에 넣고 512자까지 읽어본다. 이후 1번.
 				// 읽어들인 문자에서 crlf가 있다면 유저별 버퍼에 있는 내용과 합쳐서 파싱을 시작한다.
-				// 
+				// 		한 명령어 단위를 읽고, recvLen을 남은 길이로 갱신 후, 그 뒤부터 crlf을 찾는다.
+				//			1. 버퍼 남은거에 crlf가 또 있다면 recvLen가 0이 될때까지 반복.
+				//			2. crlf가 없고, recvLen이 0이 아니라면 유저별 버퍼에 넣고 다시 recv(위의 2번과 같음)
+				//				이때, recv반환값이 would block일때까지 다 읽어와서...? 아니 이러면 그쪽에서 데이터를 계속 보내면 다른 클라한테 작업권이 안감.
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
 					int lenRecv;
-					// TODO: char->string
 					char buffer[BUFFERSIZE];
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
-					if (strnstr(buffer, "\r\n", lenRecv) == NULL)
+					if (lenRecv < 0)
 					{
-						string left(buffer, 0, lenRecv);
-						cout << "1 :" << left << endl;
-						this->userManager.getUserByFd(iter->first)->setBuffer(left);
-						break;
-						//TODO:512내에 CRLF가 안오면, 다음 CRLF까지 들어온 입력을 싹 날려주는 명령. 근데 User에서 가지고 있어야되서 일단 패스.
-						//int errorFlag = false; // 
-						// 유저단에서 버퍼도 가지고 있어야 할거 같은데? ㅋㅋㅋ -> 유저가 보낸 명령르 다 못받을 수도 있어서, 받을때까지 기다려야 하면, 이걸 일단 가지고 있어야한다.
+						cerr << "[recv " << iter->first << "]" << strerror(errno) <<endl;
+						continue;
 					}
+					else if (lenRecv == 0)
+					{
+						cout << iter->first << " disconnect" << endl;
+						//TODO:this->userManager.
+						continue;
+					}
+					ptrBufferStart = buffer;
 					while (1)
 					{
-						char* where = strnstr(buffer, "\r\n", lenRecv);
+						char* where = strnstr(ptrBufferStart, "\r\n", lenRecv);
+						// 유저 버퍼
+						// where이 NULL이고, lenRecv + userBuffer >= 512인 경우
+						//	userBuffer 510까지 buffer에서 받아와 저장하고 뒤에 crlf
+						//	ptrBufferStart옮기고, lenRecv길이도 적합하게 수정
+						// where이 NULL이고, lenRecv + userBuffer < 512인 경우 유저별 버퍼에 저장.
+						if (where == NULL)
+						{
+							if (lenRecv == BUFFERSIZE)
+							{
+								tempBuffer.assign(ptrBufferStart, BUFFERSIZE - 2);
+								tempBuffer.append("\r\n");
+								pushCmdToQueue(tempBuffer);
+								continue;
+							}
+							else
+							{
+								this->userManager.getUserByFd(iter->first)->setBuffer
+							}
+						}
 						size_t len = where - buffer;
 						if (where == NULL && lenRecv != 0)
 						{
@@ -158,10 +191,6 @@ bool Network::IOMultiflexing()
 			// TODO: send작업은 좀 나중에 하기.
 			// for (int i = 0; i < this->sendVector_.size(); i++)
 			// {
-			// 	if (FD_ISSET(this->sendVector_[i].first.getFd(), &this->wSet))
-			// 	{
-					
-			// 	}
 			// }
 		}
 	}
