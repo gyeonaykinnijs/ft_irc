@@ -44,7 +44,7 @@ public:
 
 	*/
 
-	Channel *getChannel() const;
+	Channel *getChannel();
 	string getNickname() const;
 	string getUserName() const;
 	string getPasswd() const;
