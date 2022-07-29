@@ -1,9 +1,10 @@
-#ifndef __ICOMMAND_H__
-#define __ICOMMAND_H__
+#ifndef __ICOMMAND_HPP__
+#define __ICOMMAND_HPP__
 
-#include "../Network/Network.hpp"
-#include "../Channel/ChannelManager.hpp"
+#include "../defines.hpp"
 #include "../User/UserManager.hpp"
+#include "../Channel/ChannelManager.hpp"
+#include "../Network/Network.hpp"
 
 class ICommand
 {

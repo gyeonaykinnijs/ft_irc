@@ -1,7 +1,7 @@
-#ifndef __CNICK_H__
-#define __CNICK_H__
+#ifndef __CNICK_HPP__
+#define __CNICK_HPP__
 
-#include "../defines.hpp"
+#include "./ICommand.hpp"
 
 class Cnick: public ICommand
 {
