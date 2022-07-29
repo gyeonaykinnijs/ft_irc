@@ -47,4 +47,6 @@ void UserManager::deleteUser(int fd)
 	
 	this->userListByNickname.erase(user->getUserName());
 	this->userListByFd.erase(fd);
+	
+	delete user;
 }
