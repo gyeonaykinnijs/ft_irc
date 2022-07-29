@@ -10,13 +10,26 @@ class ChannelManager
 public:
 	ChannelManager();
 	~ChannelManager();
+	/*
+		Getter
+	*/
 	Channel* getChannel(string channelName);
+
+	/**
+	 * @brief 
+	 * Create
+	 */
 	Channel *createChannel(string channelName, string passwd, User *user);
+
+
+	/**
+	 * @brief 
+	 * Delete
+	 */
 	void deleteChannel(string channelName);
 
 private:
 	map<string, Channel *> channel_list;
-
 };
 
 #endif

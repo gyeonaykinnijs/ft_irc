@@ -1,7 +1,6 @@
 #ifndef __JOIN_HPP__
 #define __JOIN_HPP__
 
-#include "ICommand.hpp"
 
 #include <string>
 #include "./ICommand.hpp"

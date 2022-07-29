@@ -9,23 +9,24 @@ class Channel
 public:
 	Channel();
 	~Channel();
+	
 
-
-	class mode
-	{
-	public:
-
-	private:
-
-	};
-
+	/**
+	 * @brief Set the Channel Name object
+	 * 
+	 * 			Setter
+	 */
 	void setChannelName(const string channelName);
 	void setMakeUser(const User *user);
 	void setChannelKey(const string channelKey);
 	void setCurSizeUser(const int size);
 
 
-
+	/**
+	 * @brief Get the Channel Name object
+	 * 
+	 * 			Getter
+	 */
 	string getChannelName() const;
 	User* getMakeUser() const;
 	string getChannelKey() const;
@@ -34,15 +35,70 @@ public:
 
 
 
+	/**
+	 * @brief 
+	 * 
+	 * @param user 
+	 * 
+	 * 			Insert User
+	 */
 	void addJoinUser(User *user);
+
+	/**
+	 * @brief 
+	 * 
+	 * @param user 
+	 * 
+	 * 			Delete User
+	 */
 	void deleteJoinUser(User user);
+
+	/**
+	 * @brief Get the Join User object
+	 * 
+	 * @return std::map<string, User *> 
+	 * 
+	 * 	return Insert All User
+	 */
 	std::map<string, User *> getJoinUser();
+
+
+	/**
+	 * @brief 
+	 * 
+	 * 				ENUM
+	 * 
+	 */
+
+	enum Mode
+	{
+		WAIT, TALKING, ELSE
+	};
 
 private:
 	string channelName;
-	User *makeUser;
 	string channelKey;
+
+
+	/**
+	 * @brief 
+	 * 
+	 * 		채널 생성한 사람
+	 */
+	User *makeUser;
+	
+	/**
+	 * @brief 
+	 * 
+	 * 		채널에 참가하고 있는 사람 list
+	 * 
+	 */
 	map<string, User *> joinUser;
+
+	/**
+	 * @brief Channel user Size
+	 * 
+	 */
 	int maxSizeUser;
 	int curSizeUser;
 };

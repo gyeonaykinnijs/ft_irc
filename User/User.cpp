@@ -6,6 +6,7 @@ User::User()
 	this->userName = "";
 	this->passwd = "";
 	this->fd = 0;
+	this->auth = NORMAL;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {
