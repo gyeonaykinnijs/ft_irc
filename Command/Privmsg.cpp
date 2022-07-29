@@ -39,36 +39,6 @@ void Privmsg::execute(ChannelManager &channelManager,
 	message = message.at(0) == ':' ? message.substr(1) : message;
 
 	Channel *channel = user->getChannel();
-	if (targetUser.at(0) == '#') {
-
-		
-		if (!channel) {
-			
-			return;
-		}
-
-		if (channel->isNoExt()){
-			vector<string>			nicknames(channel->getChannelName());
-			vector<string>::iterator	i;
-			
-			for (i = nicknames.begin(); i != nicknames.end(); i++)
-				if (*i == user->getNickname())
-					break;
-			if (i == nicknames.end())
-			{
-				/**
-				 * @brief 
-				 * 
-				 * 		ERROR
-				 * 
-				 */
-				return;
-			}
-		}
-
-		channel->broadcast(RPL_PRIVMSG(user->getPrefix(), target, message), client);
-		return;
-	}
 
 	User *none = channel->selectJoinUser(targetUser);
 	if (!none) {
