@@ -1,13 +1,25 @@
 #ifndef __USER_HPP__
 #define __USER_HPP__
 #include "../defines.hpp"
-#include "../Channel/channel.hpp"
+#include "../Channel/Channel.hpp"
 
 class User
 {
 
 
 public:
+	/*
+
+		Ennum;
+
+	*/
+
+	enum Auth
+	{
+		ADMIN, NORMAL
+	};
+
+
 	User();
 	User(const string nickname, const string userName);
 	~User();
@@ -24,7 +36,7 @@ public:
 	void setBuffer(const string buffer);
 	void setIsRegistered(const bool isRegistered);
 	void setChannel(Channel *channel);
-
+	void setAuth(const User::Auth auth);
 
 	/*
 
@@ -37,6 +49,7 @@ public:
 	string getUserName() const;
 	string getPasswd() const;
 	string getBuffer() const;
+	User::Auth getAuth() const;
 	bool getIsRegistered() const;
 	int getFd() const;
 	
@@ -44,16 +57,6 @@ public:
 	
 	void appendBuffer(string buffer);
 
-	/*
-
-		Ennum;
-
-	*/
-
-	enum Auth
-	{
-		ADMIN, NORMAL
-	};
 
 
 private:

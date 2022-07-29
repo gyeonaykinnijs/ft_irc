@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include "../User/User.hpp"
 
 Channel::Channel()
 {
@@ -21,6 +22,16 @@ void Channel::setCurSizeUser(const int size)
 	this->curSizeUser = size;
 }
 
+void Channel::setMakeUser(User *user)
+{
+	this->makeUser = user;
+}
+
+void Channel::setChannelKey(const string channelKey)
+{
+	this->channelKey = channelKey;
+}
+
 string Channel::getChannelName() const
 {
 	return this->channelName;
@@ -39,12 +50,13 @@ int Channel::getMaxSizeUser() const
 
 void Channel::addJoinUser(User* user) 
 {
+	
 	joinUser.insert(make_pair(user->getNickname(), user));
 }
 
-void Channel::deleteJoinUser(User user) 
+void Channel::deleteJoinUser(User *user) 
 {
-	joinUser.erase(user.getUserName());
+	joinUser.erase(user->getUserName());
 }
 
 std::map<string, User *> Channel::getJoinUser()

@@ -2,7 +2,9 @@
 #define __CHANNEL_HPP__
 
 #include "../defines.hpp"
-#include "../User/User.hpp"
+
+class User;
+
 class Channel
 {
 
@@ -17,7 +19,7 @@ public:
 	 * 			Setter
 	 */
 	void setChannelName(const string channelName);
-	void setMakeUser(const User *user);
+	void setMakeUser(User *user);
 	void setChannelKey(const string channelKey);
 	void setCurSizeUser(const int size);
 
@@ -51,7 +53,7 @@ public:
 	 * 
 	 * 			Delete User
 	 */
-	void deleteJoinUser(User user);
+	void deleteJoinUser(User *user);
 
 	/**
 	 * @brief Get the Join User object
