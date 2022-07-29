@@ -21,6 +21,8 @@ Channel* ChannelManager::createChannel(string channelName, string passwd, User* 
 	channel->addJoinUser(user);
 	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
 	channel_list.insert(std::pair<string, Channel*>(channelName, channel));
+	
+	return channel;
 }
 
 void ChannelManager::deleteChannel(string channelName)

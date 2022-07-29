@@ -46,6 +46,10 @@ void User::setChannel(Channel *channel)
 	this->channel = channel;
 }
 
+void User::setAuth(const User::Auth auth)
+{
+	this->auth = auth;
+}
 
 std::string User::getNickname() const
 {
@@ -67,6 +71,12 @@ string User::getBuffer() const
 	return this->buffer;
 }
 
+User::Auth User::getAuth() const
+{
+	return this->auth;
+}
+
+
 bool User::getIsRegistered() const
 {
 	return this->isRegistered;
@@ -82,3 +92,4 @@ void User::appendBuffer(string buffer)
 {
 	this->buffer.append(buffer);
 }
+
