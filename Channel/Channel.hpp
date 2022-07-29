@@ -1,10 +1,7 @@
-#ifndef __CHANNEL_H__
-#define __CHANNEL_H__
+#ifndef __CHANNEL_HPP__
+#define __CHANNEL_HPP__
 
-#include <string>
-#include <vector>
-#include <map>
-#include "../User/User.hpp"
+#include "defines.hpp"
 
 using namespace std;
 

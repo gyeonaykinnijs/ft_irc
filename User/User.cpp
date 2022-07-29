@@ -29,17 +29,37 @@ void User::setFd(const int fd)
 	this->fd = fd;
 }
 
-std::string User::getNickname()
+void User::setBuffer(const string buffer)
+{
+	this->buffer = buffer;
+}
+
+void User::setIsRegistered(const bool isRegistered)
+{
+	this->isRegistered = isRegistered;
+}
+
+std::string User::getNickname() const
 {
 	return this->nickname;
 }
 
-std::string User::getUserName()
+std::string User::getUserName() const
 {
 	return this->userName;
 }
 
-int User::getFd()
+int User::getFd() const
 {
 	return this->fd;
+}
+
+string getBuffer() const
+{
+	return this->buffer;
+}
+
+bool getIsRegistered() const
+{
+	return this->isRegistered;
 }

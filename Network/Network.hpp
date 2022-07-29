@@ -25,6 +25,7 @@ struct CommandChunk
 class Network
 {
 public:
+	Network();
 	Network(const char* ip, const short port, const char* passWord, UserManager& userManager);
 	~Network(); //RAII
 	void init();
