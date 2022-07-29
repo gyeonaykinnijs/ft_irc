@@ -11,6 +11,7 @@ public:
 				UserManager &userManager,
 				Network &network,
 				struct CommandChunk commandChunk);
+
 };
 
 #endif

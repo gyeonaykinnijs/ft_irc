@@ -10,7 +10,10 @@ using namespace std;
 class Join : public ICommand
 {
 public:
-	void execute(ChannelManager &channelManager, UserManager &userManager, Network &network, struct CommandChunk commandChunk);
+	void execute(ChannelManager &channelManager,
+					UserManager &userManager,
+					Network &network,
+					struct CommandChunk commandChunk);
 };
 
 #endif

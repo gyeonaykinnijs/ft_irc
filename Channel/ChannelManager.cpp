@@ -18,7 +18,7 @@ Channel* ChannelManager::createChannel(string channelName, string passwd, User* 
 	channel->setChannelName(channelName);
 	channel->setChannelKey(passwd);
 	channel->setMakeUser(user);
-	channel->addJoinUser(user);
+	channel->insertJoinUser(user);
 	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
 	channel_list.insert(std::pair<string, Channel*>(channelName, channel));
 	

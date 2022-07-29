@@ -82,7 +82,7 @@ bool User::getIsRegistered() const
 	return this->isRegistered;
 }
 
-Channel* User::getChannel() const
+Channel* User::getChannel()
 {
 	return this->channel;
 }

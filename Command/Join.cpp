@@ -1,6 +1,9 @@
 #include "Join.hpp"
 
-void Join::execute(ChannelManager &channelManager, UserManager &userManager, Network &network, struct CommandChunk commandChunk)
+void Join::execute(ChannelManager &channelManager,
+					UserManager &userManager,
+					Network &network,
+					struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
