@@ -3,6 +3,8 @@
 Channel::Channel()
 {
 	this->channelName = "deafult";
+	this->maxSizeUser = 10;
+	this->curSizeUser = 0;
 }
 
 Channel::~Channel()
@@ -13,27 +15,34 @@ void Channel::setChannelName(const std::string channelName)
 	this->channelName = channelName;
 }
 
-void Channel::setChannelId(size_t channelId)
+
+void Channel::setCurSizeUser(const int size)
 {
-	this->channelId = channelId;
+	this->curSizeUser = size;
 }
 
-std::string Channel::getChannelName()
+string Channel::getChannelName() const
 {
 	return this->channelName;
 }
 
-size_t Channel::getChannelId()
+int Channel::getCurSizeUser() const
 {
-	return this->channelId;
+	return this->curSizeUser;
 }
 
-void Channel::addJoinUser(User* user)
+int Channel::getMaxSizeUser() const
+{
+	return this->maxSizeUser;
+}
+
+
+void Channel::addJoinUser(User* user) 
 {
 	joinUser.insert(make_pair(user->getNickname(), user));
 }
 
-void Channel::deleteJoinUser(User user)
+void Channel::deleteJoinUser(User user) 
 {
 	joinUser.erase(user.getUserName());
 }

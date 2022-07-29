@@ -12,9 +12,14 @@ Channel* ChannelManager::getChannel(string channelName)
 	return channel_list.at(channelName);
 }
 
-void ChannelManager::addChannel(string channelName)
+Channel* ChannelManager::createChannel(string channelName, string passwd, User* user)
 {
 	Channel *channel = new Channel;
+	channel->setChannelName(channelName);
+	channel->setChannelKey(passwd);
+	channel->setMakeUser(user);
+	channel->addJoinUser(user);
+	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
 	channel_list.insert(std::pair<string, Channel*>(channelName, channel));
 }
 

@@ -6,6 +6,8 @@ User::User()
 	this->userName = "";
 	this->passwd = "";
 	this->fd = 0;
+	this->auth = NORMAL;
+	this->buffer = "";
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {
@@ -39,6 +41,12 @@ void User::setIsRegistered(const bool isRegistered)
 	this->isRegistered = isRegistered;
 }
 
+void User::setChannel(Channel *channel)
+{
+	this->channel = channel;
+}
+
+
 std::string User::getNickname() const
 {
 	return this->nickname;
@@ -62,4 +70,15 @@ string User::getBuffer() const
 bool User::getIsRegistered() const
 {
 	return this->isRegistered;
+}
+
+Channel* User::getChannel() const
+{
+	return this->channel;
+}
+
+
+void User::appendBuffer(string buffer)
+{
+	this->buffer.append(buffer);
 }
