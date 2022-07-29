@@ -70,7 +70,7 @@ bool Network::AcceptUser()
 
 void pushCmdToQueue(string cmd)
 {
-
+	cout << "🌟" << cmd << "🌟" << endl;
 }
 
 bool Network::IOMultiflexing()
@@ -123,6 +123,8 @@ bool Network::IOMultiflexing()
 				{
 					int lenRecv;
 					char buffer[BUFFERSIZE];
+					User* user = this->userManager.getUserByFd(iter->first);
+					// BUFFERSIZE 다 받지 말고, 유저 버퍼에 남아있는 버퍼 사이즈의 길이 반영해서, 도합 512까지.
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
 					if (lenRecv < 0)
 					{
@@ -135,56 +137,27 @@ bool Network::IOMultiflexing()
 						//TODO:this->userManager.
 						continue;
 					}
-					ptrBufferStart = buffer;
-					while (1)
+					else
 					{
-						char* where = strnstr(ptrBufferStart, "\r\n", lenRecv);
-						// 유저 버퍼
-						// where이 NULL이고, lenRecv + userBuffer >= 512인 경우
-						//	userBuffer 510까지 buffer에서 받아와 저장하고 뒤에 crlf
-						//	ptrBufferStart옮기고, lenRecv길이도 적합하게 수정
-						// where이 NULL이고, lenRecv + userBuffer < 512인 경우 유저별 버퍼에 저장.
-						if (where == NULL)
-						{
-							if (lenRecv == BUFFERSIZE)
-							{
-								tempBuffer.assign(ptrBufferStart, BUFFERSIZE - 2);
-								tempBuffer.append("\r\n");
-								pushCmdToQueue(tempBuffer);
-								continue;
-							}
-							else
-							{
-								this->userManager.getUserByFd(iter->first)->setBuffer
-							}
-						}
-						size_t len = where - buffer;
-						if (where == NULL && lenRecv != 0)
-						{
-							string left(buffer, 0, lenRecv);
-							cout << "2 :" << left << endl;
-							this->userManager.getUserByFd(iter->first)->setBuffer(left);
-							break;
-						}
-						else if (where != NULL)
-						{
-							string temp(buffer, 0, len);
-							cout << "🌟" << temp << "🌟" << endl;
-							if (lenRecv > (int)len + 2)
-							{
-								lenRecv -= len + 2;
-								if (lenRecv == 0)
-								{
-									cout << "33333333333333" << endl;
-									break;
-								}
-								memcpy(buffer, buffer + len + 2, lenRecv);
-							}
-							else
-							{
-								break;
-							}
-						}
+						tempBuffer.assign(buffer, lenRecv);
+					}
+					// 유저 버퍼 처리하는 로직
+					// 유저에 ignore 플래그 필요
+					size_t crlfIndex = user->getBuffer().find_first_of("\r\n");
+					if (crlfIndex >= BUFFERSIZE)
+					{
+						tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
+						tempBuffer.append("\r\n");
+						pushCmdToQueue(tempBuffer);
+						// User.setIgnore();
+						user->setBuffer("");
+					}
+					else
+					{
+						tempBuffer.assign(user->getBuffer(), crlfIndex + 2);
+						pushCmdToQueue(tempBuffer);
+						tempBuffer.assign(user->getBuffer().substr(0, user->getBuffer().size() - crlfIndex - 2));
+						user->setBuffer(tempBuffer);
 					}
 				}
 			}
