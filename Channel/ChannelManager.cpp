@@ -2,25 +2,30 @@
 
 ChannelManager::ChannelManager()
 {
-	this->channelCnt = 0;
 }
 
 ChannelManager::~ChannelManager()
 {}
 
-Channel ChannelManager::getChannel(size_t channelId)
+Channel* ChannelManager::getChannel(string channelName)
 {
-	return channel_list.find(channelId);
+	return channel_list.at(channelName);
 }
 
-void ChannelManager::addChannel()
+Channel* ChannelManager::createChannel(string channelName, string passwd, User* user)
 {
-	this->channelCnt++;
 	Channel *channel = new Channel;
-	channel_list.insert(std::pair<size_t, Channel>(channelCnt, channel));
+	channel->setChannelName(channelName);
+	channel->setChannelKey(passwd);
+	channel->setMakeUser(user);
+	channel->addJoinUser(user);
+	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
+	channel_list.insert(std::pair<string, Channel*>(channelName, channel));
+	
+	return channel;
 }
 
-void ChannelManager::deleteChannel(size_t channelId)
+void ChannelManager::deleteChannel(string channelName)
 {
-	channel_list.erase(channelId);
+	channel_list.erase(channelName);
 }

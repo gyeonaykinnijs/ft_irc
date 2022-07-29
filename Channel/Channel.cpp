@@ -1,51 +1,71 @@
 #include "Channel.hpp"
+#include "../User/User.hpp"
 
 Channel::Channel()
 {
 	this->channelName = "deafult";
+	this->maxSizeUser = 10;
+	this->curSizeUser = 0;
 }
 
 Channel::~Channel()
 {}
 
-void Channel::setChannelName(const std::string ChannelName)	
+void Channel::setChannelName(const std::string channelName)	
 {
 	this->channelName = channelName;
 }
 
-void Channel::setChannelId(size_t channelId)
+
+void Channel::setCurSizeUser(const int size)
 {
-	this->channelId = channelId;
+	this->curSizeUser = size;
 }
 
-std::string Channel::getChannelName()
+void Channel::setMakeUser(User *user)
+{
+	this->makeUser = user;
+}
+
+void Channel::setChannelKey(const string channelKey)
+{
+	this->channelKey = channelKey;
+}
+
+string Channel::getChannelName() const
 {
 	return this->channelName;
 }
 
-size_t Channel::getChannelId()
+int Channel::getCurSizeUser() const
 {
-	return this->channelId;
+	return this->curSizeUser;
 }
 
-void Channel::addJoinUser(User user)
+int Channel::getMaxSizeUser() const
 {
-		joinUser.insert(pair<std::string, User>(user.getNickName(), user));
+	return this->maxSizeUser;
 }
 
-void Channel::deleteJoinUser(User user)
+
+void Channel::addJoinUser(User* user) 
 {
-	joinUser.eraser(user.getUserName());
+	
+	joinUser.insert(make_pair(user->getNickname(), user));
 }
 
-std::vector<User *> Channel::getJoinUser()
+void Channel::deleteJoinUser(User *user) 
 {
-	std::vector<User *> userList;
+	joinUser.erase(user->getUserName());
+}
 
+std::map<string, User *> Channel::getJoinUser()
+{
+	std::map<string, User *> userList;
 
-	auto iter = joinUser.begin();
+	map<string, User *>::iterator iter = this->joinUser.begin();
     while (iter != joinUser.end()) {
-		userList.push_back(iter->second);
+		userList.insert(*iter);
         ++iter;
     }
 

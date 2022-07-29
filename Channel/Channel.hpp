@@ -1,12 +1,9 @@
-#ifndef __CHANNEL_H__
-#define __CHANNEL_H__
+#ifndef __CHANNEL_HPP__
+#define __CHANNEL_HPP__
 
-#include <string>
-#include <vector>
-#include <map>
-#include <./User/User.hpp>
+#include "../defines.hpp"
 
-using namespace std;
+class User;
 
 class Channel
 {
@@ -14,26 +11,98 @@ class Channel
 public:
 	Channel();
 	~Channel();
+	
 
-
-	enum Status
-	{
-		WAIT,
-		TAKING
-	};
-
+	/**
+	 * @brief Set the Channel Name object
+	 * 
+	 * 			Setter
+	 */
 	void setChannelName(const string channelName);
-	void setChannelId(size_t channelId);
-	string getChannelName();
-	size_t getChannelId();
-	void addJoinUser(User user);
-	void deleteJoinUser(User user);
-	vector<User *> getJoinUser();
+	void setMakeUser(User *user);
+	void setChannelKey(const string channelKey);
+	void setCurSizeUser(const int size);
+
+
+	/**
+	 * @brief Get the Channel Name object
+	 * 
+	 * 			Getter
+	 */
+	string getChannelName() const;
+	User* getMakeUser() const;
+	string getChannelKey() const;
+	int getCurSizeUser() const;
+	int getMaxSizeUser() const;
+
+
+
+	/**
+	 * @brief 
+	 * 
+	 * @param user 
+	 * 
+	 * 			Insert User
+	 */
+	void addJoinUser(User *user);
+
+	/**
+	 * @brief 
+	 * 
+	 * @param user 
+	 * 
+	 * 			Delete User
+	 */
+	void deleteJoinUser(User *user);
+
+	/**
+	 * @brief Get the Join User object
+	 * 
+	 * @return std::map<string, User *> 
+	 * 
+	 * 	return Insert All User
+	 */
+	std::map<string, User *> getJoinUser();
+
+
+	/**
+	 * @brief 
+	 * 
+	 * 				ENUM
+	 * 
+	 */
+
+	enum Mode
+	{
+		WAIT, TALKING, ELSE
+	};
 
 private:
 	string channelName;
-	size_t channelId;
+	string channelKey;
+
+
+	/**
+	 * @brief 
+	 * 
+	 * 		채널 생성한 사람
+	 */
+	User *makeUser;
+	
+	/**
+	 * @brief 
+	 * 
+	 * 		채널에 참가하고 있는 사람 list
+	 * 
+	 */
 	map<string, User *> joinUser;
+
+	/**
+	 * @brief Channel user Size
+	 * 
+	 */
+	int maxSizeUser;
+	int curSizeUser;
 };
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef __PART_HPP__
-#define __PART_HPP__
+#ifndef __KILL_HPP__
+#define __KILL_HPP__
 
 
 #include <string>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Part : public ICommand
+class Kill : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

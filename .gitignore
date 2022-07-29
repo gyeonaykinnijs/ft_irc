@@ -1,0 +1,4 @@
+# Network
+*.test
+*TEST*
+.vscode

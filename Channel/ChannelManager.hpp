@@ -7,17 +7,29 @@ using namespace std;
 
 class ChannelManager
 {
-	
 public:
 	ChannelManager();
 	~ChannelManager();
-	Channel getChannel(size_t channelId);
-	void addChannel();
-	void deleteChannel(size_t channelId);
+	/*
+		Getter
+	*/
+	Channel* getChannel(string channelName);
+
+	/**
+	 * @brief 
+	 * Create
+	 */
+	Channel *createChannel(string channelName, string passwd, User *user);
+
+
+	/**
+	 * @brief 
+	 * Delete
+	 */
+	void deleteChannel(string channelName);
 
 private:
-	size_t channelCnt;
-	map<size_t, Channel *> channel_list;
+	map<string, Channel *> channel_list;
 };
 
 #endif
