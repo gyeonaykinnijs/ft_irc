@@ -90,30 +90,24 @@ bool Network::IOMultiflexing()
 	}
 	while (1)
 	{
-		std::cout << "🌖" << std::endl;
 		initFdSets();
 		sleep(3);
 		// FIXME: 클라 끊겼을떄 정리하는 코드 작성
-		std::cout << "🌖🌖" << std::endl;
 		if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
 		{
 			// FIXME: 수정 필요.
 			cerr << "[select]" << strerror(errno) <<endl;
 		}
-		//std::cout << "ssdddd" << std::endl;
-		std::cout << "🌖🌖🌖" << std::endl;
 		if (FD_ISSET(this->fdServer, &this->rSet))
 		{
 			this->AcceptUser();
 		}
 		else
 		{
-			std::cout << "🌖🌖🌖🌖" << std::endl;
 			map<int, User*>& users = this->userManager.getAllUser();
 			// 이미 연결된 유저들과 관련된 동작
 			for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
 			{
-				std::cout << "🌖🌖🌖🌖🌖" << std::endl;
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
 					int lenRecv;
@@ -138,7 +132,6 @@ bool Network::IOMultiflexing()
 						// 유저 버퍼 처리하는 로직
 						// 유저에 ignore 플래그 필요
 						// FIXME: 버퍼에 내용이 남아있는 상태에서 select가 안들어 오면, 남아있는 내용이 동작하지 않는다. -> 
-						std::cout << "🌖🌖🌖🌖🌖🌟" << std::endl;
 						while(1)
 						{
 							if (user->getBuffer().empty())
@@ -182,15 +175,11 @@ bool Network::IOMultiflexing()
 void Network::initFdSets()
 {
 	// rSet모든 유저 돌면서 set에 추가.
-	std::cout << "1" << std::endl;
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
-	std::cout << "2" << std::endl;
 	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
 	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
-	std::cout << "3" << std::endl;
 	FD_SET(this->fdServer, &this->rSet);
-	std::cout << "4" << std::endl;
 	for (;iter != iterEnd; iter++)
 	{
 		
