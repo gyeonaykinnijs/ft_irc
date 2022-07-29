@@ -28,7 +28,7 @@ void Join::execute(ChannelManager &channelManager, UserManager &userManager, Net
 		return;
 	}
 
-	if (channel.getPassword() != password) {
+	if (channel->getChannelKey() != password) {
 		/* no match password error */
 		return;
 	}

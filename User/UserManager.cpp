@@ -40,3 +40,11 @@ void UserManager::makeUser(int fd)
 	user->setFd(fd);
 	addUser(user);
 }
+
+void UserManager::deleteUser(int fd)
+{
+	User *user = userListByFd.at(fd);
+	
+	this->userListByNickname.erase(user->getUserName());
+	this->userListByFd.erase(fd);
+}

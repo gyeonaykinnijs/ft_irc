@@ -16,6 +16,9 @@ public:
 	void addUser(User *user);
 	void addUserNickName(User *user);
 
+	
+	void deleteUser(int fd);
+
 private:
 	map<string, User *> userListByNickname;
 	map<int, User *> userListByFd;
