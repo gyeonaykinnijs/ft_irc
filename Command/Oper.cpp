@@ -58,5 +58,17 @@ void Oper::execute(ChannelManager &channelManager,
 		}
 	}
 
+	/**
+	 * @brief 
+	 * 
+	 * 				Setting User Auth -> Admin
+	 * 
+	 */
 
+
+	for (int i = 1; i < param.size(); i++)
+	{
+		User * user = userList.at(param.at(i));
+		user->setAuth(User::ADMIN);
+	}
 }
