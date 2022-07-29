@@ -98,19 +98,26 @@ bool Network::IOMultiflexing()
 			// 이미 연결된 유저들과 관련된 동작
 			for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
 			{
+				// 파싱 조건문 다시.
+				// 우선 recv를 통해서 읽어들인다.
+				// 읽어들인 문자에서 crlf가 없다면 유저별 버퍼에 합치는데
+				// 		1. 총 합이 512보다 길게 된다면, 유저별 버퍼를 싹 비우고, crlf이전까지의 입력을 날리기만 한다.
+				//		2. 총 합이 512보다 짧다면 일단 -> 생각해보니 한번 쭉 받았는데, crlf가 없다면 그냥 이상한 입력 아닌가?
+				// -> 읽어들인 문자열에서 crlf가 없다면 나올때까지의 입력을 싹 무시한다.
+				// 읽어들인 문자에서 crlf가 있다면 유저별 버퍼에 있는 내용과 합쳐서 파싱을 시작한다.
+				// 
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
-					
 					int lenRecv;
 					// TODO: char->string
 					char buffer[BUFFERSIZE];
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
-					//std::cout << "[" << iter->first << "] " << lenRecv << std::endl;
-					//write(1, buffer, lenRecv);
 					if (strnstr(buffer, "\r\n", lenRecv) == NULL)
 					{
 						string left(buffer, 0, lenRecv);
+						cout << "1 :" << left << endl;
 						this->userManager.getUserByFd(iter->first)->setBuffer(left);
+						break;
 						//TODO:512내에 CRLF가 안오면, 다음 CRLF까지 들어온 입력을 싹 날려주는 명령. 근데 User에서 가지고 있어야되서 일단 패스.
 						//int errorFlag = false; // 
 						// 유저단에서 버퍼도 가지고 있어야 할거 같은데? ㅋㅋㅋ -> 유저가 보낸 명령르 다 못받을 수도 있어서, 받을때까지 기다려야 하면, 이걸 일단 가지고 있어야한다.
@@ -119,16 +126,14 @@ bool Network::IOMultiflexing()
 					{
 						char* where = strnstr(buffer, "\r\n", lenRecv);
 						size_t len = where - buffer;
-						if (where == NULL)
+						if (where == NULL && lenRecv != 0)
 						{
-							//cout << lenRecv << endl;
-							//cout << where << endl;
-							printf("🌟%p\n", where);
+							string left(buffer, 0, lenRecv);
+							cout << "2 :" << left << endl;
+							this->userManager.getUserByFd(iter->first)->setBuffer(left);
 							break;
-							//TODO:no \r\n, 나올때까지 입력 날려버리기. -> buffer 꽉 차게 받받았았는데 CRLF가 없는 경우 CRLF나올때까지 모든 입력 무시.
-							// 2. 버퍼에 recv한 데이터가 짤려서 CRLF가 안들어간 경우 ->
 						}
-						else
+						else if (where != NULL)
 						{
 							string temp(buffer, 0, len);
 							cout << "🌟" << temp << "🌟" << endl;
