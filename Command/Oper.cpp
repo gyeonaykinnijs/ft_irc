@@ -25,7 +25,6 @@
 
 */
 
-
 void Oper::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
@@ -33,6 +32,31 @@ void Oper::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	
 	string channelName = param.at(0);
+	Channel *channel = channelManager.getChannel(channelName);
+	map<string, User *> userList = channel->getJoinUser();
+
+
+	if (!channel) {
+		/**
+		 * @brief 
+		 * 
+		 * 		No Such Channel Error
+		 */
+		return;
+	}
+
+	for (int i = 1; i < param.size(); i++)
+	{
+		if (!userList.at(param.at(i)))
+		{
+			/**
+			 * @brief 
+			 * 			No Such User in Channel Error
+			 */
+			return ;
+		}
+	}
+
+
 }

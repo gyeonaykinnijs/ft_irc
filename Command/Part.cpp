@@ -18,28 +18,28 @@ void Part::execute(ChannelManager &channelManager,
 
 	if (param.empty()) {
 		/*
-			param more need Error
+				param more need Error
 		*/
 		return;
 	}
 
-	std::string name = param[0];
+	std::string channelName = param[0];
 
-	Channel *channel = channelManager.getChannel(name);
+	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel) {
 		/**
 		 * @brief 
 		 * 
-		 * 	No Such Channel Error
+		 * 		No Such Channel Error
 		 */
 		return;
 	}
 
-	if (!user->getChannel() || user->getChannel()->getChannelName() != name) {
+	if (!user->getChannel() || user->getChannel()->getChannelName() != channelName) {
 		/**
 		 * @brief 
 		 * 
-		 * 	NO Name Match Channel Error
+		 * 		NO Name Match Channel Error
 		 * 
 		 */
 		return;

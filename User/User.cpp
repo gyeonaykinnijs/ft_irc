@@ -80,5 +80,5 @@ Channel* User::getChannel() const
 
 void User::appendBuffer(string buffer)
 {
-	this->buffer = this->buffer + buffer;
+	this->buffer.append(buffer);
 }
