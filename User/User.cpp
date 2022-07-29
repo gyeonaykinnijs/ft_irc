@@ -39,6 +39,12 @@ void User::setIsRegistered(const bool isRegistered)
 	this->isRegistered = isRegistered;
 }
 
+void User::setChannel(const channel *channel)
+{
+	this->channel = channel;
+}
+
+
 std::string User::getNickname() const
 {
 	return this->nickname;
@@ -62,4 +68,9 @@ string User::getBuffer() const
 bool User::getIsRegistered() const
 {
 	return this->isRegistered;
+}
+
+Channel* User::getChannel() const
+{
+	return this->channel;
 }

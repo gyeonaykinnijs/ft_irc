@@ -23,16 +23,19 @@ map<int, User *> &UserManager::getAllUser()
 
 void UserManager::addUser(User *user)
 {
+	// user fd or nickname 중복 error error
 	this->userListByFd.insert(pair<int, User *>(user->getFd(), user));
 }
 
 void UserManager::addUserNickName(User *user)
 {
+	// user fd or nickname 중복 error error
 	this->userListByNickname.insert(pair<string, User *>(user->getUserName(), user));
 }
 
 void UserManager::makeUser(int fd)
 {	
+	// user fd or nickname 중복 error error
 	User *user = new User;
 	user->setFd(fd);
 	addUser(user);
