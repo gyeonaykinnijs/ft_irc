@@ -55,9 +55,28 @@ void Network::init()
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 };
 
+bool Network::AcceptUser()
+{
+	sockaddr_in addressClient;
+	socklen_t lenClient = sizeof(addressClient);
+	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
+	if (fdClient < 0)
+	{
+		std::cerr << "[select]" << strerror(errno) <<endl;
+	}
+	this->userManager.makeUser(fdClient);
+	std::cout << fdClient << " user set" << std::endl;
+	return true;
+}
+
+void pushCmdToQueue(string cmd)
+{
+	cout << "🌟" << cmd << "🌟" << endl;
+}
+
 bool Network::IOMultiflexing()
 {
-	
+	string tempBuffer;
 	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
@@ -71,80 +90,81 @@ bool Network::IOMultiflexing()
 	}
 	while (1)
 	{
+		std::cout << "🌖" << std::endl;
 		initFdSets();
 		sleep(3);
 		// FIXME: 클라 끊겼을떄 정리하는 코드 작성
+		std::cout << "🌖🌖" << std::endl;
 		if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
 		{
 			// FIXME: 수정 필요.
 			cerr << "[select]" << strerror(errno) <<endl;
 		}
 		//std::cout << "ssdddd" << std::endl;
+		std::cout << "🌖🌖🌖" << std::endl;
 		if (FD_ISSET(this->fdServer, &this->rSet))
 		{
-			sockaddr_in addressClient;
-			socklen_t lenClient = sizeof(addressClient);
-			int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
-			if (fdClient < 0)
-			{
-				std::cerr << "[select]" << strerror(errno) <<endl;
-			}
-			this->userManager.makeUser(fdClient);
-			std::cout << fdClient << " user set" << std::endl;
+			this->AcceptUser();
 		}
 		else
 		{
+			std::cout << "🌖🌖🌖🌖" << std::endl;
 			map<int, User*>& users = this->userManager.getAllUser();
 			// 이미 연결된 유저들과 관련된 동작
 			for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
 			{
+				std::cout << "🌖🌖🌖🌖🌖" << std::endl;
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
-					
 					int lenRecv;
-					// TODO: char->string
 					char buffer[BUFFERSIZE];
+					User* user = this->userManager.getUserByFd(iter->first);
+					// BUFFERSIZE 다 받지 말고, 유저 버퍼에 남아있는 버퍼 사이즈의 길이 반영해서, 도합 512까지.
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
-					//std::cout << "[" << iter->first << "] " << lenRecv << std::endl;
-					//write(1, buffer, lenRecv);
-					if (strnstr(buffer, "\r\n", lenRecv) == NULL)
+					if (lenRecv < 0)
 					{
-						string left(buffer, 0, lenRecv);
-						this->userManager.getUserByFd(iter->first)->setBuffer(left);
-						//TODO:512내에 CRLF가 안오면, 다음 CRLF까지 들어온 입력을 싹 날려주는 명령. 근데 User에서 가지고 있어야되서 일단 패스.
-						//int errorFlag = false; // 
-						// 유저단에서 버퍼도 가지고 있어야 할거 같은데? ㅋㅋㅋ -> 유저가 보낸 명령르 다 못받을 수도 있어서, 받을때까지 기다려야 하면, 이걸 일단 가지고 있어야한다.
+						cerr << "[recv " << iter->first << "]" << strerror(errno) <<endl;
 					}
-					while (1)
+					else if (lenRecv == 0)
 					{
-						char* where = strnstr(buffer, "\r\n", lenRecv);
-						size_t len = where - buffer;
-						if (where == NULL)
+						this->userManager.deleteUser(iter->first);
+						cout << iter->first << " disconnect" << endl;
+						//TODO:this->userManager.
+					}
+					else
+					{
+						tempBuffer.assign(buffer, lenRecv);
+						user->appendBuffer(tempBuffer);
+						// 유저 버퍼 처리하는 로직
+						// 유저에 ignore 플래그 필요
+						// FIXME: 버퍼에 내용이 남아있는 상태에서 select가 안들어 오면, 남아있는 내용이 동작하지 않는다. -> 
+						std::cout << "🌖🌖🌖🌖🌖🌟" << std::endl;
+						while(1)
 						{
-							//cout << lenRecv << endl;
-							//cout << where << endl;
-							printf("🌟%p\n", where);
-							break;
-							//TODO:no \r\n, 나올때까지 입력 날려버리기. -> buffer 꽉 차게 받받았았는데 CRLF가 없는 경우 CRLF나올때까지 모든 입력 무시.
-							// 2. 버퍼에 recv한 데이터가 짤려서 CRLF가 안들어간 경우 ->
-						}
-						else
-						{
-							string temp(buffer, 0, len);
-							cout << "🌟" << temp << "🌟" << endl;
-							if (lenRecv > (int)len + 2)
+							if (user->getBuffer().empty())
 							{
-								lenRecv -= len + 2;
-								if (lenRecv == 0)
-								{
-									cout << "33333333333333" << endl;
-									break;
-								}
-								memcpy(buffer, buffer + len + 2, lenRecv);
+								break;
+							}
+							size_t crlfIndex = user->getBuffer().find("\r\n");
+							if (crlfIndex == string::npos)
+							{
+								std::cout << "🔥" << user->getBuffer() << std::endl;
+								break;
+							}
+							else if (crlfIndex >= BUFFERSIZE)
+							{
+								tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
+								tempBuffer.append("\r\n");
+								pushCmdToQueue(tempBuffer);
+								// User.setIgnore();
+								user->setBuffer("");
 							}
 							else
 							{
-								break;
+								tempBuffer.assign(user->getBuffer(), 0, crlfIndex);
+								pushCmdToQueue(tempBuffer);
+								tempBuffer.assign(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2));
+								user->setBuffer(tempBuffer);
 							}
 						}
 					}
@@ -153,10 +173,6 @@ bool Network::IOMultiflexing()
 			// TODO: send작업은 좀 나중에 하기.
 			// for (int i = 0; i < this->sendVector_.size(); i++)
 			// {
-			// 	if (FD_ISSET(this->sendVector_[i].first.getFd(), &this->wSet))
-			// 	{
-					
-			// 	}
 			// }
 		}
 	}
@@ -166,13 +182,18 @@ bool Network::IOMultiflexing()
 void Network::initFdSets()
 {
 	// rSet모든 유저 돌면서 set에 추가.
+	std::cout << "1" << std::endl;
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
+	std::cout << "2" << std::endl;
 	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
 	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
+	std::cout << "3" << std::endl;
 	FD_SET(this->fdServer, &this->rSet);
+	std::cout << "4" << std::endl;
 	for (;iter != iterEnd; iter++)
 	{
+		
 		FD_SET(iter->first, &this->rSet);
 	}
 	// wSet의 경우, queue에 입력된 유저들을 확인하고...? 근데 채널에 보내는 경우는?
