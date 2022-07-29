@@ -132,7 +132,7 @@ bool Network::IOMultiflexing()
 						{
 							string temp(buffer, 0, len);
 							cout << "🌟" << temp << "🌟" << endl;
-							if (lenRecv > len + 2)
+							if (lenRecv > (int)len + 2)
 							{
 								lenRecv -= len + 2;
 								if (lenRecv == 0)
@@ -141,6 +141,10 @@ bool Network::IOMultiflexing()
 									break;
 								}
 								memcpy(buffer, buffer + len + 2, lenRecv);
+							}
+							else
+							{
+								break;
 							}
 						}
 					}

@@ -1,7 +1,8 @@
 #ifndef __CHANNELMANAGER_HPP__
 #define __CHANNELMANAGER_HPP__
 
-#include "defines.hpp"
+#include "../defines.hpp"
+#include "./Channel.hpp"
 
 class ChannelManager
 {
@@ -9,9 +10,9 @@ class ChannelManager
 public:
 	ChannelManager();
 	~ChannelManager();
-	Channel getChannel(size_t channelId);
-	void addChannel();
-	void deleteChannel(size_t channelId);
+	Channel* getChannel(string channelName);
+	void addChannel(string channelName);
+	void deleteChannel(string channelName);
 
 private:
 	map<string, Channel *> channel_list;

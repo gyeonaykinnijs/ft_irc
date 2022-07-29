@@ -1,6 +1,6 @@
 #ifndef __USER_HPP__
 #define __USER_HPP__
-#include "defines.hpp"
+#include "../defines.hpp"
 
 class User
 {
@@ -20,7 +20,7 @@ public:
 	string getPasswd() const;
 	string getBuffer() const;
 	bool getIsRegistered() const;
-	int getFd();
+	int getFd() const;
 
 private:
 	string nickname;

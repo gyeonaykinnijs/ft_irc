@@ -2,6 +2,9 @@
 #define __SERVER_HPP__
 
 #include "../defines.hpp"
+#include "../User/UserManager.hpp"
+#include "../Channel/ChannelManager.hpp"
+#include "../Network/Network.hpp"
 
 class Server
 {
@@ -12,12 +15,12 @@ public:
     ~Server();
 
 private:
-    map<string, ICommand *> commands;
-    ChannelManager channelManager;
     UserManager userManager;
+    ChannelManager channelManager;
+    // map<string, ICommand *> commands;
     Network network;
 
-    int callCommand(struct CommandChunk commandChunk);
+    // int callCommand(struct CommandChunk commandChunk);
 };
 
 #endif

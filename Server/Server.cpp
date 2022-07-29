@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server::Server(): channelManager(), userManager(), network()
+Server::Server(): userManager(), channelManager(), network("127.0.0.1", 8181, "12345", userManager)
 {
 
 }
@@ -31,19 +31,19 @@ void Server::run()
 
     while (1) {
         network.IOMultiflexing();
-        struct CommandChunk tmpCommand = network.getCommand();
-        if (commands.find(tmpCommand.command) == commands.end())
-        {
-            // 실행 안 해야 됨
-        }
-        else
-        {
-            if (callCommand(tmpCommand) == ERROR)
-            {
-                // 에러니까 뭔 조치를 취해야 함.
-            }
+    //     struct CommandChunk tmpCommand = network.getCommand();
+    //     if (commands.find(tmpCommand.command) == commands.end())
+    //     {
+    //         // 실행 안 해야 됨
+    //     }
+    //     else
+    //     {
+    //         if (callCommand(tmpCommand) == ERROR)
+    //         {
+    //             // 에러니까 뭔 조치를 취해야 함.
+    //         }
 
-        }
+    //     }
     }
 }
 
@@ -53,8 +53,8 @@ Server::~Server()
 }
 
 
-int Server::callCommand(struct CommandChunk commandChunk)
-{
-    commands[commandChunk.command]->execute(this->channelManager, this->userManager, this->network, commandChunk);
+// int Server::callCommand(struct CommandChunk commandChunk)
+// {
+//     // commands[commandChunk.command]->execute(this->channelManager, this->userManager, this->network, commandChunk);
     
-}
+// }

@@ -54,12 +54,12 @@ int User::getFd() const
 	return this->fd;
 }
 
-string getBuffer() const
+string User::getBuffer() const
 {
 	return this->buffer;
 }
 
-bool getIsRegistered() const
+bool User::getIsRegistered() const
 {
 	return this->isRegistered;
 }

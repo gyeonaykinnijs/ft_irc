@@ -1,10 +1,8 @@
 #ifndef __USERMANAGER_HPP__
 #define __USERMANAGER_HPP__
 
-#include "defines.hpp"
-
-using namespace std;
-
+#include "../defines.hpp"
+#include "./User.hpp"
 
 class UserManager
 {

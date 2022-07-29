@@ -1,10 +1,8 @@
 #ifndef __CHANNEL_HPP__
 #define __CHANNEL_HPP__
 
-#include "defines.hpp"
-
-using namespace std;
-
+#include "../defines.hpp"
+#include "../User/User.hpp"
 class Channel
 {
 
@@ -23,9 +21,9 @@ public:
 	void setChannelId(size_t channelId);
 	string getChannelName();
 	size_t getChannelId();
-	void addJoinUser(User user);
+	void addJoinUser(User *user);
 	void deleteJoinUser(User user);
-	vector<User *> getJoinUser();
+	std::map<string, User *> getJoinUser();
 
 private:
 	string channelName;

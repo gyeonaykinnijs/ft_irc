@@ -8,7 +8,7 @@ Channel::Channel()
 Channel::~Channel()
 {}
 
-void Channel::setChannelName(const std::string ChannelName)	
+void Channel::setChannelName(const std::string channelName)	
 {
 	this->channelName = channelName;
 }
@@ -28,24 +28,23 @@ size_t Channel::getChannelId()
 	return this->channelId;
 }
 
-void Channel::addJoinUser(User user)
+void Channel::addJoinUser(User* user)
 {
-		joinUser.insert(pair<std::string, User>(user.getNickName(), user));
+	joinUser.insert(make_pair(user->getNickname(), user));
 }
 
 void Channel::deleteJoinUser(User user)
 {
-	joinUser.eraser(user.getUserName());
+	joinUser.erase(user.getUserName());
 }
 
-std::vector<User *> Channel::getJoinUser()
+std::map<string, User *> Channel::getJoinUser()
 {
-	std::vector<User *> userList;
+	std::map<string, User *> userList;
 
-
-	auto iter = joinUser.begin();
+	map<string, User *>::iterator iter = this->joinUser.begin();
     while (iter != joinUser.end()) {
-		userList.push_back(iter->second);
+		userList.insert(*iter);
         ++iter;
     }
 

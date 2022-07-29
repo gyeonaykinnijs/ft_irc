@@ -8,10 +8,12 @@
 #include <utility>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
-class User;
-class Channel;
-class UserManager;
+// #include "../defines.hpp"
+#include "../User/UserManager.hpp"
+#include "../Channel/ChannelManager.hpp"
+// class User;
+// class UserManager;
+// class Channel;
 
 struct CommandChunk
 {
@@ -39,13 +41,13 @@ private:
 	Network& operator=(const Network& other);
 
 	void initFdSets();
-	UserManager& userManager;
-	fd_set rSet;
 	fd_set wSet;
-	const std::string PASSWORD;
+	fd_set rSet;
 	sockaddr_in addressServer;
 	const std::string IP;
 	const short PORT;
+	const std::string PASSWORD;
+	UserManager& userManager;
 	int fdServer;
 	std::queue<CommandChunk> commandQueue;
 	std::vector<std::pair<User, std::string> > sendVector;
