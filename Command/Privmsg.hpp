@@ -1,11 +1,11 @@
-#ifndef __PONG_HPP__
-#define __PONG_HPP__
+#ifndef __PRIVMSG_HPP__
+#define __PRIVMSG_HPP__
 
 #include <string>
 
 #include "ICommand.hpp"
 
-class Pong : public ICommand
+class Privmsg : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

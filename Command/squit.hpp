@@ -1,11 +1,12 @@
-#ifndef __PONG_HPP__
-#define __PONG_HPP__
+#ifndef __SQUIT_HPP__
+#define __SQUIT_HPP__
 
 #include <string>
+#include "./ICommand.hpp"
 
-#include "ICommand.hpp"
+using namespace std;
 
-class Pong : public ICommand
+class Squit : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

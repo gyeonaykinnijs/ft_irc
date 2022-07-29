@@ -44,7 +44,16 @@ public:
 	 * 
 	 * 			Insert User
 	 */
-	void addJoinUser(User *user);
+	void insertJoinUser(User *user);
+
+
+	/**
+	 * @brief 
+	 * 			
+	 * 			Select User
+	 */
+	User* selectJoinUser(string userName);
+
 
 	/**
 	 * @brief 

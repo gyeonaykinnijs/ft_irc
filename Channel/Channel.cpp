@@ -48,10 +48,15 @@ int Channel::getMaxSizeUser() const
 }
 
 
-void Channel::addJoinUser(User* user) 
+void Channel::insertJoinUser(User* user) 
 {
 	
 	joinUser.insert(make_pair(user->getNickname(), user));
+}
+
+User* Channel::selectJoinUser(string userName)
+{
+	return joinUser.at(userName);
 }
 
 void Channel::deleteJoinUser(User *user) 
