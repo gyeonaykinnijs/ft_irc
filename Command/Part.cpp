@@ -13,5 +13,42 @@ void Part::execute(ChannelManager &channelManager,
 					Network &network,
 					struct CommandChunk commandChunk)
 {
-	
+	User *user = userManager.getUserByFd(commandChunk.fd);
+	vector<string> param = commandChunk.parameters;
+
+	if (param.empty()) {
+		/*
+			param more need Error
+		*/
+		return;
+	}
+
+	std::string name = param[0];
+
+	Channel *channel = channelManager.getChannel(name);
+	if (!channel) {
+		/**
+		 * @brief 
+		 * 
+		 * 	No Such Channel Error
+		 */
+		return;
+	}
+
+	if (!user->getChannel() || user->getChannel()->getChannelName() != name) {
+		/**
+		 * @brief 
+		 * 
+		 * 	NO Name Match Channel Error
+		 * 
+		 */
+		return;
+	}
+
+	/*
+			유저 채널에서 퇴장
+	*/
+
+	channel->deleteJoinUser(user);
+	user->setChannel(NULL);
 }

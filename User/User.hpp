@@ -23,7 +23,7 @@ public:
 	void setPasswd(const string passwd);
 	void setBuffer(const string buffer);
 	void setIsRegistered(const bool isRegistered);
-	void setChannel(const Channel *channel);
+	void setChannel(Channel *channel);
 
 
 	/*
@@ -41,6 +41,9 @@ public:
 	int getFd() const;
 	
 
+	
+	void appendBuffer(string buffer);
+
 	/*
 
 		Ennum;
@@ -54,15 +57,24 @@ public:
 
 
 private:
+
+	/*
+		기본 정보
+	*/
 	string nickname;
 	string userName;
 	string realName;
 	string passwd;
+	int	fd;
+	Auth auth;
+
+	/*
+
+	*/
 	string buffer;
 	Channel *channel;
-	Auth auth;
 	bool isRegistered;
-	int	fd;
+
 };
 
 #endif
