@@ -1,13 +1,11 @@
-#ifndef __OPER_HPP__
-#define __OPER_HPP__
-
+#ifndef __CPONG_HPP__
+#define __CPONG_HPP__
 
 #include <string>
-#include "./ICommand.hpp"
 
-using namespace std;
+#include "ICommand.hpp"
 
-class Oper : public ICommand
+class Pong : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

@@ -1,5 +1,5 @@
-#ifndef __JOIN_HPP__
-#define __JOIN_HPP__
+#ifndef __CJOIN_HPP__
+#define __CJOIN_HPP__
 
 
 #include <string>

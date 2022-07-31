@@ -1,4 +1,4 @@
-#include "Join.hpp"
+#include "Cjoin.hpp"
 
 void Join::execute(ChannelManager &channelManager,
 					UserManager &userManager,

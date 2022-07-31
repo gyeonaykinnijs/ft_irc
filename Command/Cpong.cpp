@@ -1,4 +1,4 @@
-#include "Pong.hpp"
+#include "Cpong.hpp"
 
 void Pong::execute(ChannelManager &channelManager,
 					UserManager &userManager,
