@@ -1,4 +1,4 @@
-#include "Ping.hpp"
+#include "Cping.hpp"
 
 void Ping::execute(ChannelManager &channelManager,
 					UserManager &userManager,
