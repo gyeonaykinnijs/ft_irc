@@ -52,6 +52,11 @@ void User::setAuth(const User::Auth auth)
 	this->auth = auth;
 }
 
+void User::setIgnored(const bool ignore)
+{
+	this->ignored = ignore;
+}
+
 std::string User::getNickname() const
 {
 	return this->nickname;
@@ -86,6 +91,11 @@ bool User::getIsRegistered() const
 Channel* User::getChannel()
 {
 	return this->channel;
+}
+
+bool User::getIgnored() const
+{
+	return this->ignored;
 }
 
 
