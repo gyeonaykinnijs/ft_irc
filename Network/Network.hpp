@@ -39,6 +39,7 @@ public:
 private:
 	Network(const Network& other);
 	Network& operator=(const Network& other);
+	bool AcceptUser();
 
 	void initFdSets();
 	fd_set wSet;
