@@ -54,3 +54,9 @@ void UserManager::deleteUser(int fd)
 	this->userListByNickname.erase(userListByFd.at(fd)->getUserName());
 	this->userListByFd.erase(fd);
 }
+
+
+void UserManager::sendError(string errorCode)
+{
+	
+}
