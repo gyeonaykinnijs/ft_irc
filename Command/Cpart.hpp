@@ -1,5 +1,5 @@
-#ifndef __OPER_HPP__
-#define __OPER_HPP__
+#ifndef __CPART_HPP__
+#define __CPART_HPP__
 
 
 #include <string>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Oper : public ICommand
+class Part : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

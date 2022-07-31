@@ -1,13 +1,12 @@
-#ifndef __PART_HPP__
-#define __PART_HPP__
-
+#ifndef __CSQUIT_HPP__
+#define __CSQUIT_HPP__
 
 #include <string>
 #include "./ICommand.hpp"
 
 using namespace std;
 
-class Part : public ICommand
+class Squit : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,
