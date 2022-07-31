@@ -29,6 +29,13 @@ public:
 	*/
 	void deleteUser(int fd);
 
+	/**
+	 * @brief Eorro Message 출력
+	 * 
+	 */
+
+	void sendError(string errorCode);
+
 private:
 	map<string, User *> userListByNickname;
 	map<int, User *> userListByFd;
