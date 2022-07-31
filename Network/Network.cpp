@@ -106,7 +106,9 @@ bool Network::IOMultiflexing()
 		{
 			map<int, User*>& users = this->userManager.getAllUser();
 			// 이미 연결된 유저들과 관련된 동작
-			for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
+			// FIXME: iter를 받아놓고 for문 내부에서 map을 조작(삭제)해서, iter가 유효하지 않은 위치를 포인팅하는거 같음.
+			//for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
+			for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
 			{
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
@@ -117,21 +119,29 @@ bool Network::IOMultiflexing()
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
 					if (lenRecv < 0)
 					{
-						cerr << "[recv " << iter->first << "]" << strerror(errno) <<endl;
+						int tempFd;
+						tempFd = iter->first;
+						cerr << "[recv " << tempFd << "]" << strerror(errno) <<endl;
+						++iter;
+						this->userManager.deleteUser(tempFd);
+						close(tempFd);
+						continue;
 					}
 					else if (lenRecv == 0)
 					{
-						this->userManager.deleteUser(iter->first);
-						cout << iter->first << " disconnect" << endl;
+						int tempFd;
+						tempFd = iter->first;
+						cout << tempFd << " disconnect" << endl;
+						++iter;
+						this->userManager.deleteUser(tempFd);
+						close(tempFd);
+						continue ;
 						//TODO:this->userManager.
 					}
 					else
 					{
 						tempBuffer.assign(buffer, lenRecv);
 						user->appendBuffer(tempBuffer);
-						// 유저 버퍼 처리하는 로직
-						// 유저에 ignore 플래그 필요
-						// FIXME: 버퍼에 내용이 남아있는 상태에서 select가 안들어 오면, 남아있는 내용이 동작하지 않는다. -> 
 						while(1)
 						{
 							if (user->getBuffer().empty())
@@ -141,7 +151,7 @@ bool Network::IOMultiflexing()
 							size_t crlfIndex = user->getBuffer().find("\r\n");
 							if (crlfIndex == string::npos)
 							{
-								std::cout << "🔥" << user->getBuffer() << std::endl;
+								std::cout << "🔥" << iter->first << " :" << user->getBuffer() << std::endl;
 								break;
 							}
 							else if (crlfIndex >= BUFFERSIZE)
@@ -162,6 +172,7 @@ bool Network::IOMultiflexing()
 						}
 					}
 				}
+				++iter;
 			}
 			// TODO: send작업은 좀 나중에 하기.
 			// for (int i = 0; i < this->sendVector_.size(); i++)
@@ -182,9 +193,9 @@ void Network::initFdSets()
 	FD_SET(this->fdServer, &this->rSet);
 	for (;iter != iterEnd; iter++)
 	{
-		
 		FD_SET(iter->first, &this->rSet);
 	}
+	std::cout << std::endl;
 	// wSet의 경우, queue에 입력된 유저들을 확인하고...? 근데 채널에 보내는 경우는?
 	
 }
