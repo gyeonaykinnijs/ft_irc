@@ -9,6 +9,7 @@ User::User()
 	this->auth = NORMAL;
 	this->buffer = "";
 	this->isRegistered = false;
+	this->ignored = false;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {
