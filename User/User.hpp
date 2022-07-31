@@ -37,6 +37,7 @@ public:
 	void setIsRegistered(const bool isRegistered);
 	void setChannel(Channel *channel);
 	void setAuth(const User::Auth auth);
+	void setIgnored(const bool ignore);
 
 	/*
 
@@ -52,6 +53,7 @@ public:
 	User::Auth getAuth() const;
 	bool getIsRegistered() const;
 	int getFd() const;
+	bool getIgnored() const;
 	
 
 	
@@ -77,6 +79,7 @@ private:
 	string buffer;
 	Channel *channel;
 	bool isRegistered;
+	bool ignored;
 
 };
 

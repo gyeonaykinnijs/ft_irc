@@ -14,4 +14,3 @@ void execute(ChannelManager& channelManager, UserManager& userManager, Network& 
 
 	}
 }
- 
