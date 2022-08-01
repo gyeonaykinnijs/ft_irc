@@ -21,9 +21,8 @@ void Quit::execute(ChannelManager &channelManager,
 
 	std::string reason = param.empty() ? "Leaving..." : param.at(0);
 	reason = reason.at(0) == ':' ? reason.substr(1) : reason;
-
-	std::string buffer = ":" + commandChunk.prefix  + " QUIT :Quit" + reason + "\r\n";
 	
-	if (send(user->getFd(), buffer.c_str(), buffer.length(), 0) < 0)
-		throw std::runtime_error("Error while sending message to client.");
+	string msg = UserManager::makeMessage("", user->getNickname(), "Quit", reason);
+	network.sendToUser(*user, msg);
+
 }
