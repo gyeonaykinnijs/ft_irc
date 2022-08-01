@@ -1,11 +1,13 @@
-#ifndef __PRIVMSG_HPP__
-#define __PRIVMSG_HPP__
+#ifndef __CKICK_HPP__
+#define __CKICK_HPP__
+
 
 #include <string>
+#include "./ICommand.hpp"
 
-#include "ICommand.hpp"
+using namespace std;
 
-class Privmsg : public ICommand
+class Kick : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

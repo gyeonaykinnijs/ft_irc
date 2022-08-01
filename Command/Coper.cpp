@@ -1,4 +1,4 @@
-#include "Oper.hpp"
+#include "Coper.hpp"
 
 
 /*
@@ -43,10 +43,13 @@ void Oper::execute(ChannelManager &channelManager,
 		 * 
 		 * 		No Such Channel Error
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
-	for (int i = 1; i < param.size(); i++)
+	for (unsigned long i = 1; i < param.size(); i++)
 	{
 		if (!userList.at(param.at(i)))
 		{
@@ -54,6 +57,9 @@ void Oper::execute(ChannelManager &channelManager,
 			 * @brief 
 			 * 			No Such User in Channel Error
 			 */
+
+			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "No Such User in Channel");
+			network.sendToUser(*user, msg);
 			return ;
 		}
 	}
@@ -66,7 +72,7 @@ void Oper::execute(ChannelManager &channelManager,
 	 */
 
 
-	for (int i = 1; i < param.size(); i++)
+	for (unsigned long i = 1; i < param.size(); i++)
 	{
 		User * user = userList.at(param.at(i));
 		user->setAuth(User::ADMIN);

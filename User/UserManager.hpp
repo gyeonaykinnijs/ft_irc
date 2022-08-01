@@ -29,6 +29,18 @@ public:
 	*/
 	void deleteUser(int fd);
 
+	/**
+	 * @brief Error Message 출력
+	 * 
+	 * 
+	 * 		prefix 일단 지우고 나중에 필요하면 작성하기
+	 */
+
+	static string makeMessage(string code, string target, string message);
+
+	bool hasNickname(const string nickName);
+
+
 private:
 	map<string, User *> userListByNickname;
 	map<int, User *> userListByFd;

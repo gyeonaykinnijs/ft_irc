@@ -1,4 +1,4 @@
-#include "Privmsg.hpp"
+#include "Cprivmsg.hpp"
 
 /**
  * @brief 
@@ -26,9 +26,13 @@ void Privmsg::execute(ChannelManager &channelManager,
 		 * 
 		 * 			Need More Param ERROR
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
+	
 	string targetUser = param.at(0);
 	string message;
 
@@ -39,6 +43,7 @@ void Privmsg::execute(ChannelManager &channelManager,
 	message = message.at(0) == ':' ? message.substr(1) : message;
 
 	Channel *channel = user->getChannel();
+
 
 	User *none = channel->selectJoinUser(targetUser);
 	if (!none) {

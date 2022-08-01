@@ -2,12 +2,14 @@
 
 User::User()
 {
-	this->nickname = "";
+	this->nickname = "*";
 	this->userName = "";
 	this->passwd = "";
 	this->fd = 0;
 	this->auth = NORMAL;
 	this->buffer = "";
+	this->isRegistered = false;
+	this->ignored = false;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {
@@ -26,6 +28,12 @@ void User::setUserName(const std::string userName)
 {
 	this->userName = userName;
 }
+
+void User::setRealName(const std::string realName)
+{
+	this->realName = realName;
+}
+
 void User::setFd(const int fd)
 {
 	this->fd = fd;
@@ -49,6 +57,16 @@ void User::setChannel(Channel *channel)
 void User::setAuth(const User::Auth auth)
 {
 	this->auth = auth;
+}
+
+void User::setIgnored(const bool ignore)
+{
+	this->ignored = ignore;
+}
+
+void User::setPasswd(const string passwd)
+{
+	this->passwd = passwd;
 }
 
 std::string User::getNickname() const
@@ -82,11 +100,25 @@ bool User::getIsRegistered() const
 	return this->isRegistered;
 }
 
-Channel* User::getChannel()
+Channel* User::getChannel() const
 {
 	return this->channel;
 }
 
+bool User::getIgnored() const
+{
+	return this->ignored;
+}
+
+string User::getRealName() const
+{
+	return this->realName;
+}
+
+string User::getPasswd() const
+{
+	return this->passwd;
+}
 
 void User::appendBuffer(string buffer)
 {

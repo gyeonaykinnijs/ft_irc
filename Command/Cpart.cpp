@@ -1,4 +1,4 @@
-#include "Part.hpp"
+#include "Cpart.hpp"
 
 
 /*
@@ -20,6 +20,9 @@ void Part::execute(ChannelManager &channelManager,
 		/*
 				param more need Error
 		*/
+
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
@@ -32,6 +35,9 @@ void Part::execute(ChannelManager &channelManager,
 		 * 
 		 * 		No Such Channel Error
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
@@ -42,6 +48,9 @@ void Part::execute(ChannelManager &channelManager,
 		 * 		NO Name Match Channel Error
 		 * 
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
