@@ -69,13 +69,126 @@ bool Network::AcceptUser()
 	return true;
 }
 
-void pushCmdToQueue(string cmd)
+void Network::prtCmd(int fd)
 {
-	cout << "🌟" << cmd << "🌟" << endl;
+	CommandChunk tempChunk;
+	size_t queueSize = this->commandQueue.size();
+	string temp;
+
+	for (size_t i = 0; i < queueSize; i++)
+	{
+		tempChunk = this->commandQueue.front();
+		//cout << tempChunk.fd << " | " << tempChunk.prefix << " | " << tempChunk.command;
+		temp.append(std::to_string(tempChunk.fd) + " | " + tempChunk.prefix + " | " + tempChunk.command + " | ");
+		for (size_t j = 0; j < tempChunk.parameters.size(); j++)
+		{
+			//cout << tempChunk.parameters[i] << " - ";
+			temp.append(tempChunk.parameters[j] + " - ");
+		}
+		//cout << "| " << tempChunk.parameterLast << std::endl;
+		temp.append("| " + tempChunk.parameterLast + "\n");
+		//this->commandQueue.push(this->commandQueue.front());
+		this->commandQueue.pop();
+		User* user = this->userManager.getUserByFd(fd);
+		this->sendToUser(*user, temp);
+		
+	}
 }
+
+bool Network::sendToUser(User& user, const std::string& message)
+{
+	map<int, vector<string> >::iterator iter;
+
+	iter = this->sendMap.find(user.getFd());
+	if (iter == this->sendMap.end())
+	{
+		vector<string> temp;
+		temp.push_back(message);
+		this->sendMap.insert(make_pair(user.getFd(), temp));
+		std::cout << user.getFd() << "]" << message << endl;
+	}
+	else
+	{
+		iter->second.push_back(message);
+	}
+	return true;
+}
+
+void Network::pushCmdToQueue(int fd, string cmd)
+{
+	CommandChunk tempChunk;
+	string tempStr;
+
+	if (cmd.find("  ") != string::npos)
+	{
+		// protocol ERROR
+	} 
+	// 공백 날리기(trim)기능 추가
+	tempChunk.fd = fd;
+	if (cmd[0] == ':')
+	{
+		if (cmd.find(' ') == string::npos)
+		{
+			//TODO:ERROR
+			tempChunk.prefix.assign(cmd, 0, cmd.size());
+			this->commandQueue.push(tempChunk);
+			return ;
+		}
+		else
+		{
+			tempChunk.prefix.assign(cmd, 0, cmd.find(' '));
+			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
+		}
+	}
+
+	if (cmd.find(' ') == string::npos)
+	{
+		tempChunk.command.assign(cmd, 0, cmd.size());
+		this->commandQueue.push(tempChunk);
+		return ;
+	}
+	else
+	{
+		tempChunk.command.assign(cmd, 0, cmd.find(' '));
+		cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
+	}
+	
+	while (1)
+	{
+		if (cmd.find(' ') == string::npos)
+		{
+			tempStr.assign(cmd, 0, cmd.size());
+			tempChunk.parameters.push_back(tempStr);
+			this->commandQueue.push(tempChunk);
+			return ;
+		}
+		else
+		{
+			tempStr.assign(cmd, 0, cmd.find(' '));
+			tempChunk.parameters.push_back(tempStr);
+			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
+		}
+		if (cmd[0] == ':')
+		{
+			tempChunk.parameterLast.assign(cmd, 0, cmd.size());
+			this->commandQueue.push(tempChunk);
+			return ;
+		}
+		else if (cmd.size() == 0)
+		{
+			break;
+		}
+	}
+	this->commandQueue.push(tempChunk);
+}
+
+	// template<typename T>
+	// using std::map<int, std::vector<std::string> > sendMap_t;
+	// using std::vector<std::string> strVector_t;
 
 bool Network::IOMultiflexing()
 {
+
 	string tempBuffer;
 	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
@@ -90,30 +203,26 @@ bool Network::IOMultiflexing()
 	}
 	while (1)
 	{
-		std::cout << "🌖" << std::endl;
 		initFdSets();
 		sleep(3);
 		// FIXME: 클라 끊겼을떄 정리하는 코드 작성
-		std::cout << "🌖🌖" << std::endl;
 		if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
 		{
 			// FIXME: 수정 필요.
 			cerr << "[select]" << strerror(errno) <<endl;
 		}
-		//std::cout << "ssdddd" << std::endl;
-		std::cout << "🌖🌖🌖" << std::endl;
 		if (FD_ISSET(this->fdServer, &this->rSet))
 		{
 			this->AcceptUser();
 		}
 		else
 		{
-			std::cout << "🌖🌖🌖🌖" << std::endl;
 			map<int, User*>& users = this->userManager.getAllUser();
 			// 이미 연결된 유저들과 관련된 동작
-			for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
+			// FIXME: iter를 받아놓고 for문 내부에서 map을 조작(삭제)해서, iter가 유효하지 않은 위치를 포인팅하는거 같음.
+			//for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
+			for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
 			{
-				std::cout << "🌖🌖🌖🌖🌖" << std::endl;
 				if (FD_ISSET(iter->first, &this->rSet))
 				{
 					int lenRecv;
@@ -123,22 +232,29 @@ bool Network::IOMultiflexing()
 					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
 					if (lenRecv < 0)
 					{
-						cerr << "[recv " << iter->first << "]" << strerror(errno) <<endl;
+						int tempFd;
+						tempFd = iter->first;
+						cerr << "[recv " << tempFd << "]" << strerror(errno) <<endl;
+						++iter;
+						this->userManager.deleteUser(tempFd);
+						close(tempFd);
+						continue;
 					}
 					else if (lenRecv == 0)
 					{
-						this->userManager.deleteUser(iter->first);
-						cout << iter->first << " disconnect" << endl;
+						int tempFd;
+						tempFd = iter->first;
+						cout << tempFd << " disconnect" << endl;
+						++iter;
+						this->userManager.deleteUser(tempFd);
+						close(tempFd);
+						continue ;
 						//TODO:this->userManager.
 					}
 					else
 					{
 						tempBuffer.assign(buffer, lenRecv);
 						user->appendBuffer(tempBuffer);
-						// 유저 버퍼 처리하는 로직
-						// 유저에 ignore 플래그 필요
-						// FIXME: 버퍼에 내용이 남아있는 상태에서 select가 안들어 오면, 남아있는 내용이 동작하지 않는다. -> 
-						std::cout << "🌖🌖🌖🌖🌖🌟" << std::endl;
 						while(1)
 						{
 							if (user->getBuffer().empty())
@@ -148,32 +264,71 @@ bool Network::IOMultiflexing()
 							size_t crlfIndex = user->getBuffer().find("\r\n");
 							if (crlfIndex == string::npos)
 							{
-								std::cout << "🔥" << user->getBuffer() << std::endl;
+								std::cout << "🔥" << iter->first << " :" << user->getBuffer() << std::endl;
 								break;
 							}
 							else if (crlfIndex >= BUFFERSIZE)
 							{
 								tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
 								tempBuffer.append("\r\n");
-								pushCmdToQueue(tempBuffer);
+								pushCmdToQueue(iter->first, tempBuffer);
+								prtCmd(iter->first);
 								// User.setIgnore();
 								user->setBuffer("");
+								break;
 							}
 							else
 							{
 								tempBuffer.assign(user->getBuffer(), 0, crlfIndex);
-								pushCmdToQueue(tempBuffer);
+								pushCmdToQueue(iter->first, tempBuffer);
+								prtCmd(iter->first);
 								tempBuffer.assign(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2));
 								user->setBuffer(tempBuffer);
 							}
 						}
 					}
 				}
+				++iter;
 			}
 			// TODO: send작업은 좀 나중에 하기.
-			// for (int i = 0; i < this->sendVector_.size(); i++)
+			// for (sendMap_t iter = this->sendMap.begin(); iter != this->sendMap.end();)
 			// {
+			// 	std::vector<std::string> temp;
+
+			
+			// 	++iter;
 			// }
+			for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
+			{
+				int lenSend;
+				map<int, vector<string> >::iterator temp = iter;
+				if (FD_ISSET(iter->first, &this->wSet))
+				{
+					for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
+					{
+						lenSend = ::send(iter->first, iterVec->c_str(), iterVec->size(), 0);
+						if (lenSend < 0)
+						{
+							cerr << iter->first << " send error" << endl;
+						}
+						else if (lenSend == 0)
+						{
+							cerr << iter->first  << " ???" << endl;
+						}
+						else
+						{
+							cout << iter->first << " send done" << endl;
+						}
+						++iterVec;
+					}
+					++iter;
+					this->sendMap.erase(temp->first);
+				}
+				else
+				{
+					++iter;
+				}
+			}
 		}
 	}
 }
@@ -182,22 +337,24 @@ bool Network::IOMultiflexing()
 void Network::initFdSets()
 {
 	// rSet모든 유저 돌면서 set에 추가.
-	std::cout << "1" << std::endl;
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
-	std::cout << "2" << std::endl;
 	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
 	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
-	std::cout << "3" << std::endl;
 	FD_SET(this->fdServer, &this->rSet);
-	std::cout << "4" << std::endl;
 	for (;iter != iterEnd; iter++)
 	{
-		
 		FD_SET(iter->first, &this->rSet);
 	}
 	// wSet의 경우, queue에 입력된 유저들을 확인하고...? 근데 채널에 보내는 경우는?
-	
+	map<int, vector<string> >::iterator iterMap = this->sendMap.begin();
+	map<int, vector<string> >::iterator iterMapEnd = this->sendMap.end();
+	for (; iterMap != iterMapEnd; iterMap++)
+	{
+		std::cout << iterMap->first << ", ";
+		FD_SET(iterMap->first, &this->wSet);
+	}
+	cout << endl;
 }
 
 // 서버어서 소켓 관련 에러가 났을때 exception을 쓰는게 좋나?

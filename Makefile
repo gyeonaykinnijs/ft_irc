@@ -1,6 +1,6 @@
 TARGET = ircserv
 CPP = c++
-FLAGS = -std=c++98 -Wall -Wextra -Werror
+FLAGS = -g -std=c++98 -Wall -Wextra -Werror
 DIR = ./
 SRCS = main.cpp\
 		User/User.cpp User/UserManager.cpp\
