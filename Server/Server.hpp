@@ -5,6 +5,7 @@
 #include "../User/UserManager.hpp"
 #include "../Channel/ChannelManager.hpp"
 #include "../Network/Network.hpp"
+#include "../Command/ICommand.hpp"
 
 class Server
 {
@@ -17,7 +18,7 @@ public:
 private:
     UserManager userManager;
     ChannelManager channelManager;
-    // map<string, ICommand *> commands;
+    map<string, ICommand *> commands;
     Network network;
 
     // int callCommand(struct CommandChunk commandChunk);
