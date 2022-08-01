@@ -40,6 +40,8 @@ private:
 	Network(const Network& other);
 	Network& operator=(const Network& other);
 	bool AcceptUser();
+	void pushCmdToQueue(int fd, string cmd);
+	void prtCmd(int fd);
 
 	void initFdSets();
 	fd_set wSet;
@@ -51,7 +53,7 @@ private:
 	UserManager& userManager;
 	int fdServer;
 	std::queue<CommandChunk> commandQueue;
-	std::vector<std::pair<User, std::string> > sendVector;
+	map<int, vector<string> > sendMap;
 };
 
 #endif
