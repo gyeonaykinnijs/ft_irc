@@ -2,12 +2,14 @@
 
 User::User()
 {
-	this->nickname = "";
+	this->nickname = "*";
 	this->userName = "";
 	this->passwd = "";
 	this->fd = 0;
 	this->auth = NORMAL;
 	this->buffer = "";
+	this->isRegistered = false;
+	this->ignored = false;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {
@@ -51,6 +53,11 @@ void User::setAuth(const User::Auth auth)
 	this->auth = auth;
 }
 
+void User::setIgnored(const bool ignore)
+{
+	this->ignored = ignore;
+}
+
 std::string User::getNickname() const
 {
 	return this->nickname;
@@ -85,6 +92,11 @@ bool User::getIsRegistered() const
 Channel* User::getChannel()
 {
 	return this->channel;
+}
+
+bool User::getIgnored() const
+{
+	return this->ignored;
 }
 
 

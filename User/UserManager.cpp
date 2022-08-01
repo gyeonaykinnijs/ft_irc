@@ -23,9 +23,11 @@ map<int, User *> &UserManager::getAllUser()
 
 void UserManager::addUser(User *user)
 {
+
 	/*
 		user fd or nickname 중복 error error
 	*/
+
 	this->userListByFd.insert(pair<int, User *>(user->getFd(), user));
 }
 
@@ -51,4 +53,10 @@ void UserManager::deleteUser(int fd)
 {
 	this->userListByNickname.erase(userListByFd.at(fd)->getUserName());
 	this->userListByFd.erase(fd);
+}
+
+
+void UserManager::sendError(string errorCode)
+{
+	
 }
