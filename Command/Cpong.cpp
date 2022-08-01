@@ -21,6 +21,6 @@ void Pong::execute(ChannelManager &channelManager,
 		return ;
 	}
 
-	string buffer = " PONG :" + param.at(0) + "\r\n";
-	network.sendToUser(*user, buffer.c_str());
+	string msg = " PONG :" + param.at(0) + "\r\n";
+	network.sendToUser(*user, msg);
 }

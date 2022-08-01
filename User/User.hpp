@@ -59,8 +59,6 @@ public:
 	
 	void appendBuffer(string buffer);
 
-
-
 private:
 
 	/*

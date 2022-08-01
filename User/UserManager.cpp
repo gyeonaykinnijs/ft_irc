@@ -56,23 +56,23 @@ void UserManager::deleteUser(int fd)
 }
 
 
-// void UserManager::makeError(string errorCode)
-// {
-	
-// }
-
-// void UserManager::makeReply(int fd, string errorCode, int len)
-// {
-
-// 	NetWork
-// 	send
-// 	user->getFd(), buffer.c_str(), buffer.length(), 0
-// }
-
-string UserManager::makeMessage(string code, string target, string message, string extra)
+string UserManager::makeMessage(string code, string target, string message)
 {
 	string buffer;
 
-	buffer = code + (code.size() ? " " : "") + target + " : " + message + (extra.size() ? " " : "") + extra + "\r\n";
+	buffer = code + (code.size() ? " " : "") + target + " : " + message + "\r\n";
 	return buffer;
+}
+
+
+bool UserManager::hasNickname(const string nickname)
+{
+	for(map<int, User *>::iterator iter = userListByFd.begin(); iter != userListByFd.end(); iter++)
+	{
+		if (iter->second->getNickname() == nickname)
+		{
+			return true;
+		}
+	}
+	return false;
 }

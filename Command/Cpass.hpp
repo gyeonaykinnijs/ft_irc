@@ -6,7 +6,10 @@
 class Cpass: public ICommand
 {
 public:
-	void Cpass::execute(ChannelManager&, UserManager&, Network&, struct CommandChunk);
+	void execute(ChannelManager &channelManager,
+				UserManager &userManager,
+				Network &network,
+				struct CommandChunk commandChunk);
 };
 
 #endif

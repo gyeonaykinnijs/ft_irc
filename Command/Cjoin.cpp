@@ -44,5 +44,14 @@ void Join::execute(ChannelManager &channelManager,
 		return;
 	}
 
+	/**
+	 * @brief 
+	 * 			
+	 * 			channel에 사람 넣기 
+	 * 			+
+	 * 			사람에 channel 넣기
+	 * 
+	 */
+
 
 }
