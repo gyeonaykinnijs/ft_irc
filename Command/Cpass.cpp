@@ -6,12 +6,15 @@ void Cpass::execute(ChannelManager &channelManager, UserManager &userManager, Ne
 
 	if (tmpUser->getIsRegistered())
 	{
-		return sendError(ERR_ALREADYREGISTERED);
+		string errMessage = ":" + prefix + " " + ERR_ALREADYREGISTERED 
+					+ tmpUser->getNickname() + 
+		network.sendToUser(*tmpUser, errMessage);
 	}
 	else if (commandChunk.parameters.size() == 0)
 	{
+		network.sendToUser(*tmpUser, err_message);
 		return sendError(ERR_NEEDMOREPARAMS);
-	}
+	} 
 	else
 	{
 		std::string password = commandChunk.parameters[0];
