@@ -37,6 +37,11 @@ string Channel::getChannelName() const
 	return this->channelName;
 }
 
+string Channel::getChannelKey() const
+{
+	return this->channelKey;
+}
+
 int Channel::getCurSizeUser() const
 {
 	return this->curSizeUser;
@@ -47,6 +52,10 @@ int Channel::getMaxSizeUser() const
 	return this->maxSizeUser;
 }
 
+User* Channel::getMakeUser(const string nickname)
+{
+	return this->joinUser.at(nickname);
+}
 
 void Channel::insertJoinUser(User* user) 
 {

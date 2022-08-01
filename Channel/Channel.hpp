@@ -30,7 +30,7 @@ public:
 	 * 			Getter
 	 */
 	string getChannelName() const;
-	User* getMakeUser() const;
+	User* getMakeUser(const string nickname);
 	string getChannelKey() const;
 	int getCurSizeUser() const;
 	int getMaxSizeUser() const;

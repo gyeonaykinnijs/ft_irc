@@ -17,12 +17,12 @@ void Quit::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-
+	(void)channelManager;
 
 	std::string reason = param.empty() ? "Leaving..." : param.at(0);
 	reason = reason.at(0) == ':' ? reason.substr(1) : reason;
 	
-	string msg = UserManager::makeMessage("", user->getNickname(), "Quit", reason);
+	string msg = UserManager::makeMessage("", user->getNickname(), "Quit" + reason);
 	network.sendToUser(*user, msg);
 
 }
