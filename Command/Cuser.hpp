@@ -7,7 +7,10 @@
 class Cuser: public ICommand
 {
 public:
-	static void execute(const struct CommandChunk commandChunk);
+	void execute(ChannelManager &channelManager,
+					UserManager &userManager,
+					Network &network,
+					struct CommandChunk commandChunk);
 };
 
 

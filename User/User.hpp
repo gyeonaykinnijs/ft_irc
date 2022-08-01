@@ -32,6 +32,7 @@ public:
 	void setNickname(const string nickName);
 	void setUserName(const string userName);
 	void setFd(const int fd);
+	void setRealName(const string realName);
 	void setPasswd(const string passwd);
 	void setBuffer(const string buffer);
 	void setIsRegistered(const bool isRegistered);
@@ -50,6 +51,7 @@ public:
 	string getUserName() const;
 	string getPasswd() const;
 	string getBuffer() const;
+	string getRealName() const;
 	User::Auth getAuth() const;
 	bool getIsRegistered() const;
 	int getFd() const;
