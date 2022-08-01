@@ -4,7 +4,7 @@
 #include <string>
 #include "./ICommand.hpp"
 
-class Ping : public ICommand
+class Cping : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

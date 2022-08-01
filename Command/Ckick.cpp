@@ -6,7 +6,7 @@
  * 				format: KICK <channel> <user> *( "," <user> ) [<comment>]
  */
 
-void Kick::execute(ChannelManager &channelManager,
+void Ckick::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

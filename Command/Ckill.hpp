@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Kill : public ICommand
+class Ckill : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

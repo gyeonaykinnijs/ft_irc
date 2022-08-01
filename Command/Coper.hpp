@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Oper : public ICommand
+class Coper : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

@@ -10,7 +10,7 @@
 
 */
 
-void Quit::execute(ChannelManager &channelManager,
+void Cquit::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

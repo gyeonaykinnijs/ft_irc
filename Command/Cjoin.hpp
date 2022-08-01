@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Join : public ICommand
+class Cjoin : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

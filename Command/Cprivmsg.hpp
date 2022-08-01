@@ -5,7 +5,7 @@
 
 #include "ICommand.hpp"
 
-class Privmsg : public ICommand
+class Cprivmsg : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

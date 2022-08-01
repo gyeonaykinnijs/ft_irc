@@ -16,7 +16,7 @@
  */
 
 
-void Ping::execute(ChannelManager &channelManager,
+void Cping::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

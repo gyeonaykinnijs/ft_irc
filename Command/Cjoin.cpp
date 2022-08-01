@@ -1,6 +1,6 @@
 #include "Cjoin.hpp"
 
-void Join::execute(ChannelManager &channelManager,
+void Cjoin::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

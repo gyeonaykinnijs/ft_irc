@@ -16,7 +16,7 @@
 		- RFC 1459에 정의되어 있습니다.
  */
 
-void Kill::execute(ChannelManager &channelManager,
+void Ckill::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

@@ -25,7 +25,7 @@
 
 */
 
-void Oper::execute(ChannelManager &channelManager,
+void Coper::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

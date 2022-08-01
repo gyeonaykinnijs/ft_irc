@@ -1,6 +1,6 @@
 #include "Cpong.hpp"
 
-void Pong::execute(ChannelManager &channelManager,
+void Cpong::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

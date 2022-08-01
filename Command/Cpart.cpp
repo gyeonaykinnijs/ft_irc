@@ -8,7 +8,7 @@
 	- RFC 1459에 정의되어 있습니다.
 */
 
-void Part::execute(ChannelManager &channelManager,
+void Cpart::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)

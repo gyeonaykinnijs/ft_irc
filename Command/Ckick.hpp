@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Kick : public ICommand
+class Ckick : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

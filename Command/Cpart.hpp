@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Part : public ICommand
+class Cpart : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

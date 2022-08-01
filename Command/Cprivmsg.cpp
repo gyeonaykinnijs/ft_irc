@@ -11,7 +11,7 @@
  * 
  */
 
-void Privmsg::execute(ChannelManager &channelManager,
+void Cprivmsg::execute(ChannelManager &channelManager,
 				UserManager &userManager,
 				Network &network,
 				struct CommandChunk commandChunk)

@@ -5,7 +5,7 @@
 
 #include "ICommand.hpp"
 
-class Pong : public ICommand
+class Cpong : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,

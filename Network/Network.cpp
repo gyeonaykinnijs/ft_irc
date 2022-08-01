@@ -114,6 +114,18 @@ bool Network::sendToUser(User& user, const std::string& message)
 	return true;
 }
 
+CommandChunk Network::getCommand()
+{
+	CommandChunk temp;
+	temp.fd = -1;
+	if (!this->commandQueue.empty())
+	{
+		temp =  this->commandQueue.front();
+		this->commandQueue.pop();
+	}
+	return temp;
+}
+
 void Network::pushCmdToQueue(int fd, string cmd)
 {
 	CommandChunk tempChunk;
@@ -182,10 +194,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	this->commandQueue.push(tempChunk);
 }
 
-	// template<typename T>
-	// using std::map<int, std::vector<std::string> > sendMap_t;
-	// using std::vector<std::string> strVector_t;
-
 bool Network::IOMultiflexing()
 {
 
@@ -201,136 +209,129 @@ bool Network::IOMultiflexing()
 		// FIXME: 수정 필요.
 		cerr << "[listen]" << strerror(errno) <<endl;
 	}
-	while (1)
+	// while (1)
+	// {
+	initFdSets();
+	sleep(3);
+	// FIXME: 클라 끊겼을떄 정리하는 코드 작성
+	if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
-		initFdSets();
-		sleep(3);
-		// FIXME: 클라 끊겼을떄 정리하는 코드 작성
-		if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
+		// FIXME: 수정 필요.
+		cerr << "[select]" << strerror(errno) <<endl;
+	}
+	if (FD_ISSET(this->fdServer, &this->rSet))
+	{
+		this->AcceptUser();
+	}
+	else
+	{
+		map<int, User*>& users = this->userManager.getAllUser();
+		// 이미 연결된 유저들과 관련된 동작
+		// FIXME: iter를 받아놓고 for문 내부에서 map을 조작(삭제)해서, iter가 유효하지 않은 위치를 포인팅하는거 같음.
+		//for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
+		for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
 		{
-			// FIXME: 수정 필요.
-			cerr << "[select]" << strerror(errno) <<endl;
-		}
-		if (FD_ISSET(this->fdServer, &this->rSet))
-		{
-			this->AcceptUser();
-		}
-		else
-		{
-			map<int, User*>& users = this->userManager.getAllUser();
-			// 이미 연결된 유저들과 관련된 동작
-			// FIXME: iter를 받아놓고 for문 내부에서 map을 조작(삭제)해서, iter가 유효하지 않은 위치를 포인팅하는거 같음.
-			//for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
-			for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
+			if (FD_ISSET(iter->first, &this->rSet))
 			{
-				if (FD_ISSET(iter->first, &this->rSet))
+				int lenRecv;
+				char buffer[BUFFERSIZE];
+				User* user = this->userManager.getUserByFd(iter->first);
+				// BUFFERSIZE 다 받지 말고, 유저 버퍼에 남아있는 버퍼 사이즈의 길이 반영해서, 도합 512까지.
+				lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
+				if (lenRecv < 0)
 				{
-					int lenRecv;
-					char buffer[BUFFERSIZE];
-					User* user = this->userManager.getUserByFd(iter->first);
-					// BUFFERSIZE 다 받지 말고, 유저 버퍼에 남아있는 버퍼 사이즈의 길이 반영해서, 도합 512까지.
-					lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
-					if (lenRecv < 0)
-					{
-						int tempFd;
-						tempFd = iter->first;
-						cerr << "[recv " << tempFd << "]" << strerror(errno) <<endl;
-						++iter;
-						this->userManager.deleteUser(tempFd);
-						close(tempFd);
-						continue;
-					}
-					else if (lenRecv == 0)
-					{
-						int tempFd;
-						tempFd = iter->first;
-						cout << tempFd << " disconnect" << endl;
-						++iter;
-						this->userManager.deleteUser(tempFd);
-						close(tempFd);
-						continue ;
-						//TODO:this->userManager.
-					}
-					else
-					{
-						tempBuffer.assign(buffer, lenRecv);
-						user->appendBuffer(tempBuffer);
-						while(1)
-						{
-							if (user->getBuffer().empty())
-							{
-								break;
-							}
-							size_t crlfIndex = user->getBuffer().find("\r\n");
-							if (crlfIndex == string::npos)
-							{
-								std::cout << "🔥" << iter->first << " :" << user->getBuffer() << std::endl;
-								break;
-							}
-							else if (crlfIndex >= BUFFERSIZE)
-							{
-								tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
-								tempBuffer.append("\r\n");
-								pushCmdToQueue(iter->first, tempBuffer);
-								prtCmd(iter->first);
-								// User.setIgnore();
-								user->setBuffer("");
-								break;
-							}
-							else
-							{
-								tempBuffer.assign(user->getBuffer(), 0, crlfIndex);
-								pushCmdToQueue(iter->first, tempBuffer);
-								prtCmd(iter->first);
-								tempBuffer.assign(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2));
-								user->setBuffer(tempBuffer);
-							}
-						}
-					}
-				}
-				++iter;
-			}
-			// TODO: send작업은 좀 나중에 하기.
-			// for (sendMap_t iter = this->sendMap.begin(); iter != this->sendMap.end();)
-			// {
-			// 	std::vector<std::string> temp;
-
-			
-			// 	++iter;
-			// }
-			for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
-			{
-				int lenSend;
-				map<int, vector<string> >::iterator temp = iter;
-				if (FD_ISSET(iter->first, &this->wSet))
-				{
-					for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
-					{
-						lenSend = ::send(iter->first, iterVec->c_str(), iterVec->size(), 0);
-						if (lenSend < 0)
-						{
-							cerr << iter->first << " send error" << endl;
-						}
-						else if (lenSend == 0)
-						{
-							cerr << iter->first  << " ???" << endl;
-						}
-						else
-						{
-							cout << iter->first << " send done" << endl;
-						}
-						++iterVec;
-					}
+					int tempFd;
+					tempFd = iter->first;
+					cerr << "[recv " << tempFd << "]" << strerror(errno) <<endl;
 					++iter;
-					this->sendMap.erase(temp->first);
+					this->userManager.deleteUser(tempFd);
+					close(tempFd);
+					continue;
+				}
+				else if (lenRecv == 0)
+				{
+					int tempFd;
+					tempFd = iter->first;
+					cout << tempFd << " disconnect" << endl;
+					++iter;
+					this->userManager.deleteUser(tempFd);
+					close(tempFd);
+					continue ;
+					//TODO:this->userManager.
 				}
 				else
 				{
-					++iter;
+					tempBuffer.assign(buffer, lenRecv);
+					user->appendBuffer(tempBuffer);
+					while(1)
+					{
+						if (user->getBuffer().empty())
+						{
+							break;
+						}
+						size_t crlfIndex = user->getBuffer().find("\r\n");
+						if (crlfIndex == string::npos)
+						{
+							std::cout << "🔥" << iter->first << " :" << user->getBuffer() << std::endl;
+							break;
+						}
+						else if (crlfIndex >= BUFFERSIZE)
+						{
+							tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
+							tempBuffer.append("\r\n");
+							pushCmdToQueue(iter->first, tempBuffer);
+							//prtCmd(iter->first);
+							// User.setIgnore();
+							user->setBuffer("");
+							break;
+						}
+						else
+						{
+							tempBuffer.assign(user->getBuffer(), 0, crlfIndex);
+							pushCmdToQueue(iter->first, tempBuffer);
+							//prtCmd(iter->first);
+							tempBuffer.assign(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2));
+							user->setBuffer(tempBuffer);
+						}
+					}
 				}
+			}
+			++iter;
+		}
+		for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
+		{
+			int lenSend;
+			map<int, vector<string> >::iterator temp = iter;
+			if (FD_ISSET(iter->first, &this->wSet))
+			{
+				for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
+				{
+					lenSend = ::send(iter->first, iterVec->c_str(), iterVec->size(), 0);
+					if (lenSend < 0)
+					{
+						cerr << iter->first << " send error" << endl;
+					}
+					else if (lenSend == 0)
+					{
+						cerr << iter->first  << " ???" << endl;
+					}
+					else
+					{
+						cout << iter->first << " send done" << endl;
+					}
+					++iterVec;
+				}
+				++iter;
+				this->sendMap.erase(temp->first);
+			}
+			else
+			{
+				++iter;
 			}
 		}
 	}
+	//}
+	return true;
 }
 
 // TODO:
