@@ -7,6 +7,8 @@ void Pong::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
+	(void)channelManager;
+	
 	if (param.empty())
 	{
 		/**

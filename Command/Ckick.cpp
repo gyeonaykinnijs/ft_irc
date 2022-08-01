@@ -14,6 +14,7 @@ void Kick::execute(ChannelManager &channelManager,
 	
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
+	(void)channelManager;
 	
 
 	string name = param.at(0);
@@ -58,7 +59,7 @@ void Kick::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	if (channel->getMakeUser() != user) {
+	if (channel->getMakeUser(user->getUserName()) != user) {
 		
 		/**
 		 * @brief 

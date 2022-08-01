@@ -5,7 +5,8 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 	Channel *channel = user->getChannel();
-
+	(void)channelManager;
+	
 	if (param.empty()) // 인자 부족할 때
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need more Parameter");

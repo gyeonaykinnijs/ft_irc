@@ -39,6 +39,7 @@ public:
 	void setChannel(Channel *channel);
 	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
+	
 
 	/*
 
@@ -46,7 +47,7 @@ public:
 
 	*/
 
-	Channel *getChannel();
+	Channel *getChannel() const;
 	string getNickname() const;
 	string getUserName() const;
 	string getPasswd() const;
@@ -56,6 +57,7 @@ public:
 	bool getIsRegistered() const;
 	int getFd() const;
 	bool getIgnored() const;
+	
 	
 
 	

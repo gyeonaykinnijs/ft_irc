@@ -49,7 +49,7 @@ void Oper::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	for (int i = 1; i < param.size(); i++)
+	for (unsigned long i = 1; i < param.size(); i++)
 	{
 		if (!userList.at(param.at(i)))
 		{
@@ -72,7 +72,7 @@ void Oper::execute(ChannelManager &channelManager,
 	 */
 
 
-	for (int i = 1; i < param.size(); i++)
+	for (unsigned long i = 1; i < param.size(); i++)
 	{
 		User * user = userList.at(param.at(i));
 		user->setAuth(User::ADMIN);

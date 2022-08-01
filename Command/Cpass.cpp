@@ -29,7 +29,8 @@
 void Cpass::execute(ChannelManager &channelManager, UserManager &userManager, Network &network, struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
-
+	(void)channelManager;
+	
 	if (user->getIsRegistered())
 	{
 		string msg = UserManager::makeMessage(ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered");
