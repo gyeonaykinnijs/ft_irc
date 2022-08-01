@@ -28,7 +28,13 @@ void Kick::execute(ChannelManager &channelManager,
 		 * 
 		 * 			less Param ERROR
 		 * 
+		 * 
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "less Param ERROR");
+		network.sendToUser(*user, msg);
+		return;
+
 		return;
 	}
 
@@ -47,6 +53,8 @@ void Kick::execute(ChannelManager &channelManager,
 		 * 			채널이 존재하지 않거나 채널이름이 맞지 않는 ERROR
 		 * 
 		 */
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
@@ -61,6 +69,9 @@ void Kick::execute(ChannelManager &channelManager,
 		 * 
 		 */
 
+		// What error Name
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
@@ -75,6 +86,10 @@ void Kick::execute(ChannelManager &channelManager,
 		 * 		없을시 ERROR
 		 * 
 		 */
+
+		string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "Not User in Channel");
+		network.sendToUser(*user, msg);
+
 		return;
 	}
 
@@ -87,6 +102,9 @@ void Kick::execute(ChannelManager &channelManager,
 		 * 		없을 시 ERROR
 		 * 
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "Not User in Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 

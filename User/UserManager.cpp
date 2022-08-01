@@ -56,7 +56,23 @@ void UserManager::deleteUser(int fd)
 }
 
 
-void UserManager::sendError(string errorCode)
-{
+// void UserManager::makeError(string errorCode)
+// {
 	
+// }
+
+// void UserManager::makeReply(int fd, string errorCode, int len)
+// {
+
+// 	NetWork
+// 	send
+// 	user->getFd(), buffer.c_str(), buffer.length(), 0
+// }
+
+string UserManager::makeMessage(string code, string target, string message, string extra)
+{
+	string buffer;
+
+	buffer = code + (code.size() ? " " : "") + target + " : " + message + (extra.size() ? " " : "") + extra + "\r\n";
+	return buffer;
 }

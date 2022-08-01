@@ -43,6 +43,9 @@ void Oper::execute(ChannelManager &channelManager,
 		 * 
 		 * 		No Such Channel Error
 		 */
+
+		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(*user, msg);
 		return;
 	}
 
@@ -54,6 +57,9 @@ void Oper::execute(ChannelManager &channelManager,
 			 * @brief 
 			 * 			No Such User in Channel Error
 			 */
+
+			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "No Such User in Channel");
+			network.sendToUser(*user, msg);
 			return ;
 		}
 	}

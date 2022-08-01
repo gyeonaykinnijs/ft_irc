@@ -12,13 +12,15 @@ void Pong::execute(ChannelManager &channelManager,
 		/**
 		 * @brief 
 		 * 			need more param
+		 * 
+		 * 
 		 */
-		return;
+
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
+		network.sendToUser(*user, msg);
+		return ;
 	}
 
-	std::string buffer = ":" + commandChunk.prefix  + " PONG :" + param.at(0) + "\r\n";
-	
-	if (send(user->getFd(), buffer.c_str(), buffer.length(), 0) < 0)
-		throw std::runtime_error("Error while sending message to client.");
-		
+	string buffer = " PONG :" + param.at(0) + "\r\n";
+	network.sendToUser(*user, buffer.c_str());
 }

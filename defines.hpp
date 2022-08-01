@@ -45,6 +45,7 @@ using namespace std;
 #define ERR_CHANNELISFULL "471"
 #define ERR_NOSUCHCHANNEL "403"
 #define ERR_TOOMANYCHANNELS "405"
+#define ERR_USERNOTINCHANNEL "444" // ? 
 #define RPL_TOPIC "332"
 #define RPF_NOTOPIC "331"
 #define ERR_NORECIPIENT "411"
