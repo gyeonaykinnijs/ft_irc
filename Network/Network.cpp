@@ -330,7 +330,7 @@ bool Network::IOMultiflexing()
 			}
 		}
 	}
-	//}
+	// }
 	return true;
 }
 

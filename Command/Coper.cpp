@@ -32,7 +32,7 @@ void Coper::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	string channelName = param.at(0);
+	string channelName = param[0];
 	Channel *channel = channelManager.getChannel(channelName);
 	map<string, User *> userList = channel->getJoinUser();
 
@@ -51,7 +51,7 @@ void Coper::execute(ChannelManager &channelManager,
 
 	for (unsigned long i = 1; i < param.size(); i++)
 	{
-		if (!userList.at(param.at(i)))
+		if (!userList[param[i]])
 		{
 			/**
 			 * @brief 
@@ -74,7 +74,7 @@ void Coper::execute(ChannelManager &channelManager,
 
 	for (unsigned long i = 1; i < param.size(); i++)
 	{
-		User * user = userList.at(param.at(i));
+		User * user = userList[param[i]];
 		user->setAuth(User::ADMIN);
 	}
 }

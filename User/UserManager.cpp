@@ -8,12 +8,12 @@ UserManager::~UserManager()
 
 User* UserManager::getUserByNickname(string nickname)
 {
-	return this->userListByNickname.at(nickname);
+	return this->userListByNickname[nickname];
 }
 
 User* UserManager::getUserByFd(int fd)
 {
-	return this->userListByFd.at(fd);
+	return this->userListByFd[fd];
 }
 
 map<int, User *> &UserManager::getAllUser()

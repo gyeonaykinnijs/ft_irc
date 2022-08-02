@@ -8,8 +8,12 @@ void Cjoin::execute(ChannelManager &channelManager,
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 	
-
-	string channelName = param.at(0);
+	if (param.size() == 0)
+	{
+		cout << "need more parameters" << endl;
+		return ;
+	}
+	string channelName = param[0];
 	string password = param.size() > 1 ? param[1] : "";
 	
 	Channel *channel = user->getChannel();

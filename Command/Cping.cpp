@@ -37,6 +37,6 @@ void Cping::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	string msg = " PONG :" + param.at(0) + "\r\n";
+	string msg = " PONG :" + param[0] + "\r\n";
 	network.sendToUser(*user, msg);
 }
