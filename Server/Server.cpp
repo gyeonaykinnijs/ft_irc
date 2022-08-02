@@ -62,9 +62,11 @@ void Server::run()
             }
             else
             {
-                if (this->commands.find(temp.command) != this->commands.end())
+                cout << "command is " << temp.command << endl;
+                // if (this->commands.find(temp.command) != this->commands.end())
+                if (this->commands.count(temp.command) == 1)
                 {
-                    this->commands.at(temp.command)->execute(this->channelManager, this->userManager, this->network, temp);
+                    this->commands[temp.command]->execute(this->channelManager, this->userManager, this->network, temp);
                 }
                 else
                 {

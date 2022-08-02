@@ -17,8 +17,8 @@ void Ckick::execute(ChannelManager &channelManager,
 	(void)channelManager;
 	
 
-	string name = param.at(0);
-	string targetUser = param.at(1);
+	string name = param[0];
+	string targetUser = param[1];
 	string reason = "Something....";
 
 	Channel *channel = user->getChannel();

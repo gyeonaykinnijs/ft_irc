@@ -9,7 +9,7 @@ ChannelManager::~ChannelManager()
 
 Channel* ChannelManager::getChannel(string channelName)
 {
-	return channel_list.at(channelName);
+	return channel_list[channelName];
 }
 
 Channel* ChannelManager::createChannel(string channelName, string passwd, User* user)

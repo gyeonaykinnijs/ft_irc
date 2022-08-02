@@ -33,14 +33,14 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	}
 
 	
-	string targetUser = param.at(0);
+	string targetUser = param[0];
 	string message;
 
 	for (vector<string>::iterator it = param.begin() + 1; it != param.end(); it++) {
 		message.append(*it + " ");
 	}
 
-	message = message.at(0) == ':' ? message.substr(1) : message;
+	message = message[0] == ':' ? message.substr(1) : message;
 
 	Channel *channel = user->getChannel();
 

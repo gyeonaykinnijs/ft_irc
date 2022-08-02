@@ -54,7 +54,7 @@ int Channel::getMaxSizeUser() const
 
 User* Channel::getMakeUser(const string nickname)
 {
-	return this->joinUser.at(nickname);
+	return this->joinUser[nickname];
 }
 
 void Channel::insertJoinUser(User* user) 
@@ -65,7 +65,7 @@ void Channel::insertJoinUser(User* user)
 
 User* Channel::selectJoinUser(string userName)
 {
-	return joinUser.at(userName);
+	return joinUser[userName];
 }
 
 void Channel::deleteJoinUser(User *user) 
