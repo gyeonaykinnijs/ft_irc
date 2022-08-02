@@ -11,6 +11,7 @@ class Server
 {
 public:
     Server();
+    Server(const short port, const char* passWord);
     void init();
     void run();
     ~Server();
@@ -20,8 +21,7 @@ private:
     ChannelManager channelManager;
     map<string, ICommand *> commands;
     Network network;
-
-    // int callCommand(struct CommandChunk commandChunk);
+    const string PASSWORD;
 };
 
 #endif

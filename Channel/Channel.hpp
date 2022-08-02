@@ -11,76 +11,20 @@ class Channel
 public:
 	Channel();
 	~Channel();
-	
-
-	/**
-	 * @brief Set the Channel Name object
-	 * 
-	 * 			Setter
-	 */
+	Channel(const std::string channelName);
 	void setChannelName(const string channelName);
 	void setMakeUser(User *user);
 	void setChannelKey(const string channelKey);
 	void setCurSizeUser(const int size);
-
-
-	/**
-	 * @brief Get the Channel Name object
-	 * 
-	 * 			Getter
-	 */
 	string getChannelName() const;
-	User* getMakeUser(const string nickname);
+	User* getMakeUser();
 	string getChannelKey() const;
 	int getCurSizeUser() const;
 	int getMaxSizeUser() const;
-
-
-
-	/**
-	 * @brief 
-	 * 
-	 * @param user 
-	 * 
-	 * 			Insert User
-	 */
 	void insertJoinUser(User *user);
-
-
-	/**
-	 * @brief 
-	 * 			
-	 * 			Select User
-	 */
 	User* selectJoinUser(string userName);
-
-
-	/**
-	 * @brief 
-	 * 
-	 * @param user 
-	 * 
-	 * 			Delete User
-	 */
 	void deleteJoinUser(User *user);
-
-	/**
-	 * @brief Get the Join User object
-	 * 
-	 * @return std::map<string, User *> 
-	 * 
-	 * 	return Insert All User
-	 */
 	std::map<string, User *> getJoinUser();
-
-
-	/**
-	 * @brief 
-	 * 
-	 * 				ENUM
-	 * 
-	 */
-
 	enum Mode
 	{
 		WAIT, TALKING, ELSE
@@ -89,27 +33,8 @@ public:
 private:
 	string channelName;
 	string channelKey;
-
-
-	/**
-	 * @brief 
-	 * 
-	 * 		채널 생성한 사람
-	 */
-	User *makeUser;
-	
-	/**
-	 * @brief 
-	 * 
-	 * 		채널에 참가하고 있는 사람 list
-	 * 
-	 */
-	map<string, User *> joinUser;
-
-	/**
-	 * @brief Channel user Size
-	 * 
-	 */
+	User *makeUser; // 채널 만든 사람
+	map<string, User *> joinUser; // 채널에 참가하고 있는 유저 리스트
 	int maxSizeUser;
 	int curSizeUser;
 };

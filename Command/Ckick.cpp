@@ -16,6 +16,12 @@ void Ckick::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 	
+	if (user->getIsRegistered() == false)
+	{
+		// 에러 메시지 보내야 됨
+		cout << "it should be registered" << endl;
+		return ;
+	}	
 
 	string name = param[0];
 	string targetUser = param[1];
@@ -59,7 +65,7 @@ void Ckick::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	if (channel->getMakeUser(user->getUserName()) != user) {
+	if (channel->getMakeUser() != user) {
 		
 		/**
 		 * @brief 

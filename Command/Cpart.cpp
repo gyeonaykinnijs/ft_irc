@@ -16,18 +16,21 @@ void Cpart::execute(ChannelManager &channelManager,
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 
+	if (user->getIsRegistered() == false)
+	{
+		// 에러 메시지 보내야 됨
+		cout << "it should be registered" << endl;
+		return ;
+	}	
 	if (param.empty()) {
 		/*
 				param more need Error
 		*/
-
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
 		network.sendToUser(*user, msg);
 		return;
 	}
-
 	std::string channelName = param[0];
-
 	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel) {
 		/**
@@ -57,7 +60,6 @@ void Cpart::execute(ChannelManager &channelManager,
 	/*
 			유저 채널에서 퇴장
 	*/
-
 	channel->deleteJoinUser(user);
 	user->setChannel(NULL);
 }

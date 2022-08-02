@@ -12,9 +12,7 @@ User::User()
 	this->ignored = false;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
-{
-
-}
+{}
 
 User::~User()
 {}

@@ -8,6 +8,9 @@ Channel::Channel()
 	this->curSizeUser = 0;
 }
 
+Channel::Channel(const std::string channelName) : channelName(channelName)
+{}
+
 Channel::~Channel()
 {}
 
@@ -15,7 +18,6 @@ void Channel::setChannelName(const std::string channelName)
 {
 	this->channelName = channelName;
 }
-
 
 void Channel::setCurSizeUser(const int size)
 {
@@ -52,14 +54,13 @@ int Channel::getMaxSizeUser() const
 	return this->maxSizeUser;
 }
 
-User* Channel::getMakeUser(const string nickname)
+User* Channel::getMakeUser()
 {
-	return this->joinUser[nickname];
+	return this->makeUser;
 }
 
 void Channel::insertJoinUser(User* user) 
-{
-	
+{	
 	joinUser.insert(make_pair(user->getNickname(), user));
 }
 
@@ -78,10 +79,10 @@ std::map<string, User *> Channel::getJoinUser()
 	std::map<string, User *> userList;
 
 	map<string, User *>::iterator iter = this->joinUser.begin();
-    while (iter != joinUser.end()) {
+    while (iter != joinUser.end())
+	{
 		userList.insert(*iter);
         ++iter;
     }
-
 	return userList;
 }

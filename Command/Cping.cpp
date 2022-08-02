@@ -25,6 +25,12 @@ void Cping::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 	
+	if (user->getIsRegistered() == false)
+	{
+		// 에러 메시지 보내야 됨
+		cout << "it should be registered" << endl;
+		return ;
+	}	
 	if (param.empty()) 
 	{
 		/**

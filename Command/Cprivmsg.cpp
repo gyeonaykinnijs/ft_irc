@@ -20,6 +20,12 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 
+	if (user->getIsRegistered() == false)
+	{
+		// 에러 메시지 보내야 됨
+		cout << "it should be registered" << endl;
+		return ;
+	}	
 		if (param.size() < 2 || param[0].empty() || param[1].empty()) {
 		/**
 		 * @brief 

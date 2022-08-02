@@ -12,9 +12,9 @@
 #include "../Command/Cquit.hpp"
 #include "../Command/Cuser.hpp"
 
-Server::Server(): userManager(), channelManager(), network("127.0.0.1", 8181, "12345", userManager)
+Server::Server(const short port, const char* passWord): userManager(), channelManager(), network("127.0.0.1", port, passWord, userManager), PASSWORD(passWord)
 {
-
+    
 }
 
 void Server::init()
@@ -49,8 +49,6 @@ void Server::init()
 
 void Server::run()
 {
-
-
     while (1) {
         network.IOMultiflexing();
         while (1)
@@ -62,11 +60,21 @@ void Server::run()
             }
             else
             {
-                cout << "command is " << temp.command << endl;
-                // if (this->commands.find(temp.command) != this->commands.end())
                 if (this->commands.count(temp.command) == 1)
                 {
                     this->commands[temp.command]->execute(this->channelManager, this->userManager, this->network, temp);
+                    if (temp.command == "nick")
+                    {
+                        if (this->userManager.getUserByFd(temp.fd)->getPasswd() == this->PASSWORD)
+                        {
+                            this->userManager.getUserByFd(temp.fd)->setIsRegistered(true);
+                        }
+                        else
+                        {
+                            // 접속시키지 말고 에러메세지쓰고 return
+                            return ;
+                        }
+                    }
                 }
                 else
                 {
@@ -75,19 +83,6 @@ void Server::run()
             }
         
         }
-    //     struct CommandChunk tmpCommand = network.getCommand();
-    //     if (commands.find(tmpCommand.command) == commands.end())
-    //     {
-    //         // 실행 안 해야 됨
-    //     }
-    //     else
-    //     {
-    //         if (callCommand(tmpCommand) == ERROR)
-    //         {
-    //             // 에러니까 뭔 조치를 취해야 함.
-    //         }
-
-    //     }
     }
 }
 
@@ -95,10 +90,3 @@ Server::~Server()
 {
 
 }
-
-
-// int Server::callCommand(struct CommandChunk commandChunk)
-// {
-//     // commands[commandChunk.command]->execute(this->channelManager, this->userManager, this->network, commandChunk);
-    
-// }

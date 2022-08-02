@@ -1,31 +1,18 @@
-#ifndef __CHANNELMANAGER_H__
-#define __CHANNELMANAGER_H__
+#ifndef __CHANNELMANAGER_HPP__
+#define __CHANNELMANAGER_HPP__
 
-#include "Channel.hpp"
-#include <map>
-using namespace std;
+
+#include "../defines.hpp"
+#include "./Channel.hpp"
+
 
 class ChannelManager
 {
 public:
 	ChannelManager();
 	~ChannelManager();
-	/*
-		Getter
-	*/
-	Channel* getChannel(string channelName);
-
-	/**
-	 * @brief 
-	 * Create
-	 */
-	Channel *createChannel(string channelName, string passwd, User *user);
-
-
-	/**
-	 * @brief 
-	 * Delete
-	 */
+	Channel* getChannel(const string channelName);
+	Channel *createChannel(const string channelName, const string passwd, User *user);
 	void deleteChannel(string channelName);
 
 private:

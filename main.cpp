@@ -10,10 +10,11 @@ int main(int ac, char **av)
     }
     else
     {
-        Server server;
+        const short port = atoi(av[1]);
+        const char* passWord = av[2];
+        Server server(port, passWord);
         server.init();
         server.run();
     }
-    (void)av;
     return 0;
 }

@@ -19,6 +19,12 @@ void Cquit::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 
+	if (user->getIsRegistered() == false)
+	{
+		// 에러 메시지 보내야 됨
+		cout << "it should be registered" << endl;
+		return ;
+	}	
 	std::string reason = param.empty() ? "Leaving..." : param[0];
 	reason = reason[0] == ':' ? reason.substr(1) : reason;
 	

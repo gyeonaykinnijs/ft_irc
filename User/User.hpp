@@ -5,30 +5,15 @@
 
 class User
 {
-
-
 public:
-	/*
-
-		Ennum;
-
-	*/
-
 	enum Auth
 	{
 		ADMIN, NORMAL
 	};
 
-
 	User();
 	User(const string nickname, const string userName);
 	~User();
-
-	/*
-
-		Setter
-
-	*/
 	void setNickname(const string nickName);
 	void setUserName(const string userName);
 	void setFd(const int fd);
@@ -39,14 +24,6 @@ public:
 	void setChannel(Channel *channel);
 	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
-	
-
-	/*
-
-		Getter
-
-	*/
-
 	Channel *getChannel() const;
 	string getNickname() const;
 	string getUserName() const;
@@ -57,32 +34,19 @@ public:
 	bool getIsRegistered() const;
 	int getFd() const;
 	bool getIgnored() const;
-	
-	
-
-	
 	void appendBuffer(string buffer);
 
 private:
-
-	/*
-		기본 정보
-	*/
 	string nickname;
 	string userName;
 	string realName;
 	string passwd;
 	int	fd;
 	Auth auth;
-
-	/*
-
-	*/
 	string buffer;
 	Channel *channel;
 	bool isRegistered;
 	bool ignored;
-
 };
 
 #endif

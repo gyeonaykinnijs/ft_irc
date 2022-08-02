@@ -4,7 +4,6 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 {  // 최대길이 9
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	// Channel *channel = user->getChannel();
 	(void)channelManager;
 	
 	if (param.empty()) // 인자 부족할 때
@@ -30,9 +29,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	{
 		// 응답코드 필요
 		string msg = UserManager::makeMessage(prevNickname, "are now known as" ,user->getNickname());
-		//network.sendToChannel(*channel, msg);
 		network.sendToUser(*user, msg);
 		return;
 	}
-
 }
