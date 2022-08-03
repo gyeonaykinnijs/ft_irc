@@ -35,8 +35,10 @@ using namespace std;
 #define ERR_CANNOTSENDTOCHAN "404"
 #define ERR_NOSUCHNICK "401"
 #define ERR_NOTONCHANNEL "442"
+#define ERR_TOOMANYTARGETS "407"
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
+
 
 
 #endif
