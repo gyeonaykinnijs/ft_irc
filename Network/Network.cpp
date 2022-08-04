@@ -46,6 +46,7 @@ Network::~Network()
 void Network::init()
 {
 	int fd;
+	int result = 1;
 
 	this->addressServer.sin_family = PF_INET;
 	this->addressServer.sin_port = htons(this->PORT);
@@ -53,6 +54,22 @@ void Network::init()
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
 	fd = this->fdServer;
 	fcntl(fd, F_SETFL, O_NONBLOCK);
+	// Socket 옵션 초기화
+	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
+		throw std::runtime_error("Setsockopt setting Failed");
+	std::cout << "Socket setting Success!" << std::endl;
+	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
+	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
+	{
+		// FIXME: 수정 필요.
+		cerr << "[bind]" << strerror(errno) <<endl;
+	}
+	if(::listen(this->fdServer, 5) < 0)
+	{
+		// FIXME: 수정 필요.
+		cerr << "[listen]" << strerror(errno) <<endl;
+	}
+
 };
 
 bool Network::AcceptUser()
@@ -198,17 +215,7 @@ bool Network::IOMultiflexing()
 {
 
 	string tempBuffer;
-	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
-	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
-	{
-		// FIXME: 수정 필요.
-		cerr << "[bind]" << strerror(errno) <<endl;
-	}
-	if(::listen(this->fdServer, 5) < 0)
-	{
-		// FIXME: 수정 필요.
-		cerr << "[listen]" << strerror(errno) <<endl;
-	}
+
 	// while (1)
 	// {
 	initFdSets();
