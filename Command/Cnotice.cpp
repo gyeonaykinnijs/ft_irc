@@ -1,13 +1,14 @@
 #include "Cnotice.hpp"
 
 
-void Coper::execute(ChannelManager &channelManager,
+void Cnotice::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)
 {
     User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
+	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
 	{
@@ -24,7 +25,7 @@ void Coper::execute(ChannelManager &channelManager,
 		return;
 	}
 	string targetUser = param[0];
-	User *target = channel->selectJoinUser(targetUser);
+	User *target = userManager.getUserByNickname(targetUser);
 	if (!target)
 	{
 		return;

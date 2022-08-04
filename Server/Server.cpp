@@ -8,7 +8,8 @@
 #include "../Command/Cpart.hpp"
 #include "../Command/Cping.hpp"
 #include "../Command/Cpong.hpp"
-// #include "../Command/Cprivmsg.hpp"
+#include "../Command/Cprivmsg.hpp"
+#include "../Command/Cnotice.hpp"
 #include "../Command/Cquit.hpp"
 #include "../Command/Cuser.hpp"
 
@@ -23,7 +24,8 @@ void Server::init()
     ICommand *cjoin = new Cjoin();
     ICommand *cnick = new Cnick();
     ICommand *cuser = new Cuser();
-    // ICommand *cprivmsg = new Cprivmsg();
+    ICommand *cprivmsg = new Cprivmsg();
+    ICommand *cnotice = new Cnotice();
     ICommand *ckick = new Ckick();
     // ICommand *ckill = new Ckill();
     ICommand *coper = new Coper();
@@ -36,7 +38,8 @@ void Server::init()
     commands.insert(make_pair("nick", cnick));
     commands.insert(make_pair("user", cuser));
     commands.insert(make_pair("join", cjoin));
-    // commands.insert(make_pair("privmsg", cprivmsg));
+    commands.insert(make_pair("privmsg", cprivmsg));
+    commands.insert(make_pair("notice", cnotice));
     commands.insert(make_pair("kick", ckick));
     // commands.insert(make_pair("kill", ckill));
     commands.insert(make_pair("oper", coper));
