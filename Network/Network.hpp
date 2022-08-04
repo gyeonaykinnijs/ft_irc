@@ -32,6 +32,7 @@ public:
 	void init();
 	bool IOMultiflexing();
 	bool sendToUser(User& user, const std::string& message);
+	bool sendToUser2(int fd, const std::string& message);
 	bool sendToChannel(Channel& channel, const std::string& message);
 	void disconnectUser(User* user);
 	CommandChunk getCommand();

@@ -27,7 +27,7 @@ void Cpart::execute(ChannelManager &channelManager,
 				param more need Error
 		*/
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	std::string channelName = param[0];
@@ -40,7 +40,7 @@ void Cpart::execute(ChannelManager &channelManager,
 		 */
 
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 
@@ -53,7 +53,7 @@ void Cpart::execute(ChannelManager &channelManager,
 		 */
 
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 

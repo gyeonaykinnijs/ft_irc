@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <utility>
+#include <algorithm>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ using namespace std;
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
 #define RPL_MYINFO "004"
+#define RPL_JOIN "011" // FIXME: 코드 수정? 임의로 정해놓음
 #define ERR_NEEDMOREPARAMS "461"
 #define ERR_ALREADYREGISTERED "462"
 #define ERR_NONICKNAMEGIVEN "431"

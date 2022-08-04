@@ -34,13 +34,13 @@ void Cpass::execute(ChannelManager &channelManager, UserManager &userManager, Ne
 	if (user->getIsRegistered())
 	{
 		string msg = UserManager::makeMessage(ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	else if (commandChunk.parameters.empty())
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need more Parameter");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	} 
 	else

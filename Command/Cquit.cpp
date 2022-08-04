@@ -29,6 +29,6 @@ void Cquit::execute(ChannelManager &channelManager,
 	reason = reason[0] == ':' ? reason.substr(1) : reason;
 	
 	string msg = UserManager::makeMessage("", user->getNickname(), "Quit" + reason);
-	network.sendToUser(*user, msg);
+	network.sendToUser2(user->getFd(), msg);
 
 }

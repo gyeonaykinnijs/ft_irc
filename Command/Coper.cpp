@@ -45,7 +45,7 @@ void Coper::execute(ChannelManager &channelManager,
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	for (unsigned long i = 1; i < param.size(); i++)
@@ -58,7 +58,7 @@ void Coper::execute(ChannelManager &channelManager,
 			 */
 
 			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "No Such User in Channel");
-			network.sendToUser(*user, msg);
+			network.sendToUser2(user->getFd(), msg);
 			return ;
 		}
 	}

@@ -30,13 +30,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	if (param.size() < 1)
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	else if (param.size() > 1)
 	{
 		string msg = UserManager::makeMessage(ERR_TOOMANYTARGETS, user->getNickname(), "Too Many Targets");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	string targetUser = param[0];
@@ -44,7 +44,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	if (!target)
 	{
 		string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "no such nick");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	else

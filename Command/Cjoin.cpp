@@ -27,7 +27,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	{
 		/* Too many channel ERROR */
 		string msg = UserManager::makeMessage(ERR_TOOMANYCHANNELS, user->getNickname(), "Too many channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return ;
 	}
 	channel = channelManager.getChannel(channelName);
@@ -39,7 +39,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	{	
 		/* channel number full error */
 		string msg = UserManager::makeMessage(ERR_CHANNELISFULL , user->getNickname(), "channel is full");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 
@@ -47,12 +47,12 @@ void Cjoin::execute(ChannelManager &channelManager,
 	{
 		/* no match password error */
 		string msg = UserManager::makeMessage(ERR_BADCHANNELKEY , user->getNickname(), "no match password error");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	} 
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
-	string msg = UserManager::makeMessage("???" , user->getNickname(), "channel make and channel in user");
-	network.sendToUser(*user, msg);
+	string msg = UserManager::makeMessage(RPL_JOIN, user->getNickname(), "channel make and channel in user");
+	network.sendToUser2(user->getFd(), msg);
 
 }

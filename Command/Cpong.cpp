@@ -25,10 +25,10 @@ void Cpong::execute(ChannelManager &channelManager,
 		 */
 
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return ;
 	}
 
 	string msg = " PONG :" + param[0] + "\r\n";
-	network.sendToUser(*user, msg);
+	network.sendToUser2(user->getFd(), msg);
 }

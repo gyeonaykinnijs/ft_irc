@@ -9,14 +9,14 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (param.empty()) // 인자 부족할 때
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need more Parameter");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	string nickname = param[0];
 	if (userManager.hasNickname(nickname)) // 불가능한 닉네임일 때
 	{
 		string msg = UserManager::makeMessage(ERR_NICKNAMEINUSE, user->getNickname(), "Nickname is already in use");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	if (nickname.size() > 9)
@@ -26,7 +26,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (!(nickname[0] > 'a' && nickname[0] < 'z') || (nickname[0] > 'A' && nickname[0] < 'Z'))
 	{
 		string msg = UserManager::makeMessage(ERR_ERRONEOUSNICKNAME, nickname, "Erroneous Nickname");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	string prevNickname = user->getNickname();
@@ -35,8 +35,12 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	{
 		// 응답코드 필요
 		string msg = UserManager::makeMessage(prevNickname, "is now known as" ,user->getNickname());
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		userManager.addUser(user);
 		return;
+	}
+	else
+	{
+		// 처음 nick 설정했을 때 리플라이 보내기
 	}
 }

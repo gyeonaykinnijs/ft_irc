@@ -17,7 +17,7 @@ void Ckick::execute(ChannelManager &channelManager,
 	if (param.size() < 2)
 	{	// channel user 인자 두 개 있어야 함
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need More Parameters");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	string name = param[0];
@@ -27,32 +27,32 @@ void Ckick::execute(ChannelManager &channelManager,
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	if (channel->getChannelName() != name)
 	{	// 명령어 쓴 user가 channel의 멤버가 아닐 때
 		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "User is Not in Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	if (channel->getAdmin() != user)
 	{	// 강퇴하는 사람이 방장인지 검사
 		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	User *target = channel->selectJoinUser(targetUser);
 	if (!target)
 	{	// 내보내려는 user가 channel에 있는지 확인
 		string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "User is Not in Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	if (!target->getChannel(name) || target->getChannel(name) != channel)
 	{	// 강퇴 당하는 사람이 channel에 있는지 확인
 		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "Not User in Channel");
-		network.sendToUser(*user, msg);
+		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 	target->deleteChannel(channel->getChannelName());

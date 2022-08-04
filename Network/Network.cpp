@@ -68,6 +68,11 @@ void Network::init()
 	fcntl(this->fdServer, F_SETFL, O_NONBLOCK);
 	fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK);
 	fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK);
+	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
+	{
+		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
+	}
+	this->logging(string("Socket init Success!"));
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
 		this->errorLogging(string("[bind]") + strerror(errno), true);
@@ -76,11 +81,6 @@ void Network::init()
 	{
 		this->errorLogging(string("[listen]") + strerror(errno), true);
 	}
-	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
-	{
-		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
-	}
-	this->logging(string("Socket init Success!"));
 
 };
 
@@ -118,11 +118,35 @@ bool Network::AcceptUser()
 	socklen_t lenClient = sizeof(addressClient);
 
 	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
-	if (fdClient < 0)
+	if (fdClient < 0) 
 	{
 		this->errorLogging(string("[setsockopt]") + strerror(errno), false);
 	}
 	this->userManager.makeUser(fdClient);
+	//User *user = this->userManager.getUserByFd(fdClient);
+	string msg = UserManager::makeMessage(RPL_WELCOME, this->userManager.getUserByFd(fdClient)->getNickname(), "Welcome to the server");
+	this->sendToUser2(fdClient, msg);
+	// this->sendToUser(*(this->userManager.getUserByFd(fdClient)), msg);
+	this->userManager.getUserByFd(fdClient)->setIsRegistered(true);
+	return true;
+}
+
+bool Network::sendToUser2(int fd, const std::string& message)
+{
+	map<int, vector<string> >::iterator iter;
+
+	iter = this->sendMap.find(fd);
+	if (iter == this->sendMap.end())
+	{
+		vector<string> temp;
+		temp.push_back(message);
+		//FIXME:this->sendMap.insert(make_pair(user.getFd(), temp));
+		this->sendMap[fd] = temp;
+	}
+	else
+	{
+		iter->second.push_back(message);
+	}
 	return true;
 }
 
@@ -272,6 +296,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
+			std::cout << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;

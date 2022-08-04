@@ -63,6 +63,8 @@ void Server::run()
             }
             else
             {
+                transform(temp.command.begin(), temp.command.end(), temp.command.begin(), ::tolower);
+                cout << "command: " << temp.command << endl;
                 if (this->commands.count(temp.command) == 1)
                 {
                     this->commands[temp.command]->execute(this->channelManager, this->userManager, this->network, temp);

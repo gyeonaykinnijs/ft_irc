@@ -27,6 +27,7 @@ void UserManager::addUser(User *user)
 	/*
 		user fd or nickname 중복 error error
 	*/
+	this->userListByFd.insert(make_pair(user->getFd(), user));
 	this->userFdByName.insert(pair<string, int>(user->getUserName(), user->getFd()));
 }
 
@@ -62,9 +63,4 @@ bool UserManager::hasNickname(const string nickname)
 		}
 	}
 	return false;
-}
-
-void UserManager::deleteUser(int fd)
-{
-	(void) fd;
 }
