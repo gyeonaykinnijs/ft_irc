@@ -17,10 +17,10 @@ public:
 	void addUserNickName(User *user);
 	void deleteUser(int fd);
 	static string makeMessage(string code, string target, string message);
-	bool hasNickname(const string nickName);
+	bool hasNickname(const string nickName); 
 
 private:
-	map<string, User *> userListByNickname;
+	map<string, int> userNameByFd;
 	map<int, User *> userListByFd;
 };
 

@@ -33,7 +33,7 @@ public:
 	bool IOMultiflexing();
 	bool sendToUser(User& user, const std::string& message);
 	bool sendToChannel(Channel& channel, const std::string& message);
-	bool kick(const std::string& message, User& user);
+	void disconnectUser(User* user);
 	CommandChunk getCommand();
 private:
 	Network(const Network& other);
@@ -43,7 +43,6 @@ private:
 	void prtCmd(int fd);
 	void logging(const string& log);
 	void errorLogging(const string& log, bool serverEndFlag);
-	void disconnectUser(User* user);
 	void recvActionPerUser(map<int, User*>& users);
 	void recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv);
 	void recvActionPerSendQueue();

@@ -81,6 +81,7 @@ void Network::init()
 		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
 	}
 	this->logging(string("Socket init Success!"));
+
 };
 
 void Network::initFdSets()
@@ -327,7 +328,6 @@ bool Network::IOMultiflexing()
 	string tempBuffer;
 
 	initFdSets();
-	sleep(3);
 	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
 		this->errorLogging(string("[select]") + strerror(errno), true);

@@ -21,7 +21,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	}
 	const string channelName = param[0];
 	string password = param.size() > 1 ? param[1] : "";
-	Channel *channel = user->getChannel();
+	Channel *channel = user->getChannel(channelName);
 
 	if (channel)
 	{
@@ -51,7 +51,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 		return;
 	} 
 	channel->insertJoinUser(user);
-	user->setChannel(channel);
+	user->addChannel(channel);
 	string msg = UserManager::makeMessage("???" , user->getNickname(), "channel make and channel in user");
 	network.sendToUser(*user, msg);
 

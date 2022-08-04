@@ -36,8 +36,10 @@ using namespace std;
 #define ERR_NOSUCHNICK "401"
 #define ERR_UNKNOWNCOMMAND "421"
 #define ERR_NOTONCHANNEL "442"
+#define ERR_TOOMANYTARGETS "407"
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
+#define ERR_CHANOPRIVSNEEDED "482"
 
 
 #endif

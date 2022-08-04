@@ -72,7 +72,7 @@ void Server::run()
                         else
                         {
                             // 접속시키지 말고 에러메세지쓰고 return
-                            return ;
+                            break ;
                         }
                     }
                 }

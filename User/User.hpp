@@ -21,20 +21,22 @@ public:
 	void setPasswd(const string passwd);
 	void setBuffer(const string buffer);
 	void setIsRegistered(const bool isRegistered);
-	void setChannel(Channel *channel);
 	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
-	Channel *getChannel() const;
+	void addChannel(Channel *channel);
 	string getNickname() const;
 	string getUserName() const;
 	string getPasswd() const;
 	string getBuffer() const;
 	string getRealName() const;
+	Channel* getChannel(const string channelName);
+	map<string, Channel*> getChannelList() const;
 	User::Auth getAuth() const;
 	bool getIsRegistered() const;
 	int getFd() const;
 	bool getIgnored() const;
 	void appendBuffer(string buffer);
+	void deleteChannel(const string channelName);
 
 private:
 	string nickname;
@@ -44,7 +46,7 @@ private:
 	int	fd;
 	Auth auth;
 	string buffer;
-	Channel *channel;
+	map<string, Channel *> channelList;
 	bool isRegistered;
 	bool ignored;
 };
