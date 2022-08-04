@@ -21,7 +21,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	}
 	const string channelName = param[0];
 	string password = param.size() > 1 ? param[1] : "";
-	Channel *channel = user->getChannel();
+	Channel *channel = user->getChannel(channelName);
 
 	if (channel)
 	{

@@ -25,9 +25,9 @@ void Ckick::execute(ChannelManager &channelManager,
 
 	string name = param[0];
 	string targetUser = param[1];
-	string reason = "Something....";
+	string reason = commandChunk.parameterLast;
 
-	Channel *channel = user->getChannel();
+	Channel *channel = user->getChannel(name);
 	if (param.size() < 2) {
 		/**
 		 * @brief 
@@ -45,11 +45,7 @@ void Ckick::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	if (param.size() >= 3 && (param[2][0] != ':' || param[2].size() > 1)) {
-		reason = "";
-		for (vector<string>::iterator it = param.begin() + 2; it != param.end(); it++)
-			reason.append(*it + " ");
-	}
+
 
 
 
@@ -116,5 +112,6 @@ void Ckick::execute(ChannelManager &channelManager,
 	}
 
 	none->setChannel(NULL);
+	none->deleteChannel(channel->getChannelName());
 	channel->deleteJoinUser(none);
 }

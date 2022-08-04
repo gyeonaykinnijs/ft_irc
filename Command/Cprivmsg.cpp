@@ -39,8 +39,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		return;
 	}
 	string targetUser = param[0];
-	Channel *channel = user->getChannel();
-	User *target = channel->selectJoinUser(targetUser);
+	User *target = userManager.getUserByNickname(targetUser);
 	if (!target)
 	{
 		string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "no such nick");
