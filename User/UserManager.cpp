@@ -8,7 +8,7 @@ UserManager::~UserManager()
 
 User* UserManager::getUserByNickname(string nickname)
 {
-	return this->getUserByFd(this->userNameByFd[nickname]);
+	return this->getUserByFd(this->userFdByName[nickname]);
 }
 
 User* UserManager::getUserByFd(int fd)
@@ -28,7 +28,7 @@ void UserManager::addUser(User *user)
 		user fd or nickname 중복 error error
 	*/
 	this->userListByFd.insert(pair<int, User *>(user->getFd(), user));
-	this->userNameByFd.insert(pair<string, int>(user.getUserName(), user->getFd()));
+	this->userFdByName.insert(pair<string, int>(user->getUserName(), user->getFd()));
 }
 
 void UserManager::makeUser(int fd)
@@ -43,7 +43,8 @@ void UserManager::makeUser(int fd)
 
 void UserManager::deleteUser(int fd)
 {
-	this->userNameByFd.erase(getUserByFd(fd)->getUserName());
+	map<string, Channel *> channel = this->userListByFd[fd]->getChannelList();
+	this->userFdByName.erase(getUserByFd(fd)->getUserName());
 	this->userListByFd.erase(fd);
 }
 
