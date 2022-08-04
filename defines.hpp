@@ -34,6 +34,7 @@ using namespace std;
 #define ERR_NOTEXTTOSEND "412"
 #define ERR_CANNOTSENDTOCHAN "404"
 #define ERR_NOSUCHNICK "401"
+#define ERR_UNKNOWNCOMMAND "421"
 #define ERR_NOTONCHANNEL "442"
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
