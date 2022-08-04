@@ -26,49 +26,28 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		cout << "it should be registered" << endl;
 		return ;
 	}	
-		if (param.size() < 2 || param[0].empty() || param[1].empty()) {
-		/**
-		 * @brief 
-		 * 
-		 * 			Need More Param ERROR
-		 */
-
+	if (param.size() < 1)
+	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
 		network.sendToUser(*user, msg);
 		return;
 	}
-
-	
-	string targetUser = param[0];
-	string message;
-
-	for (vector<string>::iterator it = param.begin() + 1; it != param.end(); it++) {
-		message.append(*it + " ");
-	}
-
-	message = message[0] == ':' ? message.substr(1) : message;
-
-	Channel *channel = user->getChannel();
-
-
-	User *none = channel->selectJoinUser(targetUser);
-	if (!none) {
-		/**
-		 * @brief 
-		 * 
-		 * 			Error
-		 * 
-		 */
+	else if (param.size() > 1)
+	{
+		string msg = UserManager::makeMessage(ERR_TOOMANYTARGETS, user->getNickname(), "Too Many Targets");
+		network.sendToUser(*user, msg);
 		return;
 	}
-
-	/**
-	 * @brief 
-	 * 
-	 * 		msg 전송 완료 확인
-	 * 
-	 */
-
-
-
+	string targetUser = param[0];
+	User *target = userManager.getUserByNickname(targetUser);
+	if (!target)
+	{
+		string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "no such nick");
+		network.sendToUser(*user, msg);
+		return;
+	}
+	else
+	{
+		network.sendToUser(*target, commandChunk.parameterLast);
+	}
 }

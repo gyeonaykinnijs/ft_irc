@@ -20,7 +20,7 @@ public:
 	bool hasNickname(const string nickName); 
 
 private:
-	map<string, User *> userListByNickname;
+	map<string, int> userNameByFd;
 	map<int, User *> userListByFd;
 };
 

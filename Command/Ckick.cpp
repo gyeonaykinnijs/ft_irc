@@ -23,7 +23,7 @@ void Ckick::execute(ChannelManager &channelManager,
 	string name = param[0];
 	string targetUser = param[1];
 	string reason = commandChunk.parameterLast;
-	Channel *channel = user->getChannel();
+	Channel *channel = user->getChannel(name);
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
@@ -49,12 +49,12 @@ void Ckick::execute(ChannelManager &channelManager,
 		network.sendToUser(*user, msg);
 		return;
 	}
-	if (!target->getChannel() || target->getChannel() != channel)
+	if (!target->getChannel(name) || target->getChannel(name) != channel)
 	{	// 강퇴 당하는 사람이 channel에 있는지 확인
 		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "Not User in Channel");
 		network.sendToUser(*user, msg);
 		return;
 	}
-	target->setChannel(NULL);
+	target->deleteChannel(channel->getChannelName());
 	channel->deleteJoinUser(target);
 }
