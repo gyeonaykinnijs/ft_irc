@@ -24,7 +24,9 @@ public:
 	void setChannel(Channel *channel);
 	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
-	Channel *getChannel() const;
+	void addChannel(Channel *channel);
+	Channel *getChannel(const string channelName);
+	map<string, Channel *> getChannelList() const;
 	string getNickname() const;
 	string getUserName() const;
 	string getPasswd() const;
@@ -35,6 +37,7 @@ public:
 	int getFd() const;
 	bool getIgnored() const;
 	void appendBuffer(string buffer);
+	void deleteChannel(Channel *channel);
 
 private:
 	string nickname;
@@ -45,6 +48,7 @@ private:
 	Auth auth;
 	string buffer;
 	Channel *channel;
+	map<string, Channel *> channelList;
 	bool isRegistered;
 	bool ignored;
 };

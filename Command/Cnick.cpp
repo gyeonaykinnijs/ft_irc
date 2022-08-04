@@ -23,12 +23,18 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	{
 		nickname = nickname.substr(9);
 	}
+	if (!(nickname[0] > 'a' && nickname[0] < 'z') || (nickname[0] > 'A' && nickname[0] < 'Z'))
+	{
+		string msg = UserManager::makeMessage(ERR_ERRONEOUSNICKNAME, nickname, "Erroneous Nickname");
+		network.sendToUser(*user, msg);
+		return;
+	}
 	string prevNickname = user->getNickname();
 	user->setNickname(nickname);
 	if (user->getIsRegistered()) // 이미 등록했고 nick 변경할 때
 	{
 		// 응답코드 필요
-		string msg = UserManager::makeMessage(prevNickname, "are now known as" ,user->getNickname());
+		string msg = UserManager::makeMessage(prevNickname, "is now known as" ,user->getNickname());
 		network.sendToUser(*user, msg);
 		return;
 	}

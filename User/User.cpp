@@ -67,6 +67,11 @@ void User::setPasswd(const string passwd)
 	this->passwd = passwd;
 }
 
+void User::addChannel(Channel *channel)
+{
+	this->channelList[channel->getChannelName()] = channel;
+}
+
 std::string User::getNickname() const
 {
 	return this->nickname;
@@ -98,9 +103,11 @@ bool User::getIsRegistered() const
 	return this->isRegistered;
 }
 
-Channel* User::getChannel() const
+Channel* User::getChannel(const string channelName)
 {
-	return this->channel;
+	if (this->channelList.count(channelName) == 0)
+		return NULL;
+	return this->channelList[channelName];
 }
 
 bool User::getIgnored() const
@@ -118,8 +125,17 @@ string User::getPasswd() const
 	return this->passwd;
 }
 
+map<string, Channel *> User::getChannelList() const
+{
+	return this->channelList;
+}
+
 void User::appendBuffer(string buffer)
 {
 	this->buffer.append(buffer);
 }
 
+void User::deleteChannel(Channel *channel)
+{
+	this->channelList.erase(channel->getChannelName());
+}
