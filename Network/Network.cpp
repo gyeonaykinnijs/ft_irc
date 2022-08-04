@@ -8,6 +8,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include "../defines.hpp"
 #include "../User/User.hpp"
 #include "../User/UserManager.hpp"
 
@@ -17,7 +19,7 @@ using namespace std;
 #define BUFFERSIZE 512
 
 Network::Network(const char* ip, const short port, const char* passWord, UserManager& userManager)
-: IP(ip), PORT(port), PASSWORD(passWord), userManager(userManager)
+: IP(ip), PORT(port), PASSWORD(passWord), userManager(userManager), exitFlag(false)
 {
 	memset(&this->addressServer, 0, sizeof(this->addressServer));
 };
@@ -43,73 +45,85 @@ Network::~Network()
 	}
 };
 
+void Network::logging(const string& log)
+{
+	this->logQueue.push(log);
+}
+
+void Network::errorLogging(const string& log, bool serverEndFlag)
+{
+	this->errorLogQueue.push(log);
+	this->exitFlag = serverEndFlag;
+}
+
 void Network::init()
 {
-	int fd;
 	int result = 1;
+	string tempLog;
 
 	this->addressServer.sin_family = PF_INET;
 	this->addressServer.sin_port = htons(this->PORT);
 	inet_pton(AF_INET, this->IP.c_str(), &this->addressServer.sin_addr);
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
-	fd = this->fdServer;
-	fcntl(fd, F_SETFL, O_NONBLOCK);
-	// Socket 옵션 초기화
-	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
-		throw std::runtime_error("Setsockopt setting Failed");
-	std::cout << "Socket setting Success!" << std::endl;
-	// bind와 구분하기 위해, 아래의 bind는 namespace가 없다는걸 명시하기 위해 앞에 ::를 붙인다.
+	fcntl(this->fdServer, F_SETFL, O_NONBLOCK);
+	fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK);
+	fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK);
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
-		// FIXME: 수정 필요.
-		cerr << "[bind]" << strerror(errno) <<endl;
+		this->errorLogging(string("[bind]") + strerror(errno), true);
 	}
 	if(::listen(this->fdServer, 5) < 0)
 	{
-		// FIXME: 수정 필요.
-		cerr << "[listen]" << strerror(errno) <<endl;
+		this->errorLogging(string("[listen]") + strerror(errno), true);
 	}
+	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
+	{
+		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
+	}
+	this->logging(string("Socket init Success!"));
 
 };
 
+void Network::initFdSets()
+{
+	FD_ZERO(&this->rSet);
+	FD_ZERO(&this->wSet);
+	if (!this->logQueue.empty())
+	{
+		FD_SET(STDOUT_FILENO, &this->wSet);
+	}
+	if (!this->errorLogQueue.empty())
+	{
+		FD_SET(STDERR_FILENO, &this->wSet);
+	}
+	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
+	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
+	FD_SET(this->fdServer, &this->rSet);
+	for (;iter != iterEnd; iter++)
+	{
+		FD_SET(iter->first, &this->rSet);
+	}
+	map<int, vector<string> >::iterator iterMap = this->sendMap.begin();
+	map<int, vector<string> >::iterator iterMapEnd = this->sendMap.end();
+	for (; iterMap != iterMapEnd; iterMap++)
+	{
+		FD_SET(iterMap->first, &this->wSet);
+	}
+}
+
 bool Network::AcceptUser()
 {
+	string tempLog;
 	sockaddr_in addressClient;
 	socklen_t lenClient = sizeof(addressClient);
+
 	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
 	if (fdClient < 0)
 	{
-		std::cerr << "[select]" << strerror(errno) <<endl;
+		this->errorLogging(string("[setsockopt]") + strerror(errno), false);
 	}
 	this->userManager.makeUser(fdClient);
-	std::cout << fdClient << " user set" << std::endl;
 	return true;
-}
-
-void Network::prtCmd(int fd)
-{
-	CommandChunk tempChunk;
-	size_t queueSize = this->commandQueue.size();
-	string temp;
-
-	for (size_t i = 0; i < queueSize; i++)
-	{
-		tempChunk = this->commandQueue.front();
-		//cout << tempChunk.fd << " | " << tempChunk.prefix << " | " << tempChunk.command;
-		temp.append(std::to_string(tempChunk.fd) + " | " + tempChunk.prefix + " | " + tempChunk.command + " | ");
-		for (size_t j = 0; j < tempChunk.parameters.size(); j++)
-		{
-			//cout << tempChunk.parameters[i] << " - ";
-			temp.append(tempChunk.parameters[j] + " - ");
-		}
-		//cout << "| " << tempChunk.parameterLast << std::endl;
-		temp.append("| " + tempChunk.parameterLast + "\n");
-		//this->commandQueue.push(this->commandQueue.front());
-		this->commandQueue.pop();
-		User* user = this->userManager.getUserByFd(fd);
-		this->sendToUser(*user, temp);
-		
-	}
 }
 
 bool Network::sendToUser(User& user, const std::string& message)
@@ -121,8 +135,8 @@ bool Network::sendToUser(User& user, const std::string& message)
 	{
 		vector<string> temp;
 		temp.push_back(message);
-		this->sendMap.insert(make_pair(user.getFd(), temp));
-		std::cout << user.getFd() << "]" << message << endl;
+		//FIXME:this->sendMap.insert(make_pair(user.getFd(), temp));
+		this->sendMap[user.getFd()] = temp;
 	}
 	else
 	{
@@ -150,7 +164,9 @@ void Network::pushCmdToQueue(int fd, string cmd)
 
 	if (cmd.find("  ") != string::npos)
 	{
-		// protocol ERROR
+		User *tempUser = this->userManager.getUserByFd(fd);
+		string tempStr = UserManager::makeMessage(ERR_UNKNOWNCOMMAND, tempUser->getNickname(), "");
+		this->sendToUser(*tempUser, tempStr);
 	} 
 	// 공백 날리기(trim)기능 추가
 	tempChunk.fd = fd;
@@ -158,7 +174,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	{
 		if (cmd.find(' ') == string::npos)
 		{
-			//TODO:ERROR
 			tempChunk.prefix.assign(cmd, 0, cmd.size());
 			this->commandQueue.push(tempChunk);
 			return ;
@@ -211,160 +226,146 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	this->commandQueue.push(tempChunk);
 }
 
+void Network::disconnectUser(User* user)
+{
+	int userFd = user->getFd();
+
+	close(userFd);
+	this->userManager.deleteUser(userFd);
+}
+
+void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv)
+{
+	user->appendBuffer(string(bufferRecv, lenRecv));
+	while(1)
+	{
+		if (user->getBuffer().empty())
+		{
+			break;
+		}
+		size_t crlfIndex = user->getBuffer().find("\r\n");
+		if (crlfIndex == string::npos)
+		{
+			break;
+		}
+		else if (crlfIndex >= BUFFERSIZE)
+		{
+			pushCmdToQueue(user->getFd(), string(user->getBuffer(), BUFFERSIZE - 2).append("\r\n"));
+			user->setBuffer("");
+			break;
+		}
+		else
+		{
+			pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, crlfIndex));
+			user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
+		}
+	}
+}
+
+void Network::recvActionPerUser(map<int, User*>& users)
+{
+	int lenRecv;
+	char bufferRecv[BUFFERSIZE];
+	for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
+	{
+		if (FD_ISSET(iter->first, &this->rSet))
+		{
+			User* user = this->userManager.getUserByFd(iter->first);
+			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
+			if (lenRecv < 0)
+			{
+				++iter;
+				this->errorLogging(string("[recv]") + strerror(errno), false);
+				disconnectUser(user); 
+				continue;
+			}
+			else if (lenRecv == 0)
+			{
+				++iter;
+				this->logging(string("[disconnect]"));
+				disconnectUser(user);
+				continue ;
+			}
+			else
+			{
+				recvParsingAndLoadCommands(user, bufferRecv, lenRecv);
+			}
+		}
+		++iter;
+	}
+}
+
+void Network::recvActionPerSendQueue()
+{
+	for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
+	{
+		map<int, vector<string> >::iterator temp = iter;
+		if (FD_ISSET(iter->first, &this->wSet))
+		{
+			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
+			{
+				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
+				{
+					User* user = this->userManager.getUserByFd(iter->first);
+					this->errorLogging(string("[recv]") + strerror(errno), false);
+					disconnectUser(user);
+					break ;
+				}
+				++iterVec;
+			}
+			++iter;
+			this->sendMap.erase(temp->first);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
 bool Network::IOMultiflexing()
 {
-
 	string tempBuffer;
 
-	// while (1)
-	// {
 	initFdSets();
-	sleep(3);
-	// FIXME: 클라 끊겼을떄 정리하는 코드 작성
-	if (::select(10, &this->rSet, &this->wSet, NULL, NULL) < 0)
+	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
-		// FIXME: 수정 필요.
-		cerr << "[select]" << strerror(errno) <<endl;
+		this->errorLogging(string("[select]") + strerror(errno), true);
 	}
 	if (FD_ISSET(this->fdServer, &this->rSet))
 	{
 		this->AcceptUser();
 	}
-	else
+	if (FD_ISSET(STDOUT_FILENO, &this->wSet))
 	{
-		map<int, User*>& users = this->userManager.getAllUser();
-		// 이미 연결된 유저들과 관련된 동작
-		// FIXME: iter를 받아놓고 for문 내부에서 map을 조작(삭제)해서, iter가 유효하지 않은 위치를 포인팅하는거 같음.
-		//for(map<int, User*>::iterator iter = users.begin(); iter != users.end(); iter++)
-		for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
+		while (1)
 		{
-			if (FD_ISSET(iter->first, &this->rSet))
+			if (this->logQueue.empty())
 			{
-				int lenRecv;
-				char buffer[BUFFERSIZE];
-				User* user = this->userManager.getUserByFd(iter->first);
-				// BUFFERSIZE 다 받지 말고, 유저 버퍼에 남아있는 버퍼 사이즈의 길이 반영해서, 도합 512까지.
-				lenRecv = ::recv(iter->first, buffer, BUFFERSIZE, 0);
-				if (lenRecv < 0)
-				{
-					int tempFd;
-					tempFd = iter->first;
-					cerr << "[recv " << tempFd << "]" << strerror(errno) <<endl;
-					++iter;
-					this->userManager.deleteUser(tempFd);
-					close(tempFd);
-					continue;
-				}
-				else if (lenRecv == 0)
-				{
-					int tempFd;
-					tempFd = iter->first;
-					cout << tempFd << " disconnect" << endl;
-					++iter;
-					this->userManager.deleteUser(tempFd);
-					close(tempFd);
-					continue ;
-					//TODO:this->userManager.
-				}
-				else
-				{
-					tempBuffer.assign(buffer, lenRecv);
-					user->appendBuffer(tempBuffer);
-					while(1)
-					{
-						if (user->getBuffer().empty())
-						{
-							break;
-						}
-						size_t crlfIndex = user->getBuffer().find("\r\n");
-						if (crlfIndex == string::npos)
-						{
-							std::cout << "🔥" << iter->first << " :" << user->getBuffer() << std::endl;
-							break;
-						}
-						else if (crlfIndex >= BUFFERSIZE)
-						{
-							tempBuffer.assign(user->getBuffer(), BUFFERSIZE - 2);
-							tempBuffer.append("\r\n");
-							pushCmdToQueue(iter->first, tempBuffer);
-							//prtCmd(iter->first);
-							// User.setIgnore();
-							user->setBuffer("");
-							break;
-						}
-						else
-						{
-							tempBuffer.assign(user->getBuffer(), 0, crlfIndex);
-							pushCmdToQueue(iter->first, tempBuffer);
-							//prtCmd(iter->first);
-							tempBuffer.assign(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2));
-							user->setBuffer(tempBuffer);
-						}
-					}
-				}
+				break ;
 			}
-			++iter;
-		}
-		for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
-		{
-			int lenSend;
-			map<int, vector<string> >::iterator temp = iter;
-			if (FD_ISSET(iter->first, &this->wSet))
-			{
-				for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
-				{
-					lenSend = ::send(iter->first, iterVec->c_str(), iterVec->size(), 0);
-					if (lenSend < 0)
-					{
-						cerr << iter->first << " send error" << endl;
-					}
-					else if (lenSend == 0)
-					{
-						cerr << iter->first  << " ???" << endl;
-					}
-					else
-					{
-						cout << iter->first << " send done" << endl;
-					}
-					++iterVec;
-				}
-				++iter;
-				this->sendMap.erase(temp->first);
-			}
-			else
-			{
-				++iter;
-			}
+			write(STDOUT_FILENO, this->logQueue.front().append("\n").c_str(), this->logQueue.front().size() + 1);
+			this->logQueue.pop();
 		}
 	}
-	// }
+	if (FD_ISSET(STDERR_FILENO, &this->wSet))
+	{
+		while (1)
+		{
+			if (this->errorLogQueue.empty())
+			{
+				break ;
+			}
+			write(STDERR_FILENO, this->errorLogQueue.front().append("\n").c_str(), this->errorLogQueue.front().size() + 1);
+			this->errorLogQueue.pop();
+		}
+		if (this->exitFlag == true)
+		{
+			return false;
+		}
+	}
+	map<int, User*>& users = this->userManager.getAllUser();
+	recvActionPerUser(users);
+	recvActionPerSendQueue();
 	return true;
 }
-
-// TODO:
-void Network::initFdSets()
-{
-	// rSet모든 유저 돌면서 set에 추가.
-	FD_ZERO(&this->rSet);
-	FD_ZERO(&this->wSet);
-	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
-	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
-	FD_SET(this->fdServer, &this->rSet);
-	for (;iter != iterEnd; iter++)
-	{
-		FD_SET(iter->first, &this->rSet);
-	}
-	// wSet의 경우, queue에 입력된 유저들을 확인하고...? 근데 채널에 보내는 경우는?
-	map<int, vector<string> >::iterator iterMap = this->sendMap.begin();
-	map<int, vector<string> >::iterator iterMapEnd = this->sendMap.end();
-	for (; iterMap != iterMapEnd; iterMap++)
-	{
-		std::cout << iterMap->first << ", ";
-		FD_SET(iterMap->first, &this->wSet);
-	}
-	cout << endl;
-}
-
-// 서버어서 소켓 관련 에러가 났을때 exception을 쓰는게 좋나?
-// 아니면 에러를 반환시켜서 서버를 종료시키는게 맞나?
-// 아니면 로그만 남기고 그냥 예외처리 하고 쭉유지???????

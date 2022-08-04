@@ -46,7 +46,6 @@ private:
 	int	fd;
 	Auth auth;
 	string buffer;
-	Channel *channel;
 	map<string, Channel *> channelList;
 	bool isRegistered;
 	bool ignored;

@@ -44,7 +44,7 @@ void Cpart::execute(ChannelManager &channelManager,
 		return;
 	}
 
-	if (!user->getChannel() || user->getChannel()->getChannelName() != channelName) {
+	if (!user->getChannel(channelName) || user->getChannel(channelName)->getChannelName() != channelName) {
 		/**
 		 * @brief 
 		 * 
@@ -61,5 +61,5 @@ void Cpart::execute(ChannelManager &channelManager,
 			유저 채널에서 퇴장
 	*/
 	channel->deleteJoinUser(user);
-	user->setChannel(NULL);
+	user->deleteChannel(channelName);
 }

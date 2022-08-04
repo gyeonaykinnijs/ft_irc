@@ -98,13 +98,6 @@ bool User::getIsRegistered() const
 	return this->isRegistered;
 }
 
-Channel* User::getChannel(const string channelName)
-{
-	if (this->channelList.count(channelName) == 0)
-		return NULL;
-	return this->channelList[channelName];
-}
-
 bool User::getIgnored() const
 {
 	return this->ignored;

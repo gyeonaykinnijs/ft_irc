@@ -36,6 +36,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 		// 응답코드 필요
 		string msg = UserManager::makeMessage(prevNickname, "is now known as" ,user->getNickname());
 		network.sendToUser(*user, msg);
+		userManager.addUser(user);
 		return;
 	}
 }

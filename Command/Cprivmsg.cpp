@@ -19,6 +19,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
+	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
 	{

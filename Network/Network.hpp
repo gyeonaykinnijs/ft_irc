@@ -8,7 +8,6 @@
 #include <utility>
 #include <sys/socket.h>
 #include <netinet/in.h>
-// #include "../defines.hpp"
 #include "../User/UserManager.hpp"
 #include "../Channel/ChannelManager.hpp"
 // class User;
@@ -34,7 +33,7 @@ public:
 	bool IOMultiflexing();
 	bool sendToUser(User& user, const std::string& message);
 	bool sendToChannel(Channel& channel, const std::string& message);
-	bool kick(const std::string& message, User& user);
+	void disconnectUser(User* user);
 	CommandChunk getCommand();
 private:
 	Network(const Network& other);
@@ -42,6 +41,11 @@ private:
 	bool AcceptUser();
 	void pushCmdToQueue(int fd, string cmd);
 	void prtCmd(int fd);
+	void logging(const string& log);
+	void errorLogging(const string& log, bool serverEndFlag);
+	void recvActionPerUser(map<int, User*>& users);
+	void recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv);
+	void recvActionPerSendQueue();
 
 	void initFdSets();
 	fd_set wSet;
@@ -52,8 +56,11 @@ private:
 	const std::string PASSWORD;
 	UserManager& userManager;
 	int fdServer;
-	std::queue<CommandChunk> commandQueue;
+	queue<CommandChunk> commandQueue;
+	queue<string> errorLogQueue;
+	queue<string> logQueue;
 	map<int, vector<string> > sendMap;
+	bool exitFlag;
 };
 
 #endif
