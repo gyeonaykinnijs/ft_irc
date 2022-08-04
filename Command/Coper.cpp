@@ -31,30 +31,23 @@ void Coper::execute(ChannelManager &channelManager,
 					struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
-	vector<string> param = commandChunk.parameters;
-	string channelName = param[0];
-	Channel *channel = channelManager.getChannel(channelName);
-	map<string, User *> userList = channel->getJoinUser();
-
-
 	if (user->getIsRegistered() == false)
 	{
 		// 에러 메시지 보내야 됨
 		cout << "it should be registered" << endl;
 		return ;
-	}	
-	if (!channel) {
-		/**
-		 * @brief 
-		 * 
-		 * 		No Such Channel Error
-		 */
+	}
 
+	vector<string> param = commandChunk.parameters;
+	string channelName = param[0];
+	Channel *channel = channelManager.getChannel(channelName);
+	map<string, User *> userList = channel->getJoinUser();
+	if (!channel)
+	{	// channel 없을 때
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(*user, msg);
 		return;
 	}
-
 	for (unsigned long i = 1; i < param.size(); i++)
 	{
 		if (!userList[param[i]])

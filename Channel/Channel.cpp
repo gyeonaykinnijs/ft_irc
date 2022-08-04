@@ -24,9 +24,9 @@ void Channel::setCurSizeUser(const int size)
 	this->curSizeUser = size;
 }
 
-void Channel::setMakeUser(User *user)
+void Channel::setAdmin(User *user)
 {
-	this->makeUser = user;
+	this->admin = user;
 }
 
 void Channel::setChannelKey(const string channelKey)
@@ -54,9 +54,9 @@ int Channel::getMaxSizeUser() const
 	return this->maxSizeUser;
 }
 
-User* Channel::getMakeUser()
+User* Channel::getAdmin()
 {
-	return this->makeUser;
+	return this->admin;
 }
 
 void Channel::insertJoinUser(User* user) 

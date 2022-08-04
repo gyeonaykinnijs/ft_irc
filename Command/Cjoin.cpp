@@ -51,7 +51,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 		return;
 	} 
 	channel->insertJoinUser(user);
-	user->setChannel(channel);
+	user->addChannel(channel);
 	string msg = UserManager::makeMessage("???" , user->getNickname(), "channel make and channel in user");
 	network.sendToUser(*user, msg);
 

@@ -23,14 +23,13 @@ public:
 	void setIsRegistered(const bool isRegistered);
 	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
-	void addChannelList(Channel *channel);
-	Channel *getChannel() const;
+	void addChannel(Channel *channel);
 	string getNickname() const;
 	string getUserName() const;
 	string getPasswd() const;
 	string getBuffer() const;
 	string getRealName() const;
-	Channel* getChannel(const string channelName;);
+	Channel* getChannel(const string channelName);
 	map<string, Channel*> getChannelList() const;
 	User::Auth getAuth() const;
 	bool getIsRegistered() const;

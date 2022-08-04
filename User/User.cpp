@@ -47,11 +47,6 @@ void User::setIsRegistered(const bool isRegistered)
 	this->isRegistered = isRegistered;
 }
 
-void User::setChannel(Channel *channel)
-{
-	this->channel = channel;
-}
-
 void User::setAuth(const User::Auth auth)
 {
 	this->auth = auth;
@@ -67,7 +62,7 @@ void User::setPasswd(const string passwd)
 	this->passwd = passwd;
 }
 
-void User::addChannelList(Channel *channel)
+void User::addChannel(Channel *channel)
 {
 	this->channelList[channel->getChannelName()] = channel;
 }
@@ -103,9 +98,11 @@ bool User::getIsRegistered() const
 	return this->isRegistered;
 }
 
-Channel* User::getChannel() const
+Channel* User::getChannel(const string channelName)
 {
-	return this->channel;
+	if (this->channelList.count(channelName) == 0)
+		return NULL;
+	return this->channelList[channelName];
 }
 
 bool User::getIgnored() const
@@ -123,7 +120,7 @@ string User::getPasswd() const
 	return this->passwd;
 }
 
-Channel* User::getChannel(const string channelName;)
+Channel* User::getChannel(const string channelName)
 {
 	if (this->channelList.count(channelName) == 0)
 		return NULL;
@@ -139,7 +136,6 @@ void User::appendBuffer(string buffer)
 {
 	this->buffer.append(buffer);
 }
-
 
 void User::deleteChannel(const string channelName)
 {
