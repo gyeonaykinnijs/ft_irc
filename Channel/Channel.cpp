@@ -74,15 +74,16 @@ void Channel::deleteJoinUser(User *user)
 	joinUser.erase(user->getUserName());
 }
 
-std::map<string, User *> Channel::getJoinUser()
+map<string, User *>& Channel::getJoinUser()
 {
-	std::map<string, User *> userList;
+	// std::map<string, User *> userList;
 
-	map<string, User *>::iterator iter = this->joinUser.begin();
-    while (iter != joinUser.end())
-	{
-		userList.insert(*iter);
-        ++iter;
-    }
-	return userList;
+	// map<string, User *>::iterator iter = this->joinUser.begin();
+    // while (iter != joinUser.end())
+	// {
+	// 	userList.insert(*iter);
+    //     ++iter;
+    // }
+	// return userList;
+	return this->joinUser;
 }
