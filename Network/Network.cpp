@@ -123,11 +123,6 @@ bool Network::AcceptUser()
 		this->errorLogging(string("[setsockopt]") + strerror(errno), false);
 	}
 	this->userManager.makeUser(fdClient);
-	//User *user = this->userManager.getUserByFd(fdClient);
-	string msg = UserManager::makeMessage(RPL_WELCOME, this->userManager.getUserByFd(fdClient)->getNickname(), "Welcome to the server");
-	this->sendToUser2(fdClient, msg);
-	// this->sendToUser(*(this->userManager.getUserByFd(fdClient)), msg);
-	this->userManager.getUserByFd(fdClient)->setIsRegistered(true);
 	return true;
 }
 
@@ -296,7 +291,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
-			std::cout << string(bufferRecv, 0, lenRecv) << endl;
+			std::cout << "client send command: " << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -329,6 +324,7 @@ void Network::recvActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
+				cout << "server send reply: " << *iterVec << endl;
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);

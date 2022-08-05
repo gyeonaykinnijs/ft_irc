@@ -55,4 +55,8 @@ void Cuser::execute(ChannelManager &channelManager,
 
 	user->setUserName(param[0]);
 	user->setRealName(commandChunk.parameterLast);
+	string msg = UserManager::makeMessage(RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
+	network.sendToUser2(user->getFd(), msg);
+	// this->sendToUser(*(this->userManager.getUserByFd(fdClient)), msg);
+	user->setIsRegistered(true);
 }

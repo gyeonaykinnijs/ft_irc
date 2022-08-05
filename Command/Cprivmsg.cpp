@@ -16,16 +16,16 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 				Network &network,
 				struct CommandChunk commandChunk)
 {
-
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
 	{
-		// 에러 메시지 보내야 됨
-		cout << "it should be registered" << endl;
-		return ;
+		
+				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		network.sendToUser2(user->getFd(), msg);
+return;
 	}	
 	if (param.size() < 1)
 	{

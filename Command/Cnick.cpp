@@ -21,7 +21,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	}
 	if (nickname.size() > 9)
 	{
-		nickname = nickname.substr(9);
+		nickname = nickname.substr(0, 9);
 	}
 	if (!(nickname[0] > 'a' && nickname[0] < 'z') || (nickname[0] > 'A' && nickname[0] < 'Z'))
 	{

@@ -13,7 +13,6 @@ void Squit::execute(ChannelManager &channelManager,
 					Network &network,
 					struct CommandChunk commandChunk)
 {
-
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
 

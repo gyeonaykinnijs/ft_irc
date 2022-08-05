@@ -21,5 +21,4 @@ void Ckill::execute(ChannelManager &channelManager,
 					Network &network,
 					struct CommandChunk commandChunk)
 {
-
 }

@@ -10,9 +10,10 @@ void Ckick::execute(ChannelManager &channelManager,
 	(void)channelManager;
 	if (user->getIsRegistered() == false)
 	{
-		// 에러 메시지 보내야 됨
-		cout << "it should be registered" << endl;
-		return ;
+		
+				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		network.sendToUser2(user->getFd(), msg);
+return;
 	}
 	if (param.size() < 2)
 	{	// channel user 인자 두 개 있어야 함

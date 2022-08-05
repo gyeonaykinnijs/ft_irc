@@ -23,7 +23,6 @@ map<int, User *> &UserManager::getAllUser()
 
 void UserManager::addUser(User *user)
 {
-
 	/*
 		user fd or nickname 중복 error error
 	*/

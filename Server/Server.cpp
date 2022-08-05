@@ -64,22 +64,9 @@ void Server::run()
             else
             {
                 transform(temp.command.begin(), temp.command.end(), temp.command.begin(), ::tolower);
-                cout << "command: " << temp.command << endl;
                 if (this->commands.count(temp.command) == 1)
                 {
                     this->commands[temp.command]->execute(this->channelManager, this->userManager, this->network, temp);
-                    if (temp.command == "nick")
-                    {
-                        if (this->userManager.getUserByFd(temp.fd)->getPasswd() == this->PASSWORD)
-                        {
-                            this->userManager.getUserByFd(temp.fd)->setIsRegistered(true);
-                        }
-                        else
-                        {
-                            // 접속시키지 말고 에러메세지쓰고 return
-                            break ;
-                        }
-                    }
                 }
                 else
                 {
@@ -93,5 +80,4 @@ void Server::run()
 
 Server::~Server()
 {
-
 }

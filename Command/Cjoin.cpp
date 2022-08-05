@@ -10,14 +10,15 @@ void Cjoin::execute(ChannelManager &channelManager,
 
 	if (user->getIsRegistered() == false)
 	{
-		// 에러 메시지 보내야 됨
-		cout << "it should be registered" << endl;
-		return ;
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		network.sendToUser2(user->getFd(), msg);
+		return;
 	}	
-	if (param.size() == 0)
+	if (param.empty())
 	{
-		cout << "need more parameters" << endl;
-		return ;
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need More Parameters");
+		network.sendToUser2(user->getFd(), msg);
+		return;
 	}
 	const string channelName = param[0];
 	string password = param.size() > 1 ? param[1] : "";
@@ -54,5 +55,4 @@ void Cjoin::execute(ChannelManager &channelManager,
 	user->addChannel(channel);
 	string msg = UserManager::makeMessage(RPL_JOIN, user->getNickname(), "channel make and channel in user");
 	network.sendToUser2(user->getFd(), msg);
-
 }

@@ -7,7 +7,6 @@ class User;
 
 class Channel
 {
-
 public:
 	Channel();
 	~Channel();
