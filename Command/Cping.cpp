@@ -39,7 +39,7 @@ return;
 		 * 			need more param
 		 */
 
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}

@@ -166,8 +166,8 @@ bool Network::sendToUser(User& user, const std::string& message)
 
 bool Network::sendToChannel(Channel& channel, const std::string& message)
 {
-	std::map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
-	std::map<std::string, User *>::iterator iterEnd = channel.getJoinUser().end();
+	map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
+	map<std::string, User *>::iterator iterEnd = channel.getJoinUser().end();
 
 	while (iter != iterEnd)
 	{
@@ -246,7 +246,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		}
 		if (cmd[0] == ':')
 		{
-			tempChunk.parameterLast.assign(cmd, 0, cmd.size());
+			tempChunk.parameterLast.assign(cmd, 1, cmd.size() - 1);
 			this->commandQueue.push(tempChunk);
 			return ;
 		}
@@ -327,7 +327,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
-			std::cout << "from client :" << string(bufferRecv, 0, lenRecv) << endl;
+			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -360,7 +360,7 @@ void Network::recvActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
-				cout << "to client :" << *iterVec << endl;
+				cout << "server send reply: " << endl << *iterVec << endl;
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);

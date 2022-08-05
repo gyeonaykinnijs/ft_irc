@@ -47,6 +47,21 @@ void User::setIsRegistered(const bool isRegistered)
 	this->isRegistered = isRegistered;
 }
 
+void User::setPassOK(const bool passOK)
+{
+	this->passOK = passOK;
+}
+
+void User::setNickOK(const bool nickOK)
+{
+	this->nickOK = nickOK;
+}
+
+void User::setUserOK(const bool userOK)
+{
+	this->userOK = userOK;
+}
+
 void User::setAuth(const User::Auth auth)
 {
 	this->auth = auth;
@@ -92,10 +107,24 @@ User::Auth User::getAuth() const
 	return this->auth;
 }
 
-
 bool User::getIsRegistered() const
 {
 	return this->isRegistered;
+}
+
+bool User::getPassOK() const
+{
+	return this->passOK;
+}
+
+bool User::getNickOK() const
+{
+	return this->nickOK;
+}
+
+bool User::getUserOK() const
+{
+	return this->userOK;
 }
 
 bool User::getIgnored() const

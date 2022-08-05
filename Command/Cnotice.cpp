@@ -13,9 +13,9 @@ void Cnotice::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}	
 	if (param.size() < 1)
 	{

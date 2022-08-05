@@ -40,9 +40,9 @@ void Cuser::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 
-	if (param.size() < 3)
-	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need more Parameter");
+	if (user->getPassOK() == false)
+	{		
+		string msg = UserManager::makeMessage(ERR_NOTCONNECTED, "*", "User should be connected first");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
@@ -52,11 +52,16 @@ void Cuser::execute(ChannelManager &channelManager,
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-
-	user->setUserName(param[0]);
-	user->setRealName(commandChunk.parameterLast);
-	string msg = UserManager::makeMessage(RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
-	network.sendToUser2(user->getFd(), msg);
-	// this->sendToUser(*(this->userManager.getUserByFd(fdClient)), msg);
-	user->setIsRegistered(true);
+	else if (param.size() < 3)
+	{
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		network.sendToUser2(user->getFd(), msg);
+		return;
+	}
+	else
+	{
+		user->setUserName(param[0]);
+		user->setRealName(commandChunk.parameterLast);
+		user->setUserOK(true);
+	}
 }

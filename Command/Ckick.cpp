@@ -17,7 +17,7 @@ return;
 	}
 	if (param.size() < 2)
 	{	// channel user 인자 두 개 있어야 함
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need More Parameters");
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
