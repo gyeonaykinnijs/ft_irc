@@ -23,7 +23,7 @@ public:
 	void insertJoinUser(User *user);
 	User* selectJoinUser(string userName);
 	void deleteJoinUser(User *user);
-	std::map<string, User *> getJoinUser();
+	std::map<string, User *>& getJoinUser();
 	enum Mode
 	{
 		WAIT, TALKING, ELSE
