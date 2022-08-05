@@ -327,11 +327,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
-<<<<<<< HEAD
 			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
-=======
-			std::cout << "from client :" << string(bufferRecv, 0, lenRecv) << endl;
->>>>>>> master
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -364,11 +360,7 @@ void Network::recvActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
-<<<<<<< HEAD
 				cout << "server send reply: " << endl << *iterVec << endl;
-=======
-				cout << "to client :" << *iterVec << endl;
->>>>>>> master
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
