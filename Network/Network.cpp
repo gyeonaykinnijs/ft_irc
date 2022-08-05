@@ -166,14 +166,15 @@ bool Network::sendToUser(User& user, const std::string& message)
 
 bool Network::sendToChannel(Channel& channel, const std::string& message)
 {
-    std::map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
-    std::map<std::string, User *>::iterator iterEnd = channel.getJoinUser().end();
-    while (iter != iterEnd)
-    {
-        this->sendToUser(*iter->second, message);
-        ++iter;
-    }
-    return true;
+	map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
+	map<std::string, User *>::iterator iterEnd = channel.getJoinUser().end();
+
+	while (iter != iterEnd)
+	{
+		this->sendToUser(*iter->second, message);
+		++iter;
+	}
+	return true;
 }
 
 CommandChunk Network::getCommand()
@@ -275,20 +276,43 @@ void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t le
 			break;
 		}
 		size_t crlfIndex = user->getBuffer().find("\r\n");
-		if (crlfIndex == string::npos)
+		if (user->getIgnored())
 		{
-			break;
-		}
-		else if (crlfIndex >= BUFFERSIZE)
-		{
-			pushCmdToQueue(user->getFd(), string(user->getBuffer(), BUFFERSIZE - 2).append("\r\n"));
-			user->setBuffer("");
-			break;
+			if (crlfIndex == string::npos)
+			{
+				user->setBuffer("");
+			}
+			else
+			{
+				user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
+				user->setIgnored(false);
+			}
 		}
 		else
 		{
-			pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, crlfIndex));
-			user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
+			// 512자를 넘지 않고 crlf가 없는 경우.
+			if (user->getBuffer().size() <= BUFFERSIZE - 2 && crlfIndex == string::npos)
+			{
+				break;
+			}
+			// 버퍼 누적이 512자를 넘는데도 crlf가 없는 경우. -> 그냥 버퍼 누적이 512가 넘는 경우 앞에 거ㄹ를 다 때 버려야 한다.
+			// 즉, crlfIndex >= BUFFERSIZE이 맞다(crlfIndex == string::npos조건 포함).
+			else if (user->getBuffer().size() > BUFFERSIZE - 2 && crlfIndex > BUFFERSIZE - 2)
+			{
+				cout << "🔥 cmd 🔥 " << string(user->getBuffer(), 0, BUFFERSIZE - 2).append("\r\n") << endl;
+				pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, BUFFERSIZE - 2).append("\r\n"));
+				user->setBuffer("");
+				user->setIgnored(true);
+				break;
+			}
+			// 1조건 : 버퍼가 510자가 안되거나 같지만, crlf가 있는 경우
+			// 2조건 : 버퍼가 510자를 초과하지만, crlf가 510자 내부에 있는 경우.
+			else
+			{
+				cout << "🌟 cmd 🌟 " << string(user->getBuffer(), 0, crlfIndex) << endl;
+				pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, crlfIndex));
+				user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
+			}
 		}
 	}
 }
@@ -303,7 +327,11 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
+<<<<<<< HEAD
 			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
+=======
+			std::cout << "from client :" << string(bufferRecv, 0, lenRecv) << endl;
+>>>>>>> master
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -336,7 +364,11 @@ void Network::recvActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
+<<<<<<< HEAD
 				cout << "server send reply: " << endl << *iterVec << endl;
+=======
+				cout << "to client :" << *iterVec << endl;
+>>>>>>> master
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
