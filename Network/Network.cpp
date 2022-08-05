@@ -246,7 +246,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		}
 		if (cmd[0] == ':')
 		{
-			tempChunk.parameterLast.assign(cmd, 0, cmd.size());
+			tempChunk.parameterLast.assign(cmd, 1, cmd.size() - 1);
 			this->commandQueue.push(tempChunk);
 			return ;
 		}
