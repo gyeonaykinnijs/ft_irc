@@ -23,13 +23,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}	
 	if (param.size() < 1)
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "No Param");
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
@@ -39,16 +39,35 @@ return;
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	string targetUser = param[0];
-	User *target = userManager.getUserByNickname(targetUser);
-	if (!target)
+	string target = param[0];
+	if (target[0] == '#')
 	{
-		string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "no such nick");
-		network.sendToUser2(user->getFd(), msg);
-		return;
+		Channel *targetChannel = channelManager.getChannel(target);
+		if (!targetChannel)
+		{
+			string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No such channel");
+			network.sendToUser2(user->getFd(), msg);
+			return;
+		}
+		else
+		{
+			string msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);
+			network.sendToChannel(*targetChannel, msg);
+		}
 	}
 	else
 	{
-		network.sendToUser(*target, commandChunk.parameterLast);
+		User *targetUser = userManager.getUserByNickname(target);
+		if (!targetUser)
+		{
+			string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "No Such Nick");
+			network.sendToUser2(user->getFd(), msg);
+			return;
+		}
+		else
+		{
+			string msg = UserManager::makeMessage("PRIVMSG", targetUser->getNickname(), commandChunk.parameterLast);
+			network.sendToUser2(targetUser->getFd(), msg);
+		}
 	}
 }

@@ -29,7 +29,7 @@ return;
 	std::string reason = param.empty() ? "Leaving..." : param[0];
 	reason = reason[0] == ':' ? reason.substr(1) : reason;
 	
-	string msg = UserManager::makeMessage("", user->getNickname(), "Quit" + reason);
+	string msg = UserManager::makeMessage("", user->getNickname(), "Quit " + reason);
 	network.sendToUser2(user->getFd(), msg);
 
 }

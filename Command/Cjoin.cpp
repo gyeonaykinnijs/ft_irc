@@ -16,7 +16,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	}	
 	if (param.empty())
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need More Parameters");
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}

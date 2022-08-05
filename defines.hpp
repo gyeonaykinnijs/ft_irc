@@ -18,7 +18,7 @@ using namespace std;
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
 #define RPL_MYINFO "004"
-#define RPL_JOIN "011" // FIXME: 코드 수정? 임의로 정해놓음
+#define RPL_JOIN "011" // FIXME: custom
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
 #define RPF_NOTOPIC "331"
@@ -43,6 +43,7 @@ using namespace std;
 #define ERR_CHANNELISFULL "471"
 #define ERR_BADCHANNELKEY "475"
 #define ERR_CHANOPRIVSNEEDED "482"
-
+#define ERR_NOTCONNECTED "986" // custom
+#define ERR_ALREADYCONNECTED "987" // custom
 
 #endif

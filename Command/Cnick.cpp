@@ -6,9 +6,15 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 	
-	if (param.empty()) // 인자 부족할 때
-	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need more Parameter");
+	if (user->getPassOK() == false)
+	{	// 비밀번호 맞기 전 입력 못 하게
+		string msg = UserManager::makeMessage(ERR_NOTCONNECTED, "*", "User should be connected first");
+		network.sendToUser2(user->getFd(), msg);
+		return;
+	}
+	else if (param.empty())
+	{	// 인자 부족
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
@@ -30,17 +36,17 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 		return;
 	}
 	string prevNickname = user->getNickname();
+	user->setNickOK(true);
 	user->setNickname(nickname);
-	if (user->getIsRegistered()) // 이미 등록했고 nick 변경할 때
-	{
+	if (user->getIsRegistered())
+	{	// 이미 등록했고 nick 변경할 때
 		// 응답코드 필요
-		string msg = UserManager::makeMessage(prevNickname, "is now known as" ,user->getNickname());
+		string msg = UserManager::makeMessage("NICK", prevNickname + " is now known as " + user->getNickname(), "");
+		// map<string, Channel *>::iterator iter = user->getChannelList().begin();
+		// for (; iter != user->getChannelList().end(); iter++)
+		// {
+		// 	network.sendToChannel(*(iter->second), msg);
+		// }
 		network.sendToUser2(user->getFd(), msg);
-		userManager.addUser(user);
-		return;
-	}
-	else
-	{
-		// 처음 nick 설정했을 때 리플라이 보내기
 	}
 }

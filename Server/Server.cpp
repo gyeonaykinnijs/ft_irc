@@ -67,6 +67,17 @@ void Server::run()
                 if (this->commands.count(temp.command) == 1)
                 {
                     this->commands[temp.command]->execute(this->channelManager, this->userManager, this->network, temp);
+                    User *user = userManager.getUserByFd(temp.fd);
+                    if (user->getPassOK() == false && this->PASSWORD == user->getPasswd())
+                    {
+                        user->setPassOK(true);
+                    }
+                    else if (user->getIsRegistered() == false && user->getNickOK() == true && user->getUserOK() == true)
+                    {
+                        user->setIsRegistered(true);
+                        string msg = UserManager::makeMessage(RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
+		                network.sendToUser2(user->getFd(), msg);
+                    }
                 }
                 else
                 {
