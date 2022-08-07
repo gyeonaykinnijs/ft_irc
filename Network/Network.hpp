@@ -46,7 +46,7 @@ private:
 	void errorLogging(const string& log, bool serverEndFlag);
 	void recvActionPerUser(map<int, User*>& users);
 	void recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv);
-	void recvActionPerSendQueue();
+	void sendActionPerSendQueue();
 
 	void initFdSets();
 	fd_set wSet;

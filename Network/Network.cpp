@@ -278,12 +278,15 @@ void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t le
 		size_t crlfIndex = user->getBuffer().find("\r\n");
 		if (user->getIgnored())
 		{
+			cout << "🤐";
 			if (crlfIndex == string::npos)
 			{
+				cout << "❌" << endl;
 				user->setBuffer("");
 			}
 			else
 			{
+				cout << "⭕️" << endl;
 				user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
 				user->setIgnored(false);
 			}
@@ -293,6 +296,7 @@ void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t le
 			// 512자를 넘지 않고 crlf가 없는 경우.
 			if (user->getBuffer().size() <= BUFFERSIZE - 2 && crlfIndex == string::npos)
 			{
+				cout << "🌖 " << user->getBuffer().size() << endl;
 				break;
 			}
 			// 버퍼 누적이 512자를 넘는데도 crlf가 없는 경우. -> 그냥 버퍼 누적이 512가 넘는 경우 앞에 거ㄹ를 다 때 버려야 한다.
@@ -351,7 +355,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 	}
 }
 
-void Network::recvActionPerSendQueue()
+void Network::sendActionPerSendQueue()
 {
 	for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
 	{
@@ -384,6 +388,7 @@ bool Network::IOMultiflexing()
 {
 	string tempBuffer;
 
+	sleep(5);
 	initFdSets();
 	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
@@ -422,7 +427,7 @@ bool Network::IOMultiflexing()
 		}
 	}
 	map<int, User*>& users = this->userManager.getAllUser();
-	recvActionPerUser(users);
-	recvActionPerSendQueue();
+	this->recvActionPerUser(users);
+	this->sendActionPerSendQueue();
 	return true;
 }
