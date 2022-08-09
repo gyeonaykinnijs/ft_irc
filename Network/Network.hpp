@@ -29,7 +29,7 @@ public:
 	Network();
 	Network(const char* ip, const short port, const char* passWord, UserManager& userManager);
 	~Network(); //RAII
-	void init();
+	bool init();
 	bool IOMultiflexing();
 	bool sendToUser(User& user, const std::string& message);
 	bool sendToUser2(int fd, const std::string& message);
@@ -47,8 +47,8 @@ private:
 	void recvActionPerUser(map<int, User*>& users);
 	void recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv);
 	void sendActionPerSendQueue();
-
 	void initFdSets();
+	
 	fd_set wSet;
 	fd_set rSet;
 	sockaddr_in addressServer;

@@ -56,32 +56,45 @@ void Network::errorLogging(const string& log, bool serverEndFlag)
 	this->exitFlag = serverEndFlag;
 }
 
-void Network::init()
+bool Network::init()
 {
 	int result = 1;
-	string tempLog;
 
 	this->addressServer.sin_family = PF_INET;
 	this->addressServer.sin_port = htons(this->PORT);
 	inet_pton(AF_INET, this->IP.c_str(), &this->addressServer.sin_addr);
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
-	fcntl(this->fdServer, F_SETFL, O_NONBLOCK);
-	fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK);
-	fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK);
+	if (this->fdServer < 0)
+	{
+		this->errorLogging(string("[socket]") + strerror(errno), true);
+		return false;
+	}
 	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
 	{
 		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
+		return false;
+	}
+	if (fcntl(this->fdServer, F_SETFL, O_NONBLOCK) < 0 |
+		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK) < 0 |
+		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK) < 0)
+	{
+		this->errorLogging(string("[fcntl]") + strerror(errno), true);
+		return false;
 	}
 	this->logging(string("Socket init Success!"));
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
 		this->errorLogging(string("[bind]") + strerror(errno), true);
+		return false;
 	}
+	this->logging(string("Socket binding Success!"));
 	if(::listen(this->fdServer, 5) < 0)
 	{
 		this->errorLogging(string("[listen]") + strerror(errno), true);
+		return false;
 	}
-
+	this->logging(string("Server is listening!"));
+	return true;
 };
 
 void Network::initFdSets()
@@ -99,7 +112,7 @@ void Network::initFdSets()
 	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
 	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
 	FD_SET(this->fdServer, &this->rSet);
-	for (;iter != iterEnd; iter++)
+	for (; iter != iterEnd; iter++)
 	{
 		FD_SET(iter->first, &this->rSet);
 	}
@@ -113,7 +126,6 @@ void Network::initFdSets()
 
 bool Network::AcceptUser()
 {
-	string tempLog;
 	sockaddr_in addressClient;
 	socklen_t lenClient = sizeof(addressClient);
 
@@ -128,15 +140,13 @@ bool Network::AcceptUser()
 
 bool Network::sendToUser2(int fd, const std::string& message)
 {
-	map<int, vector<string> >::iterator iter;
+	map<int, vector<string> >::iterator iter = this->sendMap.find(fd);
 
-	iter = this->sendMap.find(fd);
 	if (iter == this->sendMap.end())
 	{
-		vector<string> temp;
-		temp.push_back(message);
-		//FIXME:this->sendMap.insert(make_pair(user.getFd(), temp));
-		this->sendMap[fd] = temp;
+		vector<string> tempVec;
+		tempVec.push_back(message);
+		this->sendMap[fd] = tempVec;
 	}
 	else
 	{
@@ -147,15 +157,13 @@ bool Network::sendToUser2(int fd, const std::string& message)
 
 bool Network::sendToUser(User& user, const std::string& message)
 {
-	map<int, vector<string> >::iterator iter;
+	map<int, vector<string> >::iterator iter = this->sendMap.find(user.getFd());
 
-	iter = this->sendMap.find(user.getFd());
 	if (iter == this->sendMap.end())
 	{
-		vector<string> temp;
-		temp.push_back(message);
-		//FIXME:this->sendMap.insert(make_pair(user.getFd(), temp));
-		this->sendMap[user.getFd()] = temp;
+		vector<string> tempVec;
+		tempVec.push_back(message);
+		this->sendMap[user.getFd()] = tempVec;
 	}
 	else
 	{
@@ -179,28 +187,26 @@ bool Network::sendToChannel(Channel& channel, const std::string& message)
 
 CommandChunk Network::getCommand()
 {
-	CommandChunk temp;
-	temp.fd = -1;
+	CommandChunk tempChunk;
+
+	tempChunk.fd = -1;
 	if (!this->commandQueue.empty())
 	{
-		temp =  this->commandQueue.front();
+		tempChunk = this->commandQueue.front();
 		this->commandQueue.pop();
 	}
-	return temp;
+	return tempChunk;
 }
 
 void Network::pushCmdToQueue(int fd, string cmd)
 {
 	CommandChunk tempChunk;
-	string tempStr;
 
 	if (cmd.find("  ") != string::npos)
 	{
-		User *tempUser = this->userManager.getUserByFd(fd);
-		string tempStr = UserManager::makeMessage(ERR_UNKNOWNCOMMAND, tempUser->getNickname(), "");
-		this->sendToUser(*tempUser, tempStr);
+		User *user = this->userManager.getUserByFd(fd);
+		this->sendToUser(*user, string(UserManager::makeMessage(ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
 	} 
-	// 공백 날리기(trim)기능 추가
 	tempChunk.fd = fd;
 	if (cmd[0] == ':')
 	{
@@ -216,7 +222,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
 		}
 	}
-
 	if (cmd.find(' ') == string::npos)
 	{
 		tempChunk.command.assign(cmd, 0, cmd.size());
@@ -228,31 +233,29 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		tempChunk.command.assign(cmd, 0, cmd.find(' '));
 		cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
 	}
-	
 	while (1)
 	{
 		if (cmd.find(' ') == string::npos)
 		{
-			tempStr.assign(cmd, 0, cmd.size());
-			tempChunk.parameters.push_back(tempStr);
+			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
 			this->commandQueue.push(tempChunk);
 			return ;
 		}
 		else
 		{
-			tempStr.assign(cmd, 0, cmd.find(' '));
-			tempChunk.parameters.push_back(tempStr);
+			tempChunk.parameters.push_back(string(cmd, 0, cmd.find(' ')));
 			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
 		}
 		if (cmd[0] == ':')
 		{
-			tempChunk.parameterLast.assign(cmd, 1, cmd.size() - 1);
+			size_t tempIdx = cmd.find_first_not_of(':');
+			tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);
 			this->commandQueue.push(tempChunk);
 			return ;
 		}
 		else if (cmd.size() == 0)
 		{
-			break;
+			break ;
 		}
 	}
 	this->commandQueue.push(tempChunk);
@@ -278,42 +281,31 @@ void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t le
 		size_t crlfIndex = user->getBuffer().find("\r\n");
 		if (user->getIgnored())
 		{
-			cout << "🤐";
 			if (crlfIndex == string::npos)
 			{
-				cout << "❌" << endl;
 				user->setBuffer("");
 			}
 			else
 			{
-				cout << "⭕️" << endl;
 				user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
 				user->setIgnored(false);
 			}
 		}
 		else
 		{
-			// 512자를 넘지 않고 crlf가 없는 경우.
 			if (user->getBuffer().size() <= BUFFERSIZE - 2 && crlfIndex == string::npos)
 			{
-				cout << "🌖 " << user->getBuffer().size() << endl;
 				break;
 			}
-			// 버퍼 누적이 512자를 넘는데도 crlf가 없는 경우. -> 그냥 버퍼 누적이 512가 넘는 경우 앞에 거ㄹ를 다 때 버려야 한다.
-			// 즉, crlfIndex >= BUFFERSIZE이 맞다(crlfIndex == string::npos조건 포함).
 			else if (user->getBuffer().size() > BUFFERSIZE - 2 && crlfIndex > BUFFERSIZE - 2)
 			{
-				cout << "🔥 cmd 🔥 " << string(user->getBuffer(), 0, BUFFERSIZE - 2).append("\r\n") << endl;
 				pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, BUFFERSIZE - 2).append("\r\n"));
 				user->setBuffer("");
 				user->setIgnored(true);
 				break;
 			}
-			// 1조건 : 버퍼가 510자가 안되거나 같지만, crlf가 있는 경우
-			// 2조건 : 버퍼가 510자를 초과하지만, crlf가 510자 내부에 있는 경우.
 			else
 			{
-				cout << "🌟 cmd 🌟 " << string(user->getBuffer(), 0, crlfIndex) << endl;
 				pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, crlfIndex));
 				user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
 			}
@@ -342,7 +334,6 @@ void Network::recvActionPerUser(map<int, User*>& users)
 			else if (lenRecv == 0)
 			{
 				++iter;
-				this->logging(string("[disconnect]"));
 				disconnectUser(user);
 				continue ;
 			}
@@ -359,7 +350,7 @@ void Network::sendActionPerSendQueue()
 {
 	for (map<int, vector<string> >::iterator iter = this->sendMap.begin(); iter != this->sendMap.end();)
 	{
-		map<int, vector<string> >::iterator temp = iter;
+		map<int, vector<string> >::iterator tempMap = iter;
 		if (FD_ISSET(iter->first, &this->wSet))
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
@@ -375,7 +366,7 @@ void Network::sendActionPerSendQueue()
 				++iterVec;
 			}
 			++iter;
-			this->sendMap.erase(temp->first);
+			this->sendMap.erase(tempMap->first);
 		}
 		else
 		{
