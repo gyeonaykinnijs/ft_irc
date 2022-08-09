@@ -149,7 +149,7 @@ Channel* User::getChannel(const string channelName)
 	return this->channelList[channelName];
 }
 
-map<string, Channel*> User::getChannelList() const
+map<string, Channel*>& User::getChannelList()
 {
 	return this->channelList;
 }

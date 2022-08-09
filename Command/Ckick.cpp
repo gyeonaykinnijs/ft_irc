@@ -23,7 +23,11 @@ return;
 	}
 	string name = param[0];
 	string targetUser = param[1];
-	string reason = commandChunk.parameterLast;
+	string reason ="";
+	if (commandChunk.parameterLast.empty() && !param[2].empty())
+			reason = param[1];
+		else 
+			reason = commandChunk.parameterLast;
 	Channel *channel = user->getChannel(name);
 	if (!channel)
 	{	// channel 없을 때

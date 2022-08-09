@@ -33,6 +33,10 @@ void Cnotice::execute(ChannelManager &channelManager,
 	}
 	else
 	{
-		network.sendToUser(*target, commandChunk.parameterLast);
+		if (commandChunk.parameterLast.empty() && !param[1].empty())
+			network.sendToUser(*target, param[1]);
+		else 
+			network.sendToUser(*target, commandChunk.parameterLast);
+		
 	}
 }

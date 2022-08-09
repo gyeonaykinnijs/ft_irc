@@ -32,6 +32,10 @@ return;
 		return;
 	}
 	std::string channelName = param[0];
+	if (channelName[0] != '#')
+	{
+		channelName = '#' + channelName;
+	}
 	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel) {
 		/**

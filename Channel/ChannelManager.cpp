@@ -8,7 +8,9 @@ ChannelManager::~ChannelManager()
 
 Channel* ChannelManager::getChannel(const string channelName)
 {
-	return channel_list[channelName];
+	if (this->channel_list.count(channelName) == 0)
+		return NULL;
+	return this->channel_list[channelName];
 }
 
 Channel* ChannelManager::createChannel(const string channelName, string passwd, User* user)

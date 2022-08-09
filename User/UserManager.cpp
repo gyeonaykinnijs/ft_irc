@@ -39,7 +39,6 @@ void UserManager::makeUser(int fd)
 
 void UserManager::deleteUser(int fd)
 {
-	map<string, Channel *> channel = this->userListByFd[fd]->getChannelList();
 	this->userFdByName.erase(getUserByFd(fd)->getUserName());
 	this->userListByFd.erase(fd);
 }
