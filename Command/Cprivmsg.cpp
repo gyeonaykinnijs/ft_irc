@@ -51,7 +51,11 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		}
 		else
 		{
-			string msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);
+			string msg = "";
+			if (commandChunk.parameterLast.empty() && !param[1].empty())
+				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), param[1]);
+			else 
+				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);			
 			network.sendToChannel(*targetChannel, msg);
 		}
 	}

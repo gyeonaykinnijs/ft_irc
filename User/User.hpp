@@ -33,7 +33,7 @@ public:
 	string getBuffer() const;
 	string getRealName() const;
 	Channel* getChannel(const string channelName);
-	map<string, Channel*> getChannelList() const;
+	map<string, Channel*>& getChannelList();
 	User::Auth getAuth() const;
 	bool getPassOK() const;
 	bool getNickOK() const;
