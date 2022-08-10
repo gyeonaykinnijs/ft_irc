@@ -25,7 +25,7 @@ class Network
 {
 public:
 	Network();
-	Network(const char* ip, const short port, const char* passWord, UserManager& userManager, Logger& argLogger);
+	Network(const short port, const char* passWord, UserManager& userManager, Logger& argLogger);
 	~Network(); //RAII
 	bool init();
 	bool IOMultiflexing();
@@ -53,7 +53,6 @@ private:
 	fd_set wSet;
 	fd_set rSet;
 	sockaddr_in addressServer;
-	const std::string IP;
 	const short PORT;
 	const std::string PASSWORD;
 	UserManager& userManager;

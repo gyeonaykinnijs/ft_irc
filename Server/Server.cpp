@@ -14,16 +14,10 @@
 #include "../Command/Cuser.hpp"
 
 Server::Server(Logger& argLogger)
-: userManager(), channelManager(), network("127.0.0.1", 0, "", userManager, argLogger), logger(argLogger), PASSWORD("")
-{
-
-}
+: userManager(), channelManager(), network(0, "", userManager, argLogger), logger(argLogger), PASSWORD("") { ;}
 
 Server::Server(const short port, const char* passWord, Logger& argLogger)
-: userManager(), channelManager(), network("127.0.0.1", port, passWord, userManager, argLogger), logger(argLogger), PASSWORD(passWord)
-{
-    
-}
+: userManager(), channelManager(), network(port, passWord, userManager, argLogger), logger(argLogger), PASSWORD(passWord) { ;}
 
 bool Server::init()
 {

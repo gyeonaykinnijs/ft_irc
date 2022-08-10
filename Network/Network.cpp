@@ -18,8 +18,8 @@
 using namespace std;
 #define BUFFERSIZE 512
 
-Network::Network(const char* ip, const short port, const char* passWord, UserManager& userManager, Logger& argLogger)
-: IP(ip), PORT(port), PASSWORD(passWord), userManager(userManager), logger(argLogger)
+Network::Network(const short port, const char* passWord, UserManager& userManager, Logger& argLogger)
+: PORT(port), PASSWORD(passWord), userManager(userManager), logger(argLogger)
 {
 	memset(&this->addressServer, 0, sizeof(this->addressServer));
 };
@@ -45,17 +45,6 @@ Network::~Network()
 	}
 };
 
-// void Network::logging(const string& log)
-// {
-// 	this->logQueue.push(log);
-// }
-
-// void Network::errorLogging(const string& log, bool serverEndFlag)
-// {
-// 	this->errorLogQueue.push(log);
-// 	this->exitFlag = serverEndFlag;
-// }
-
 bool Network::init()
 {
 	int result = 1;
@@ -68,7 +57,7 @@ bool Network::init()
 	}
 	this->addressServer.sin_family = PF_INET;
 	this->addressServer.sin_port = htons(this->PORT);
-	inet_pton(AF_INET, this->IP.c_str(), &this->addressServer.sin_addr);
+	this->addressServer.sin_addr.s_addr = htonl(INADDR_ANY);
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fdServer < 0)
 	{
@@ -86,7 +75,6 @@ bool Network::init()
 		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK) < 0 |
 		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK) < 0)
 	{
-		//this->errorLogging(string("[fcntl]") + strerror(errno), true);
 		this->logger.errorLogging(string("[fcntl]") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
@@ -94,7 +82,6 @@ bool Network::init()
 	this->logger.logging("Socket init Success!");
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
-		//this->errorLogging(string("[bind]") + strerror(errno), true);
 		this->logger.errorLogging(string("[bind]") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
@@ -102,7 +89,6 @@ bool Network::init()
 	this->logger.logging("Socket binding Success!");
 	if(::listen(this->fdServer, 5) < 0)
 	{
-		//this->errorLogging(string("[listen]") + strerror(errno), true);
 		this->logger.errorLogging(string("[listen]") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
@@ -115,12 +101,10 @@ void Network::initFdSets()
 {
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
-	//if (!this->logQueue.empty())
 	if (!this->logger.isLogEmpty())
 	{
 		FD_SET(STDOUT_FILENO, &this->wSet);
 	}
-	//if (!this->errorLogQueue.empty())
 	if (!this->logger.isErrorLogEmpty())
 	{
 		FD_SET(STDERR_FILENO, &this->wSet);
@@ -148,7 +132,6 @@ bool Network::AcceptUser()
 	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
 	if (fdClient < 0) 
 	{
-		//this->errorLogging(string("[setsockopt]") + strerror(errno), false);
 		this->logger.errorLogging(string("[setsockopt]") + strerror(errno));
 		this->logger.setServerDown(true);
 	}
@@ -363,7 +346,6 @@ void Network::recvActionPerUser(map<int, User*>& users)
 			if (lenRecv < 0)
 			{
 				++iter;
-				//this->errorLogging(string("[recv]") + strerror(errno), false);
 				this->logger.errorLogging(string("[recv]") + strerror(errno));
 				disconnectUser(user); 
 				continue;
@@ -397,7 +379,6 @@ void Network::sendActionPerSendQueue()
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
-					// this->errorLogging(string("[send]") + strerror(errno), false);
 					this->logger.errorLogging(string("[send]") + strerror(errno));
 					disconnectUser(user);
 					break ;
@@ -421,7 +402,6 @@ bool Network::IOMultiflexing()
 	initFdSets();
 	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
-		// this->errorLogging(string("[select]") + strerror(errno), true);
 		this->logger.errorLogging(string("[select]") + strerror(errno));
 		this->logger.setServerDown(true);
 	}
@@ -433,7 +413,6 @@ bool Network::IOMultiflexing()
 	{
 		while (1)
 		{
-			//if (this->logQueue.empty())
 			if (this->logger.isLogEmpty())
 			{
 				break ;
@@ -446,7 +425,6 @@ bool Network::IOMultiflexing()
 	{
 		while (1)
 		{
-			//if (this->errorLogQueue.empty())
 			if (this->logger.isErrorLogEmpty())
 			{
 				break ;
