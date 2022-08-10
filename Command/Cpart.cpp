@@ -67,4 +67,6 @@ return;
 	*/
 	channel->deleteJoinUser(user);
 	user->deleteChannel(channelName);
+	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + "PART", param[0], "");
+	network.sendToUser2(user->getFd(), msg);
 }

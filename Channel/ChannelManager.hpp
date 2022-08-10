@@ -5,6 +5,7 @@
 #include "../defines.hpp"
 #include "./Channel.hpp"
 
+class User;
 
 class ChannelManager
 {

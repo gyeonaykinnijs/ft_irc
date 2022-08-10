@@ -49,32 +49,23 @@ return;
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	for (unsigned long i = 1; i < param.size(); i++)
-	{
-		if (!userList[param[i]])
-		{
-			/**
-			 * @brief 
-			 * 			No Such User in Channel Error
-			 */
-
-			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "No Such User in Channel");
-			network.sendToUser2(user->getFd(), msg);
-			return ;
-		}
+	if (channel->getOperators().count(user->getFd()) == 0)
+	{	// 강퇴하는 사람이 방장인지 검사
+		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
+		network.sendToUser2(user->getFd(), msg);
+		return;
 	}
-
-	/**
-	 * @brief 
-	 * 
-	 * 				Setting User Auth -> Admin
-	 * 
-	 */
-
-
 	for (unsigned long i = 1; i < param.size(); i++)
 	{
-		User * user = userList[param[i]];
-		user->setAuth(User::ADMIN);
+		User *tempUser = userList[param[i]];
+		if (!tempUser)
+		{
+			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, param[i], "No Such User in Channel");
+			network.sendToUser2(user->getFd(), msg);
+		}
+		else
+		{
+			channel->addOperator(tempUser->getFd());
+		}
 	}
 }

@@ -34,6 +34,11 @@ void Channel::setChannelKey(const string channelKey)
 	this->channelKey = channelKey;
 }
 
+void Channel::addOperator(int fd)
+{
+	this->operators.insert(fd);
+}
+
 string Channel::getChannelName() const
 {
 	return this->channelName;
@@ -76,14 +81,10 @@ void Channel::deleteJoinUser(User *user)
 
 map<string, User *>& Channel::getJoinUser()
 {
-	// std::map<string, User *> userList;
-
-	// map<string, User *>::iterator iter = this->joinUser.begin();
-    // while (iter != joinUser.end())
-	// {
-	// 	userList.insert(*iter);
-    //     ++iter;
-    // }
-	// return userList;
 	return this->joinUser;
+}
+
+set<int> & Channel::getOperators()
+{
+	return this->operators;
 }

@@ -11,9 +11,9 @@ void Ckick::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}
 	if (param.size() < 2)
 	{	// channel user 인자 두 개 있어야 함
@@ -25,9 +25,9 @@ return;
 	string targetUser = param[1];
 	string reason ="";
 	if (commandChunk.parameterLast.empty() && !param[2].empty())
-			reason = param[1];
-		else 
-			reason = commandChunk.parameterLast;
+		reason = param[1];
+	else 
+		reason = commandChunk.parameterLast;
 	Channel *channel = user->getChannel(name);
 	if (!channel)
 	{	// channel 없을 때
@@ -41,7 +41,8 @@ return;
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	if (channel->getAdmin() != user)
+
+	if (channel->getOperators().count(user->getFd()) == 0)
 	{	// 강퇴하는 사람이 방장인지 검사
 		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser2(user->getFd(), msg);

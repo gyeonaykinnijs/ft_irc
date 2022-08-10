@@ -1,4 +1,5 @@
 #include "ChannelManager.hpp"
+#include "../User/User.hpp"
 
 ChannelManager::ChannelManager()
 {}
@@ -22,6 +23,7 @@ Channel* ChannelManager::createChannel(const string channelName, string passwd, 
 	channel->insertJoinUser(user);
 	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
 	this->channel_list[channel->getChannelName()] =  channel;
+	channel->addOperator(user->getFd());
 	return channel;
 }
 

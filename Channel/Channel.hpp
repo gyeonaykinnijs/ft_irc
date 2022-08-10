@@ -14,6 +14,7 @@ public:
 	void setChannelName(const string channelName);
 	void setAdmin(User *user);
 	void setChannelKey(const string channelKey);
+	void addOperator(int fd);
 	void setCurSizeUser(const int size);
 	string getChannelName() const;
 	User* getAdmin();
@@ -24,16 +25,14 @@ public:
 	User* selectJoinUser(string userName);
 	void deleteJoinUser(User *user);
 	map<string, User *>& getJoinUser();
-	enum Mode
-	{
-		WAIT, TALKING, ELSE
-	};
+	set<int> & getOperators();
 
 private:
 	string channelName;
 	string channelKey;
 	User *admin; // 채널 만든 사람
 	map<string, User *> joinUser; // 채널에 참가하고 있는 유저 리스트
+	set<int> operators;
 	int maxSizeUser;
 	int curSizeUser;
 };

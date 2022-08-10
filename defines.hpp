@@ -8,6 +8,7 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+#include <set>
 
 using namespace std;
 
@@ -18,11 +19,19 @@ using namespace std;
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
 #define RPL_MYINFO "004"
-#define RPL_JOIN "011" // FIXME: custom
+#define RPL_JOIN "JOIN" // FIXME: custom
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
 #define RPF_NOTOPIC "331"
 #define RPL_TOPIC "332"
+#define RPL_NAMREPLY "353"
+#define RPL_ENDOFNAMES "366"
+#define RPL_CHANREDIR "663"
+#define RPL_WHOISCHANNELS "319"
+#define	RPL_LISTSTART "321"
+#define RPL_CHANNEL_URL "328"
+#define RPL_INVITED "345"
+
 
 #define ERR_NOSUCHNICK "401"
 #define ERR_NOSUCHCHANNEL "403"

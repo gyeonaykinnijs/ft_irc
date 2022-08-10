@@ -33,12 +33,12 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	else if (param.size() > 1)
-	{
-		string msg = UserManager::makeMessage(ERR_TOOMANYTARGETS, user->getNickname(), "Too Many Targets");
-		network.sendToUser2(user->getFd(), msg);
-		return;
-	}
+	// else if (param.size() > 1)
+	// {
+	// 	string msg = UserManager::makeMessage(ERR_TOOMANYTARGETS, user->getNickname(), "Too Many Targets");
+	// 	network.sendToUser2(user->getFd(), msg);
+	// 	return;
+	// }
 	string target = param[0];
 	if (target[0] == '#')
 	{
@@ -55,8 +55,12 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 			if (commandChunk.parameterLast.empty() && !param[1].empty())
 				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), param[1]);
 			else 
-				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);			
-			network.sendToChannel(*targetChannel, msg);
+				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);	
+
+			//cout << user->getFd() << endl;		
+			network.sendToOtherInChannel(*targetChannel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg);
+			//network.sendToChannel(*targetChannel, msg);
+			return ;
 		}
 	}
 	else
@@ -72,6 +76,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		{
 			string msg = UserManager::makeMessage("PRIVMSG", targetUser->getNickname(), commandChunk.parameterLast);
 			network.sendToUser2(targetUser->getFd(), msg);
+			return ;
 		}
 	}
 }

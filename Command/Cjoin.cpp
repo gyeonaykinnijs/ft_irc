@@ -53,6 +53,6 @@ void Cjoin::execute(ChannelManager &channelManager,
 	} 
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
-	string msg = UserManager::makeMessage(RPL_JOIN, user->getNickname(), "channel make and channel in user");
+	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_JOIN, param[0], "");
 	network.sendToUser2(user->getFd(), msg);
 }

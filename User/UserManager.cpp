@@ -43,11 +43,13 @@ void UserManager::deleteUser(int fd)
 	this->userListByFd.erase(fd);
 }
 
-string UserManager::makeMessage(string code, string target, string message)
+string UserManager::makeMessage( string code, string target, string message)
 {
 	string buffer;
+	string colon = message.size() == 0 ? "" : " : ";
+	
 
-	buffer = code + (code.size() ? " " : "") + target + " : " + message + "\r\n";
+	buffer =  code + (code.size() ? " " : "") + target + colon + message + "\r\n";
 	return buffer;
 }
 
