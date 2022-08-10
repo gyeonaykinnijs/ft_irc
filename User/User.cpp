@@ -11,6 +11,7 @@ User::User()
 	this->isRegistered = false;
 	this->nickOK = false;
 	this->passOK = false;
+	this->userOK = false;
 	this->ignored = false;
 }
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
