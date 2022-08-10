@@ -13,12 +13,19 @@
 #include "../Command/Cquit.hpp"
 #include "../Command/Cuser.hpp"
 
-Server::Server(const short port, const char* passWord): userManager(), channelManager(), network("127.0.0.1", port, passWord, userManager), PASSWORD(passWord)
+Server::Server(Logger& argLogger)
+: userManager(), channelManager(), network("127.0.0.1", 0, "", userManager, argLogger), logger(argLogger), PASSWORD("")
+{
+
+}
+
+Server::Server(const short port, const char* passWord, Logger& argLogger)
+: userManager(), channelManager(), network("127.0.0.1", port, passWord, userManager, argLogger), logger(argLogger), PASSWORD(passWord)
 {
     
 }
 
-void Server::init()
+bool Server::init()
 {
     ICommand *cpass = new Cpass();
     ICommand *cjoin = new Cjoin();
@@ -47,13 +54,17 @@ void Server::init()
     commands.insert(make_pair("quit", cquit));
     commands.insert(make_pair("ping", cping));
     commands.insert(make_pair("pong", cpong));
-    network.init();
+    return network.init();
 }
 
-void Server::run()
+bool Server::run()
 {
-    while (1) {
-        network.IOMultiflexing();
+    while (1)
+    {
+        if (network.IOMultiflexing() == false)
+        {
+            return false;
+        }
         while (1)
         {
             CommandChunk temp = this->network.getCommand();
@@ -84,12 +95,15 @@ void Server::run()
                 }
                 else
                 {
-                    std::cerr << "cmd error" << std::endl;
+                    // FIXME:
+                    //std::cerr << "cmd error" << std::endl;
+                    this->logger.errorLogging("cmd error");
                 }
             }
         
         }
     }
+    return true;
 }
 
 Server::~Server()

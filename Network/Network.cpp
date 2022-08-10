@@ -18,8 +18,8 @@
 using namespace std;
 #define BUFFERSIZE 512
 
-Network::Network(const char* ip, const short port, const char* passWord, UserManager& userManager)
-: IP(ip), PORT(port), PASSWORD(passWord), userManager(userManager), exitFlag(false)
+Network::Network(const char* ip, const short port, const char* passWord, UserManager& userManager, Logger& argLogger)
+: IP(ip), PORT(port), PASSWORD(passWord), userManager(userManager), logger(argLogger)
 {
 	memset(&this->addressServer, 0, sizeof(this->addressServer));
 };
@@ -45,55 +45,69 @@ Network::~Network()
 	}
 };
 
-void Network::logging(const string& log)
-{
-	this->logQueue.push(log);
-}
+// void Network::logging(const string& log)
+// {
+// 	this->logQueue.push(log);
+// }
 
-void Network::errorLogging(const string& log, bool serverEndFlag)
-{
-	this->errorLogQueue.push(log);
-	this->exitFlag = serverEndFlag;
-}
+// void Network::errorLogging(const string& log, bool serverEndFlag)
+// {
+// 	this->errorLogQueue.push(log);
+// 	this->exitFlag = serverEndFlag;
+// }
 
 bool Network::init()
 {
 	int result = 1;
 
+	if (this->logger.shouldServerDown())
+	{
+		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK);
+		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK);
+		return false;
+	}
 	this->addressServer.sin_family = PF_INET;
 	this->addressServer.sin_port = htons(this->PORT);
 	inet_pton(AF_INET, this->IP.c_str(), &this->addressServer.sin_addr);
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fdServer < 0)
 	{
-		this->errorLogging(string("[socket]") + strerror(errno), true);
+		this->logger.errorLogging(string("[socket]") + strerror(errno));
+		this->logger.setServerDown(true);
 		return false;
 	}
 	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
 	{
-		this->errorLogging(string("[setsockopt]") + strerror(errno), true);
+		this->logger.errorLogging(string("[setsockopt]") + strerror(errno));
+		this->logger.setServerDown(true);
 		return false;
 	}
 	if (fcntl(this->fdServer, F_SETFL, O_NONBLOCK) < 0 |
 		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK) < 0 |
 		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK) < 0)
 	{
-		this->errorLogging(string("[fcntl]") + strerror(errno), true);
+		//this->errorLogging(string("[fcntl]") + strerror(errno), true);
+		this->logger.errorLogging(string("[fcntl]") + strerror(errno));
+		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logging(string("Socket init Success!"));
+	this->logger.logging("Socket init Success!");
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
-		this->errorLogging(string("[bind]") + strerror(errno), true);
+		//this->errorLogging(string("[bind]") + strerror(errno), true);
+		this->logger.errorLogging(string("[bind]") + strerror(errno));
+		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logging(string("Socket binding Success!"));
+	this->logger.logging("Socket binding Success!");
 	if(::listen(this->fdServer, 5) < 0)
 	{
-		this->errorLogging(string("[listen]") + strerror(errno), true);
+		//this->errorLogging(string("[listen]") + strerror(errno), true);
+		this->logger.errorLogging(string("[listen]") + strerror(errno));
+		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logging(string("Server is listening!"));
+	this->logger.logging("Server is listening!");
 	return true;
 };
 
@@ -101,11 +115,13 @@ void Network::initFdSets()
 {
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
-	if (!this->logQueue.empty())
+	//if (!this->logQueue.empty())
+	if (!this->logger.isLogEmpty())
 	{
 		FD_SET(STDOUT_FILENO, &this->wSet);
 	}
-	if (!this->errorLogQueue.empty())
+	//if (!this->errorLogQueue.empty())
+	if (!this->logger.isErrorLogEmpty())
 	{
 		FD_SET(STDERR_FILENO, &this->wSet);
 	}
@@ -132,7 +148,9 @@ bool Network::AcceptUser()
 	int fdClient = ::accept(this->fdServer, reinterpret_cast<sockaddr*>(&addressClient), &lenClient);
 	if (fdClient < 0) 
 	{
-		this->errorLogging(string("[setsockopt]") + strerror(errno), false);
+		//this->errorLogging(string("[setsockopt]") + strerror(errno), false);
+		this->logger.errorLogging(string("[setsockopt]") + strerror(errno));
+		this->logger.setServerDown(true);
 	}
 	this->userManager.makeUser(fdClient);
 	return true;
@@ -180,6 +198,22 @@ bool Network::sendToChannel(Channel& channel, const std::string& message)
 	while (iter != iterEnd)
 	{
 		this->sendToUser(*iter->second, message);
+		++iter;
+	}
+	return true;
+}
+
+bool Network::sendToOtherInChannel(Channel& channel, int fd, const std::string& message)
+{
+	map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
+	map<std::string, User *>::iterator iterEnd = channel.getJoinUser().end();
+
+	while (iter != iterEnd)
+	{
+		if (iter->second->getFd() != fd)
+		{
+			this->sendToUser(*iter->second, message);
+		}
 		++iter;
 	}
 	return true;
@@ -317,17 +351,20 @@ void Network::recvActionPerUser(map<int, User*>& users)
 {
 	int lenRecv;
 	char bufferRecv[BUFFERSIZE];
+
 	for(map<int, User*>::iterator iter = users.begin(); iter != users.end();)
 	{
 		if (FD_ISSET(iter->first, &this->rSet))
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
+			// FIXME:
 			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;
-				this->errorLogging(string("[recv]") + strerror(errno), false);
+				//this->errorLogging(string("[recv]") + strerror(errno), false);
+				this->logger.errorLogging(string("[recv]") + strerror(errno));
 				disconnectUser(user); 
 				continue;
 			}
@@ -355,11 +392,13 @@ void Network::sendActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
+				// FIXME:
 				cout << "server send reply: " << endl << *iterVec << endl;
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
-					this->errorLogging(string("[recv]") + strerror(errno), false);
+					// this->errorLogging(string("[send]") + strerror(errno), false);
+					this->logger.errorLogging(string("[send]") + strerror(errno));
 					disconnectUser(user);
 					break ;
 				}
@@ -379,11 +418,12 @@ bool Network::IOMultiflexing()
 {
 	string tempBuffer;
 
-	sleep(5);
 	initFdSets();
 	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
-		this->errorLogging(string("[select]") + strerror(errno), true);
+		// this->errorLogging(string("[select]") + strerror(errno), true);
+		this->logger.errorLogging(string("[select]") + strerror(errno));
+		this->logger.setServerDown(true);
 	}
 	if (FD_ISSET(this->fdServer, &this->rSet))
 	{
@@ -393,32 +433,33 @@ bool Network::IOMultiflexing()
 	{
 		while (1)
 		{
-			if (this->logQueue.empty())
+			//if (this->logQueue.empty())
+			if (this->logger.isLogEmpty())
 			{
 				break ;
 			}
-			write(STDOUT_FILENO, this->logQueue.front().append("\n").c_str(), this->logQueue.front().size() + 1);
-			this->logQueue.pop();
+			string tempLog = this->logger.getLog();
+			write(STDOUT_FILENO, tempLog.append("\n").c_str(), tempLog.size());
 		}
 	}
 	if (FD_ISSET(STDERR_FILENO, &this->wSet))
 	{
 		while (1)
 		{
-			if (this->errorLogQueue.empty())
+			//if (this->errorLogQueue.empty())
+			if (this->logger.isErrorLogEmpty())
 			{
 				break ;
 			}
-			write(STDERR_FILENO, this->errorLogQueue.front().append("\n").c_str(), this->errorLogQueue.front().size() + 1);
-			this->errorLogQueue.pop();
+			string tempLog = this->logger.getErrorLog();
+			write(STDERR_FILENO, tempLog.append("\n").c_str(), tempLog.size());
 		}
-		if (this->exitFlag == true)
+		if (this->logger.shouldServerDown() == true)
 		{
 			return false;
 		}
 	}
-	map<int, User*>& users = this->userManager.getAllUser();
-	this->recvActionPerUser(users);
+	this->recvActionPerUser(this->userManager.getAllUser());
 	this->sendActionPerSendQueue();
 	return true;
 }
