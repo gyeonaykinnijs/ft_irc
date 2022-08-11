@@ -281,7 +281,14 @@ void Network::pushCmdToQueue(int fd, string cmd)
 void Network::disconnectUser(User* user)
 {
 	int userFd = user->getFd();
+	map<string, Channel*>::iterator iter = user->getChannelList().begin();
+	map<string, Channel*>::iterator iterEnd = user->getChannelList().end();
 
+	for (;iter != iterEnd; iter++)
+	{
+		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
+		sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+	}
 	close(userFd);
 	this->userManager.deleteUser(userFd);
 }
