@@ -31,15 +31,20 @@ void Coper::execute(ChannelManager &channelManager,
 					struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
+	vector<string> param = commandChunk.parameters;
 	if (user->getIsRegistered() == false)
 	{
 		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}
-
-	vector<string> param = commandChunk.parameters;
+	if (param.size() < 2)
+	{	// 인자 부족
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		network.sendToUser2(user->getFd(), msg);
+		return;
+	}
 	string channelName = param[0];
 	Channel *channel = channelManager.getChannel(channelName);
 	map<string, User *> userList = channel->getJoinUser();

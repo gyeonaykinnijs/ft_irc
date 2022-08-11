@@ -88,3 +88,11 @@ set<int> & Channel::getOperators()
 {
 	return this->operators;
 }
+
+void Channel::deleteOperator(int fd)
+{
+	if (operators.count(fd) == 1)
+	{
+		operators.erase(fd);
+	}
+}

@@ -22,32 +22,30 @@ void Cmode::execute(ChannelManager &channelManager,
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	// const string channelName = param[0];
-	// Channel *channel = user->getChannel(channelName);
-	// string target = param[0];
-	// User *targetUser = userManager.getUserByNickname(target);
-	// if (!targetUser)
-	// {
-	// 	string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "No Such Nick");
-	// 	network.sendToUser2(user->getFd(), msg);
-	// 	return;
-	// }
-	// if (channel->getAdmin() == user)
-	// {
-		//string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_JOIN, param[0], "");
-		string msg = UserManager::makeMessage(":" + user->getNickname() + "!~" + user->getUserName() + "@127.0.0.1 " + "MODE" , param[0], "+s");// + user->getUserName(),  "");
+	if (param.size() == 2)
+	{
+		return;
+	}
+	if (param.size() != 3)
+	{
+		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need Three parameters");
 		network.sendToUser2(user->getFd(), msg);
-	//}
-
-
-	// string msg = "";
-	// if (commandChunk.parameterLast.empty() && !param[1].empty())
-	// 	msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), param[1]);
-	// else 
-	// 	msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);	
-
-	// string msg2 = UserManager::makeMessage("MODE" , user->getNickname()+ " @ " + channel->getChannelName(), list);
-	// network.sendToUser2(user->getFd(), msg2);
-	return ;
+		return;
+	}
+	if (param[1] != "+o")
+	{
+		string msg = UserManager::makeMessage(ERR_UMODEUNKNOWNFLAG, user->getNickname(), "UNKNOWN FLAG ERROR");
+		network.sendToUser2(user->getFd(), msg);
+		return;
+	}
+	const string channelName = param[0];
+	Channel *channel = user->getChannel(channelName);
+	map<string, User *> userList = channel->getJoinUser();
+	User *tempUser = userList[param[2]];
+	channel->addOperator(tempUser->getFd());
+	string msg = UserManager::makeMessage("MODE" , channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
+	network.sendToUser2(user->getFd(), msg);
+	string msg4 = UserManager::makeMessage("MODE", param[0], "");
+	network.sendToOtherInChannel(*channel, user->getFd(),":" + tempUser->getNickname() + "!" + tempUser->getUserName() + "@127.0.0.1 " + msg4);
 
 }

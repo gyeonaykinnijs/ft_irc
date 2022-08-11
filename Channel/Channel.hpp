@@ -26,6 +26,7 @@ public:
 	void deleteJoinUser(User *user);
 	map<string, User *>& getJoinUser();
 	set<int> & getOperators();
+	void deleteOperator(int fd);
 
 private:
 	string channelName;

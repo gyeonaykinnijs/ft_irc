@@ -41,12 +41,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (user->getIsRegistered())
 	{	// 이미 등록했고 nick 변경할 때
 		// 응답코드 필요
-		string msg = UserManager::makeMessage("NICK", prevNickname + " is now known as " + user->getNickname(), "");
-		// map<string, Channel *>::iterator iter = user->getChannelList().begin();
-		// for (; iter != user->getChannelList().end(); iter++)
-		// {
-		// 	network.sendToChannel(*(iter->second), msg);
-		// }
+		string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + "NICK", user->getNickname(), "");
 		network.sendToUser2(user->getFd(), msg);
 	}
 }

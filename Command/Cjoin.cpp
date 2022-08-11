@@ -54,8 +54,12 @@ void Cjoin::execute(ChannelManager &channelManager,
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
 	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_JOIN, param[0], "");
+	// network.sendToOtherInChannel(channel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@localhost " + RPL_JOIN + " :" + param[0]);
+	string msg4 = UserManager::makeMessage(RPL_JOIN, param[0], "");
+	//TODO:
 	network.sendToUser2(user->getFd(), msg);
-	network.sendToOtherInChannel(*channel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + channel->getChannelName());
+	network.sendToOtherInChannel(*channel, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+	
 	string list = "";
 	map<string, User *> users = channel->getJoinUser();
 	map<string, User *>::iterator iter = users.begin();
@@ -66,11 +70,17 @@ void Cjoin::execute(ChannelManager &channelManager,
 		{
 			list += " ";
 		}
+		if (channel->getOperators().count(iter->second->getFd()) == 1)
+		{
+			list += "@";
+		}
 		list += iter->second->getNickname();
 	}
-	string msg2 = UserManager::makeMessage("353" , user->getNickname()+ " @ " + channel->getChannelName(), list);
+	string msg2 = UserManager::makeMessage("353" , user->getNickname()+ " = " + channel->getChannelName(), list);
 	network.sendToUser2(user->getFd(), msg2);
+	// network.sendToOtherInChannel(*channel, user->getFd(),msg2);
 	string msg3 = UserManager::makeMessage("366" , user->getNickname() + " " + channel->getChannelName(), "End of /NAMES list.");
 	network.sendToUser2(user->getFd(), msg3);
+	//network.sendToOtherInChannel(*channel, user->getFd(),msg3);
 	
 }

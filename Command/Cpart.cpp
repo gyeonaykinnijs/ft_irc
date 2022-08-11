@@ -19,54 +19,39 @@ void Cpart::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}	
-	if (param.empty()) {
-		/*
-				param more need Error
-		*/
+	if (param.empty())
+	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	std::string channelName = param[0];
+	string channelName = param[0];
 	if (channelName[0] != '#')
 	{
 		channelName = '#' + channelName;
 	}
 	Channel *channel = channelManager.getChannel(channelName);
-	if (!channel) {
-		/**
-		 * @brief 
-		 * 
-		 * 		No Such Channel Error
-		 */
-
+	if (!channel) 
+	{
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 
-	if (!user->getChannel(channelName) || user->getChannel(channelName)->getChannelName() != channelName) {
-		/**
-		 * @brief 
-		 * 
-		 * 		NO Name Match Channel Error
-		 * 
-		 */
-
+	if (!user->getChannel(channelName) || user->getChannel(channelName)->getChannelName() != channelName) 
+	{
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 
-	/*
-			유저 채널에서 퇴장
-	*/
 	channel->deleteJoinUser(user);
 	user->deleteChannel(channelName);
+	channel->deleteOperator(user->getFd());
 	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + "PART", param[0], "");
 	network.sendToUser2(user->getFd(), msg);
 }
