@@ -66,6 +66,8 @@ return;
 		else
 		{
 			channel->addOperator(tempUser->getFd());
+			string msg = UserManager::makeMessage("MODE" , channel->getChannelName() + " +o " + param[0],  "");
+			network.sendToUser2(user->getFd(), msg);
 		}
 	}
 }

@@ -9,7 +9,8 @@ SRCS = main.cpp\
 		Server/Server.cpp\
 		Logger/Logger.cpp\
 		Command/Cjoin.cpp Command/Ckick.cpp Command/Cnick.cpp Command/Coper.cpp Command/Cpart.cpp Command/Cpass.cpp\
-		Command/Cping.cpp Command/Cpong.cpp Command/Cquit.cpp Command/Cuser.cpp Command/Cnotice.cpp Command/Cprivmsg.cpp
+		Command/Cping.cpp Command/Cpong.cpp Command/Cquit.cpp Command/Cuser.cpp Command/Cnotice.cpp Command/Cprivmsg.cpp\
+		Command/Cmode.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
