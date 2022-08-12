@@ -10,6 +10,7 @@
 #include "../Command/Cquit.hpp"
 #include "../Command/Cuser.hpp"
 #include "../Command/Cmode.hpp"
+#include "../Command/Cping.hpp"
 
 Server::Server(Logger& argLogger)
 : userManager(), channelManager(), network(0, "", userManager, channelManager, argLogger), logger(argLogger), PASSWORD("") { ;}
@@ -25,13 +26,12 @@ bool Server::init()
     ICommand *cuser = new Cuser();
     ICommand *cprivmsg = new Cprivmsg();
     ICommand *ckick = new Ckick();
-    // ICommand *ckill = new Ckill();
     ICommand *cop = new Cop();
     ICommand *cpart = new Cpart();
     ICommand *cquit = new Cquit();
     ICommand *cmode = new Cmode();
+    ICommand *cping = new Cping();
     
-
     commands.insert(make_pair("pass", cpass));
     commands.insert(make_pair("nick", cnick));
     commands.insert(make_pair("user", cuser));
@@ -42,6 +42,7 @@ bool Server::init()
     commands.insert(make_pair("part", cpart));
     commands.insert(make_pair("quit", cquit));
     commands.insert(make_pair("mode", cmode));
+    commands.insert(make_pair("ping", cping));
     return network.init();
 }
 
