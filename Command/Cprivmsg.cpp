@@ -1,16 +1,5 @@
 #include "Cprivmsg.hpp"
 
-/**
- * @brief 
- * 
- * 
- * 		### PRIVMSG
- * 		`PRIVMSG <msgtarget> :<message>`
- *		- 일반적으로 사용자 또는 채널인 <msgtarget>에 <message>를 보냅니다.
-		- RFC 1459에 정의되어 있습니다.
- * 
- */
-
 void Cprivmsg::execute(ChannelManager &channelManager,
 				UserManager &userManager,
 				Network &network,
@@ -33,12 +22,6 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
-	// else if (param.size() > 1)
-	// {
-	// 	string msg = UserManager::makeMessage(ERR_TOOMANYTARGETS, user->getNickname(), "Too Many Targets");
-	// 	network.sendToUser2(user->getFd(), msg);
-	// 	return;
-	// }
 	string target = param[0];
 	if (target[0] == '#')
 	{
@@ -49,17 +32,24 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 			network.sendToUser2(user->getFd(), msg);
 			return;
 		}
+		else if (targetChannel->getJoinUser().count(user->getNickname()) == 0)
+		{
+			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
+			network.sendToUser2(user->getFd(), msg);
+			return;
+		}
 		else
 		{
 			string msg = "";
 			if (commandChunk.parameterLast.empty() && !param[1].empty())
-				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), param[1]);
-			else 
-				msg = UserManager::makeMessage("PRIVMSG", targetChannel->getChannelName(), commandChunk.parameterLast);	
-
-			//cout << user->getFd() << endl;		
+			{
+				msg = UserManager::makeMessage(RPL_PRIVMSG, targetChannel->getChannelName(), param[1]);
+			}
+			else
+			{
+				msg = UserManager::makeMessage(RPL_PRIVMSG, targetChannel->getChannelName(), commandChunk.parameterLast);
+			}
 			network.sendToOtherInChannel(*targetChannel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg);
-			//network.sendToChannel(*targetChannel, msg);
 			return ;
 		}
 	}
@@ -74,7 +64,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		}
 		else
 		{
-			string msg = UserManager::makeMessage("PRIVMSG", targetUser->getNickname(), commandChunk.parameterLast);
+			string msg = UserManager::makeMessage(RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast);
 			network.sendToUser2(targetUser->getFd(), msg);
 			return ;
 		}

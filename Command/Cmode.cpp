@@ -11,7 +11,6 @@ void Cmode::execute(ChannelManager &channelManager,
 
     if (user->getIsRegistered() == false)
 	{
-		
 		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
 		return;
@@ -43,9 +42,9 @@ void Cmode::execute(ChannelManager &channelManager,
 	map<string, User *> userList = channel->getJoinUser();
 	User *tempUser = userList[param[2]];
 	channel->addOperator(tempUser->getFd());
-	string msg = UserManager::makeMessage("MODE" , channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
+	string msg = UserManager::makeMessage(RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
 	network.sendToUser2(user->getFd(), msg);
-	string msg4 = UserManager::makeMessage("MODE", param[0], "");
+	string msg4 = UserManager::makeMessage(RPL_MODE, param[0], "");
 	network.sendToOtherInChannel(*channel, user->getFd(),":" + tempUser->getNickname() + "!" + tempUser->getUserName() + "@127.0.0.1 " + msg4);
 
 }

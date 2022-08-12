@@ -6,11 +6,6 @@
 class User
 {
 public:
-	enum Auth
-	{
-		ADMIN, NORMAL
-	};
-
 	User();
 	User(const string nickname, const string userName);
 	~User();
@@ -24,7 +19,6 @@ public:
 	void setNickOK(const bool nickOK);
 	void setUserOK(const bool nickOK);
 	void setIsRegistered(const bool isRegistered);
-	void setAuth(const User::Auth auth);
 	void setIgnored(const bool ignore);
 	void addChannel(Channel *channel);
 	string getNickname() const;
@@ -34,7 +28,6 @@ public:
 	string getRealName() const;
 	Channel* getChannel(const string channelName);
 	map<string, Channel*>& getChannelList();
-	User::Auth getAuth() const;
 	bool getPassOK() const;
 	bool getNickOK() const;
 	bool getUserOK() const;
@@ -50,7 +43,6 @@ private:
 	string realName;
 	string passwd;
 	int	fd;
-	Auth auth;
 	string buffer;
 	map<string, Channel *> channelList;
 	bool passOK;

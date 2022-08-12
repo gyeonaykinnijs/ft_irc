@@ -1,12 +1,13 @@
-#ifndef __CSQUIT_HPP__
-#define __CSQUIT_HPP__
+#ifndef __COP_HPP__
+#define __COP_HPP__
+
 
 #include <string>
 #include "./ICommand.hpp"
 
 using namespace std;
 
-class Squit : public ICommand
+class Cop: public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,
