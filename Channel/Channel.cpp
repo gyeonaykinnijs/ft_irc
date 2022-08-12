@@ -66,7 +66,8 @@ User* Channel::getAdmin()
 
 void Channel::insertJoinUser(User* user) 
 {	
-	joinUser.insert(make_pair(user->getNickname(), user));
+	this->joinUser[user->getNickname()] = user;
+	// joinUser.insert(make_pair(user->getNickname(), user));
 }
 
 User* Channel::selectJoinUser(string userName)
@@ -76,7 +77,7 @@ User* Channel::selectJoinUser(string userName)
 
 void Channel::deleteJoinUser(User *user) 
 {
-	joinUser.erase(user->getUserName());
+	joinUser.erase(user->getNickname());
 }
 
 map<string, User *>& Channel::getJoinUser()

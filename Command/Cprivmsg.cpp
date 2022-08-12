@@ -10,8 +10,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
-	{
-		
+	{	
 		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
 		return;
@@ -55,6 +54,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	}
 	else
 	{
+
 		User *targetUser = userManager.getUserByNickname(target);
 		if (!targetUser)
 		{

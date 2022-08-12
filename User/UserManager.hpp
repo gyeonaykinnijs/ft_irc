@@ -9,7 +9,7 @@ class UserManager
 public:
 	UserManager();
 	~UserManager();
-	User* getUserByNickname(string nickname);
+	User* getUserByNickname(const string nickname);
 	User* getUserByFd(int fd);
 	map<int, User *>& getAllUser();
 	void makeUser(int fd);
