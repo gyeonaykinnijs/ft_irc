@@ -1,7 +1,6 @@
 #ifndef __CKILL_HPP__
 #define __CKILL_HPP__
 
-
 #include <string>
 #include "./ICommand.hpp"
 

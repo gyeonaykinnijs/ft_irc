@@ -25,9 +25,8 @@ void Cjoin::execute(ChannelManager &channelManager,
 	Channel *channel = user->getChannel(channelName);
 
 	if (channel)
-	{
-		/* Too many channel ERROR */
-		string msg = UserManager::makeMessage(ERR_TOOMANYCHANNELS, user->getNickname(), "Too many channel");
+	{	// 이미 들어간 채널
+		string msg = UserManager::makeMessage(ERR_USERONCHANNEL, user->getNickname(), "Already in the channel");
 		network.sendToUser2(user->getFd(), msg);
 		return ;
 	}
@@ -37,16 +36,14 @@ void Cjoin::execute(ChannelManager &channelManager,
 		channel = channelManager.createChannel(param[0], password, user);
 	}
 	if (channel->getMaxSizeUser() > 0 && channel->getCurSizeUser() >= channel->getMaxSizeUser())
-	{	
-		/* channel number full error */
+	{	// channel 꽉 찼을 때
 		string msg = UserManager::makeMessage(ERR_CHANNELISFULL , user->getNickname(), "channel is full");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}
 
 	if (channel->getChannelKey() != password)
-	{
-		/* no match password error */
+	{	// 비밀번호 틀림
 		string msg = UserManager::makeMessage(ERR_BADCHANNELKEY , user->getNickname(), "no match password error");
 		network.sendToUser2(user->getFd(), msg);
 		return;
@@ -54,12 +51,9 @@ void Cjoin::execute(ChannelManager &channelManager,
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
 	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_JOIN, param[0], "");
-	// network.sendToOtherInChannel(channel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@localhost " + RPL_JOIN + " :" + param[0]);
 	string msg4 = UserManager::makeMessage(RPL_JOIN, param[0], "");
-	//TODO:
-	network.sendToUser2(user->getFd(), msg);
 	network.sendToOtherInChannel(*channel, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
-	
+	network.sendToUser2(user->getFd(), msg);
 	string list = "";
 	map<string, User *> users = channel->getJoinUser();
 	map<string, User *>::iterator iter = users.begin();
@@ -76,11 +70,8 @@ void Cjoin::execute(ChannelManager &channelManager,
 		}
 		list += iter->second->getNickname();
 	}
-	string msg2 = UserManager::makeMessage("353" , user->getNickname()+ " = " + channel->getChannelName(), list);
+	string msg2 = UserManager::makeMessage(RPL_NAMREPLY, user->getNickname()+ " = " + channel->getChannelName(), list);
 	network.sendToUser2(user->getFd(), msg2);
-	// network.sendToOtherInChannel(*channel, user->getFd(),msg2);
-	string msg3 = UserManager::makeMessage("366" , user->getNickname() + " " + channel->getChannelName(), "End of /NAMES list.");
-	network.sendToUser2(user->getFd(), msg3);
-	//network.sendToOtherInChannel(*channel, user->getFd(),msg3);
-	
+	string msg3 = UserManager::makeMessage(RPL_ENDOFNAMES, user->getNickname() + " " + channel->getChannelName(), "End of /NAMES list.");
+	network.sendToUser2(user->getFd(), msg3);	
 }

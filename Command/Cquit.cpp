@@ -1,15 +1,5 @@
 #include "Cquit.hpp"
 
-/*
-
-### QUIT
-`QUIT [<message>]`
-	- 서버에서 사용자의 연결을 끊습니다.
-	- "종료 메시지"가 지정된 경우, 기본 메시지인 닉네임 대신 메시지가 발송됩니다.
-	- RFC 1459에 정의되어 있습니다.
-
-*/
-
 void Cquit::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
@@ -21,15 +11,20 @@ void Cquit::execute(ChannelManager &channelManager,
 
 	if (user->getIsRegistered() == false)
 	{
-		
-				string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
-return;
+		return;
 	}	
 	std::string reason = param.empty() ? "Leaving..." : param[0];
 	reason = reason[0] == ':' ? reason.substr(1) : reason;
-	
-	string msg = UserManager::makeMessage("", user->getNickname(), "Quit " + reason);
-	network.sendToUser2(user->getFd(), msg);
+	map<string, Channel*>::iterator iter = user->getChannelList().begin();
+	map<string, Channel*>::iterator iterEnd = user->getChannelList().end();
 
+	for (;iter != iterEnd; iter++)
+	{
+		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
+		network.sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+	}
+	this->userManager.deleteUser(userFd);
+	close(user->getFd());
 }

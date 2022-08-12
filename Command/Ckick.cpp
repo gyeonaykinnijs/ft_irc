@@ -10,7 +10,6 @@ void Ckick::execute(ChannelManager &channelManager,
 	(void)channelManager;
 	if (user->getIsRegistered() == false)
 	{
-		
 		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser2(user->getFd(), msg);
 		return;
@@ -23,11 +22,15 @@ void Ckick::execute(ChannelManager &channelManager,
 	}
 	string name = param[0];
 	string targetUser = param[1];
-	string reason ="";
+	string reason = "";
 	if (commandChunk.parameterLast.empty() && !param[2].empty())
+	{
 		reason = param[1];
+	}
 	else 
+	{
 		reason = commandChunk.parameterLast;
+	}
 	Channel *channel = user->getChannel(name);
 	if (!channel)
 	{	// channel 없을 때
@@ -43,7 +46,7 @@ void Ckick::execute(ChannelManager &channelManager,
 	}
 
 	if (channel->getOperators().count(user->getFd()) == 0)
-	{	// 강퇴하는 사람이 방장인지 검사
+	{	// 강퇴하는 사람이 operator인지 검사
 		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser2(user->getFd(), msg);
 		return;
@@ -51,13 +54,7 @@ void Ckick::execute(ChannelManager &channelManager,
 	User *target = channel->selectJoinUser(targetUser);
 	if (!target)
 	{	// 내보내려는 user가 channel에 있는지 확인
-		string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "User is Not in Channel");
-		network.sendToUser2(user->getFd(), msg);
-		return;
-	}
-	if (!target->getChannel(name) || target->getChannel(name) != channel)
-	{	// 강퇴 당하는 사람이 channel에 있는지 확인
-		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "Not User in Channel");
+		string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "Target User is Not in Channel");
 		network.sendToUser2(user->getFd(), msg);
 		return;
 	}

@@ -6,7 +6,6 @@ User::User()
 	this->userName = "";
 	this->passwd = "";
 	this->fd = 0;
-	this->auth = NORMAL;
 	this->buffer = "";
 	this->isRegistered = false;
 	this->nickOK = false;
@@ -14,6 +13,7 @@ User::User()
 	this->userOK = false;
 	this->ignored = false;
 }
+
 User::User(const std::string nickname, const std::string userName) : nickname(nickname), userName(userName)
 {}
 
@@ -65,11 +65,6 @@ void User::setUserOK(const bool userOK)
 	this->userOK = userOK;
 }
 
-void User::setAuth(const User::Auth auth)
-{
-	this->auth = auth;
-}
-
 void User::setIgnored(const bool ignore)
 {
 	this->ignored = ignore;
@@ -103,11 +98,6 @@ int User::getFd() const
 string User::getBuffer() const
 {
 	return this->buffer;
-}
-
-User::Auth User::getAuth() const
-{
-	return this->auth;
 }
 
 bool User::getIsRegistered() const

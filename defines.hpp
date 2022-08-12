@@ -19,7 +19,6 @@ using namespace std;
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
 #define RPL_MYINFO "004"
-#define RPL_JOIN "JOIN" // FIXME: custom
 #define RPL_LIST "322"
 #define RPL_LISTEND "323"
 #define RPF_NOTOPIC "331"
@@ -31,7 +30,13 @@ using namespace std;
 #define	RPL_LISTSTART "321"
 #define RPL_CHANNEL_URL "328"
 #define RPL_INVITED "345"
-
+#define RPL_NAMREPLY "353"
+#define RPL_ENDOFNAMES "366"
+#define RPL_JOIN "JOIN"
+#define RPL_NICK "NICK"
+#define RPL_PART "PART"
+#define RPL_MODE "MODE"
+#define RPL_PRIVMSG "PRIVMSG"
 
 #define ERR_NOSUCHNICK "401"
 #define ERR_NOSUCHCHANNEL "403"
@@ -46,6 +51,7 @@ using namespace std;
 #define ERR_NICKNAMEINUSE "433"
 #define ERR_USERNOTINCHANNEL "441"
 #define ERR_NOTONCHANNEL "442"
+#define ERR_USERONCHANNEL "443"
 #define ERR_NOTREGISTERED "451"
 #define ERR_NEEDMOREPARAMS "461"
 #define ERR_ALREADYREGISTERED "462"

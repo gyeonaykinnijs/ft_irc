@@ -287,7 +287,7 @@ void Network::disconnectUser(User* user)
 	for (;iter != iterEnd; iter++)
 	{
 		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
-		sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+		this->sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
 	}
 	close(userFd);
 	this->userManager.deleteUser(userFd);
