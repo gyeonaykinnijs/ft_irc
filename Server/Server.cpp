@@ -6,18 +6,16 @@
 #include "../Command/Cop.hpp"
 #include "../Command/Cpass.hpp"
 #include "../Command/Cpart.hpp"
-#include "../Command/Cping.hpp"
-#include "../Command/Cpong.hpp"
 #include "../Command/Cprivmsg.hpp"
 #include "../Command/Cquit.hpp"
 #include "../Command/Cuser.hpp"
 #include "../Command/Cmode.hpp"
 
 Server::Server(Logger& argLogger)
-: userManager(), channelManager(), network(0, "", userManager, argLogger), logger(argLogger), PASSWORD("") { ;}
+: userManager(), channelManager(), network(0, "", userManager, channelManager, argLogger), logger(argLogger), PASSWORD("") { ;}
 
 Server::Server(const short port, const char* passWord, Logger& argLogger)
-: userManager(), channelManager(), network(port, passWord, userManager, argLogger), logger(argLogger), PASSWORD(passWord) { ;}
+: userManager(), channelManager(), network(port, passWord, userManager, channelManager, argLogger), logger(argLogger), PASSWORD(passWord) { ;}
 
 bool Server::init()
 {
@@ -31,8 +29,6 @@ bool Server::init()
     ICommand *cop = new Cop();
     ICommand *cpart = new Cpart();
     ICommand *cquit = new Cquit();
-    ICommand *cping = new Cping();
-    ICommand *cpong = new Cpong();
     ICommand *cmode = new Cmode();
     
 
@@ -42,12 +38,9 @@ bool Server::init()
     commands.insert(make_pair("join", cjoin));
     commands.insert(make_pair("privmsg", cprivmsg));
     commands.insert(make_pair("kick", ckick));
-    // commands.insert(make_pair("kill", ckill));
     commands.insert(make_pair("op", cop));
     commands.insert(make_pair("part", cpart));
     commands.insert(make_pair("quit", cquit));
-    commands.insert(make_pair("ping", cping));
-    commands.insert(make_pair("pong", cpong));
     commands.insert(make_pair("mode", cmode));
     return network.init();
 }

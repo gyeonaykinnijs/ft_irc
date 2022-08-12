@@ -12,14 +12,15 @@
 #include "../defines.hpp"
 #include "../User/User.hpp"
 #include "../User/UserManager.hpp"
+#include "../Channel/ChannelManager.hpp"
 
 #include <cerrno>
 
 using namespace std;
 #define BUFFERSIZE 512
 
-Network::Network(const short port, const char* passWord, UserManager& userManager, Logger& argLogger)
-: PORT(port), PASSWORD(passWord), userManager(userManager), logger(argLogger)
+Network::Network(const short port, const char* passWord, UserManager& userManager, ChannelManager& channelManager, Logger& argLogger)
+: PORT(port), PASSWORD(passWord), userManager(userManager), channelManager(channelManager), logger(argLogger)
 {
 	memset(&this->addressServer, 0, sizeof(this->addressServer));
 };
@@ -288,6 +289,13 @@ void Network::disconnectUser(User* user)
 	{
 		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
 		this->sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+	}
+	map<string, Channel *> channel = user->getChannelList();
+	map<string, Channel *>::iterator iter2 = channel.begin();
+	map<string, Channel *>::iterator iterEnd2 = channel.end();
+	for (; iter2 != iterEnd2; iter2++)
+	{
+		this->channelManager.getChannel(iter2->second->getChannelName())->deleteJoinUser(user);
 	}
 	close(userFd);
 	this->userManager.deleteUser(userFd);

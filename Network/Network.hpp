@@ -25,7 +25,7 @@ class Network
 {
 public:
 	Network();
-	Network(const short port, const char* passWord, UserManager& userManager, Logger& argLogger);
+	Network(const short port, const char* passWord, UserManager& userManager, ChannelManager& channelManager, Logger& argLogger);
 	~Network(); //RAII
 	bool init();
 	bool IOMultiflexing();
@@ -56,6 +56,7 @@ private:
 	const short PORT;
 	const std::string PASSWORD;
 	UserManager& userManager;
+	ChannelManager& channelManager;
 	int fdServer;
 	queue<CommandChunk> commandQueue;
 	//FIXME:
