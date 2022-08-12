@@ -289,16 +289,11 @@ void Network::disconnectUser(User* user)
 	{
 		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
 		this->sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+		this->channelManager.getChannel(iter->second->getChannelName())->deleteJoinUser(user);
 	}
-	map<string, Channel *> channel = user->getChannelList();
-	map<string, Channel *>::iterator iter2 = channel.begin();
-	map<string, Channel *>::iterator iterEnd2 = channel.end();
-	for (; iter2 != iterEnd2; iter2++)
-	{
-		this->channelManager.getChannel(iter2->second->getChannelName())->deleteJoinUser(user);
-	}
-	close(userFd);
+	this->sendMap.erase(userFd);
 	this->userManager.deleteUser(userFd);
+	close(userFd);
 }
 
 void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t lenRecv)
