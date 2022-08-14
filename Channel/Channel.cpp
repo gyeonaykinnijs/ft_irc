@@ -3,7 +3,7 @@
 
 Channel::Channel()
 {
-	this->channelName = "deafult";
+	this->channelName = "default";
 	this->maxSizeUser = 10;
 	this->curSizeUser = 0;
 }
@@ -22,11 +22,6 @@ void Channel::setChannelName(const std::string channelName)
 void Channel::setCurSizeUser(const int size)
 {
 	this->curSizeUser = size;
-}
-
-void Channel::setAdmin(User *user)
-{
-	this->admin = user;
 }
 
 void Channel::setChannelKey(const string channelKey)
@@ -59,15 +54,10 @@ int Channel::getMaxSizeUser() const
 	return this->maxSizeUser;
 }
 
-User* Channel::getAdmin()
-{
-	return this->admin;
-}
-
 void Channel::insertJoinUser(User* user) 
 {	
 	this->joinUser[user->getNickname()] = user;
-	// joinUser.insert(make_pair(user->getNickname(), user));
+	this->curSizeUser++;
 }
 
 User* Channel::selectJoinUser(string userName)
@@ -78,6 +68,7 @@ User* Channel::selectJoinUser(string userName)
 void Channel::deleteJoinUser(User *user) 
 {
 	joinUser.erase(user->getNickname());
+	this->curSizeUser--;
 }
 
 map<string, User *>& Channel::getJoinUser()

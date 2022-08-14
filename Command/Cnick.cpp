@@ -9,20 +9,20 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (user->getPassOK() == false)
 	{	// 비밀번호 맞기 전 입력 못 하게
 		string msg = UserManager::makeMessage(ERR_NOTCONNECTED, "*", "User should be connected first");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	else if (param.empty())
 	{	// 인자 부족
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	string nickname = param[0];
 	if (userManager.hasNickname(nickname))
 	{	// 이미 사용중인 닉네임일 때
 		string msg = UserManager::makeMessage(ERR_NICKNAMEINUSE, user->getNickname(), "Nickname is already in use");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (nickname.size() > 9)
@@ -32,7 +32,7 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (!(nickname[0] > 'a' && nickname[0] < 'z') || (nickname[0] > 'A' && nickname[0] < 'Z')) //TODO: sunday 조건 추가
 	{
 		string msg = UserManager::makeMessage(ERR_ERRONEOUSNICKNAME, nickname, "Erroneous Nickname");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	string prevNickname = user->getNickname();
@@ -41,6 +41,6 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 	if (user->getIsRegistered())
 	{	// 이미 등록했고 nick 변경할 때
 		string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_NICK, user->getNickname(), "");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 	}
 }

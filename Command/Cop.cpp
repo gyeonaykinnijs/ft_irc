@@ -10,13 +10,13 @@ void Cop::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param.size() < 3)
 	{	// 인자 부족
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	string channelName = param[0];
@@ -25,13 +25,13 @@ void Cop::execute(ChannelManager &channelManager,
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (channel->getOperators().count(user->getFd()) == 0)
 	{	// 강퇴하는 사람이 방장인지 검사
 		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	for (unsigned long i = 1; i < param.size(); i++)
@@ -40,13 +40,13 @@ void Cop::execute(ChannelManager &channelManager,
 		if (!tempUser)
 		{
 			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, param[i], "No Such User in Channel");
-			network.sendToUser2(user->getFd(), msg);
+			network.sendToUser(user->getFd(), msg);
 		}
 		else
 		{
 			channel->addOperator(tempUser->getFd());
 			string msg = UserManager::makeMessage(RPL_MODE, channel->getChannelName() + " +o " + param[0],  "");
-			network.sendToUser2(user->getFd(), msg);
+			network.sendToUser(user->getFd(), msg);
 		}
 	}
 }

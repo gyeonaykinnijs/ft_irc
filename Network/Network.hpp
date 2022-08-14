@@ -29,8 +29,7 @@ public:
 	~Network(); //RAII
 	bool init();
 	bool IOMultiflexing();
-	bool sendToUser(User& user, const std::string& message);
-	bool sendToUser2(int fd, const std::string& message);
+	bool sendToUser(int fd, const std::string& message);
 	bool sendToChannel(Channel& channel, const std::string& message);
 	bool sendToOtherInChannel(Channel& channel, int fd, const std::string& message);
 	void disconnectUser(User* user);
