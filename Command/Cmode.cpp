@@ -12,13 +12,13 @@ void Cmode::execute(ChannelManager &channelManager,
     if (user->getIsRegistered() == false)
 	{
 		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param.empty())
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param.size() == 2)
@@ -28,13 +28,13 @@ void Cmode::execute(ChannelManager &channelManager,
 	if (param.size() != 3)
 	{
 		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need Three parameters");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param[1] != "+o")
 	{
 		string msg = UserManager::makeMessage(ERR_UMODEUNKNOWNFLAG, user->getNickname(), "UNKNOWN FLAG ERROR");
-		network.sendToUser2(user->getFd(), msg);
+		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	const string channelName = param[0];
@@ -43,7 +43,7 @@ void Cmode::execute(ChannelManager &channelManager,
 	User *tempUser = userList[param[2]];
 	channel->addOperator(tempUser->getFd());
 	string msg = UserManager::makeMessage(RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
-	network.sendToUser2(user->getFd(), msg);
+	network.sendToUser(user->getFd(), msg);
 	string msg4 = UserManager::makeMessage(RPL_MODE, param[0], "");
 	network.sendToOtherInChannel(*channel, user->getFd(),":" + tempUser->getNickname() + "!" + tempUser->getUserName() + "@127.0.0.1 " + msg4);
 

@@ -1,7 +1,3 @@
-//
-// Created by 연규준 on 2022/07/24.
-//
-
 #include "Network.hpp"
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -140,7 +136,7 @@ bool Network::AcceptUser()
 	return true;
 }
 
-bool Network::sendToUser2(int fd, const std::string& message)
+bool Network::sendToUser(int fd, const std::string& message)
 {
 	map<int, vector<string> >::iterator iter = this->sendMap.find(fd);
 
@@ -157,23 +153,6 @@ bool Network::sendToUser2(int fd, const std::string& message)
 	return true;
 }
 
-bool Network::sendToUser(User& user, const std::string& message)
-{
-	map<int, vector<string> >::iterator iter = this->sendMap.find(user.getFd());
-
-	if (iter == this->sendMap.end())
-	{
-		vector<string> tempVec;
-		tempVec.push_back(message);
-		this->sendMap[user.getFd()] = tempVec;
-	}
-	else
-	{
-		iter->second.push_back(message);
-	}
-	return true;
-}
-
 bool Network::sendToChannel(Channel& channel, const std::string& message)
 {
 	map<std::string, User *>::iterator iter = channel.getJoinUser().begin();
@@ -181,7 +160,7 @@ bool Network::sendToChannel(Channel& channel, const std::string& message)
 
 	while (iter != iterEnd)
 	{
-		this->sendToUser(*iter->second, message);
+		this->sendToUser(iter->second->getFd(), message);
 		++iter;
 	}
 	return true;
@@ -196,7 +175,7 @@ bool Network::sendToOtherInChannel(Channel& channel, int fd, const std::string& 
 	{
 		if (iter->second->getFd() != fd)
 		{
-			this->sendToUser2(iter->second->getFd(), message);
+			this->sendToUser(iter->second->getFd(), message);
 		}
 		++iter;
 	}
@@ -223,7 +202,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	if (cmd.find("  ") != string::npos)
 	{
 		User *user = this->userManager.getUserByFd(fd);
-		this->sendToUser(*user, string(UserManager::makeMessage(ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
+		this->sendToUser(user->getFd(), string(UserManager::makeMessage(ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
 	} 
 	tempChunk.fd = fd;
 	if (cmd[0] == ':')
@@ -267,7 +246,14 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		if (cmd[0] == ':')
 		{
 			size_t tempIdx = cmd.find_first_not_of(':');
-			tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);
+			if (tempIdx == string::npos)
+			{
+				tempChunk.parameterLast = cmd;
+			}
+			else
+			{
+				tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);  // !!! out of range.
+			}
 			this->commandQueue.push(tempChunk);
 			return ;
 		}

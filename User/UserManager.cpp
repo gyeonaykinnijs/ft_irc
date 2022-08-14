@@ -8,15 +8,17 @@ UserManager::~UserManager()
 
 User* UserManager::getUserByNickname(const string nickname)
 {
-	cout << " == " << nickname << endl;
 	const  string nick = nickname;
 	int fd = this->userFdByName[nick];
-	cout << " == fd == " << fd << endl;
 	return this->getUserByFd(fd);
 }
 
 User* UserManager::getUserByFd(int fd)
 {
+	if (this->userListByFd.count(fd) == 0)
+	{
+		return NULL;
+	}
 	return this->userListByFd[fd];
 }
 
@@ -27,15 +29,12 @@ map<int, User *> &UserManager::getAllUser()
 
 void UserManager::addUser(User *user)
 {
-	/*
-		user fd or nickname 중복 error error
-	*/
 	this->userListByFd[user->getFd()] = user;
-	// ***************** TODO: nickname 정하고 나서 맵에 넣어야 됨 **************** //
+}
+
+void UserManager::addUserFdByName(User *user)
+{
 	this->userFdByName[user->getNickname()] = user->getFd();
-	//cout << "userFdByName == " << this->userFdByName[user->getNickname()] << endl;
-	// this->userListByFd.insert(make_pair(user->getFd(), user));
-	// this->userFdByName.insert(pair<string, int>(user->getUserName(), user->getFd()));
 }
 
 void UserManager::makeUser(int fd)
@@ -47,14 +46,18 @@ void UserManager::makeUser(int fd)
 
 void UserManager::deleteUser(int fd)
 {
-	this->userFdByName.erase(getUserByFd(fd)->getNickname());
-	this->userListByFd.erase(fd);
+	User *user = this->getUserByFd(fd);
+	if (user != NULL)
+	{
+		this->userFdByName.erase(user->getNickname());
+		this->userListByFd.erase(fd);
+	}
 }
 
 string UserManager::makeMessage( string code, string target, string message)
 {
 	string buffer;
-	string colon = message.size() == 0 ? "" : " : ";
+	string colon = message.size() == 0 ? "" : " :";
 
 	buffer =  code + (code.size() ? " " : "") + target + colon + message + "\r\n";
 	return buffer;

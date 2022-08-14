@@ -19,7 +19,6 @@ Channel* ChannelManager::createChannel(const string channelName, string passwd, 
 	Channel *channel = new Channel;
 	channel->setChannelName(channelName);
 	channel->setChannelKey(passwd);
-	channel->setAdmin(user);
 	channel->insertJoinUser(user);
 	channel->setCurSizeUser(channel->getCurSizeUser() + 1);
 	this->channel_list[channel->getChannelName()] =  channel;

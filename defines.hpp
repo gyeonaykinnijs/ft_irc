@@ -36,8 +36,11 @@ using namespace std;
 #define RPL_NICK "NICK"
 #define RPL_PART "PART"
 #define RPL_MODE "MODE"
+#define RPL_KICK "KICK"
 #define RPL_PRIVMSG "PRIVMSG"
+#define RPL_QUIT "QUIT"
 
+// Error code
 #define ERR_NOSUCHNICK "401"
 #define ERR_NOSUCHCHANNEL "403"
 #define ERR_CANNOTSENDTOCHAN "404"
@@ -59,7 +62,7 @@ using namespace std;
 #define ERR_BADCHANNELKEY "475"
 #define ERR_CHANOPRIVSNEEDED "482"
 #define ERR_UMODEUNKNOWNFLAG "501"
-#define ERR_NOTCONNECTED "986" // custom
-#define ERR_ALREADYCONNECTED "987" // custom
+#define ERR_NOTCONNECTED "986"
+#define ERR_ALREADYCONNECTED "987"
 
 #endif

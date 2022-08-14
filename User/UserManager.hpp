@@ -14,6 +14,7 @@ public:
 	map<int, User *>& getAllUser();
 	void makeUser(int fd);
 	void addUser(User *user);
+	void addUserFdByName(User *user);
 	void addUserNickName(User *user);
 	void deleteUser(int fd);
 	static string makeMessage(string code, string target, string message);
