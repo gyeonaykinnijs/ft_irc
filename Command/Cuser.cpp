@@ -20,7 +20,7 @@ void Cuser::execute(ChannelManager &channelManager,
 		string msg = UserManager::makeMessage(NULL, ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered");
 		network.sendToUser(user->getFd(),
 							UserManager::makeMessage(NULL, ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered"));
-		return ;
+		return;
 	}
 	else if (param.size() < 3)
 	{

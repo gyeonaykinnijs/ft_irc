@@ -4,7 +4,7 @@
 
 int main(int ac, char **av)
 {
-    bool rtValue;
+    int rtValue;
     Logger logger;
     Server* server;
 
@@ -21,8 +21,13 @@ int main(int ac, char **av)
         server = new Server(port, passWord, logger);
     }
     server->init();
-    rtValue = !server->run();
+    rtValue = server->run();
     delete server;
 
-    return rtValue;
+    if (rtValue == FALSE)
+    {
+        return 1;
+    }
+    system("leaks ircserv");
+    return 0;
 }

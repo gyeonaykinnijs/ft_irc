@@ -14,7 +14,6 @@ public:
 	~ChannelManager();
 	Channel* getChannel(const string channelName);
 	Channel *createChannel(const string channelName, const string passwd, User *user);
-	void deleteChannel(string channelName);
 
 private:
 	map<string, Channel *> channel_list;

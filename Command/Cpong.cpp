@@ -1,6 +1,6 @@
-#include "Cping.hpp"
+#include "Cpong.hpp"
 
-void Cping::execute(ChannelManager &channelManager,
+void Cpong::execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk)
@@ -9,6 +9,6 @@ void Cping::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 
-	string msg = " PONG :" + param[0] + "\r\n";
+	string msg = " PING :" + param[0] + "\r\n";
 	network.sendToUser(user->getFd(), msg);
 }

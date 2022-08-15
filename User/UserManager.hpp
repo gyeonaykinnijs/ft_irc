@@ -11,7 +11,8 @@ public:
 	~UserManager();
 	User* getUserByNickname(const string nickname);
 	User* getUserByFd(int fd);
-	map<int, User *>& getAllUser();
+	map<int, User *>& getUserListByFd();
+	map<string, int>& getUserFdByName();
 	void makeUser(int fd);
 	void addUser(User *user);
 	void addUserFdByName(User *user);

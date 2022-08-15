@@ -28,7 +28,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	{	// 이미 들어간 채널
 		string msg = UserManager::makeMessage(NULL, ERR_USERONCHANNEL, user->getNickname(), "Already in the channel");
 		network.sendToUser(user->getFd(), msg);
-		return ;
+		return;
 	}
 	channel = channelManager.getChannel(channelName);
 	if (!channel)

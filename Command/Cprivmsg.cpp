@@ -7,6 +7,8 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
+	
+	
 	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
@@ -22,6 +24,10 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		return;
 	}
 	string target = param[0];
+	// if (!commandChunk.parameterLast)
+	// {
+		
+	// }
 	if (target[0] == '#')
 	{
 		Channel *targetChannel = channelManager.getChannel(target);
@@ -59,7 +65,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 				msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), commandChunk.parameterLast);
 			}
 			network.sendToOtherInChannel(*targetChannel, user->getFd(), msg);
-			return ;
+			return;
 		}
 	}
 	else
@@ -91,10 +97,10 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 			}
 			else
 			{
-				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast);
+				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast.substr(1));
 				network.sendToUser(targetUser->getFd(), msg);
 			}
-			return ;
+			return;
 		}
 	}
 }

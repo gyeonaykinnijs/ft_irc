@@ -13,7 +13,7 @@
 #include <cerrno>
 
 using namespace std;
-#define BUFFERSIZE 512
+
 
 Network::Network(const short port, const char* passWord, UserManager& userManager, ChannelManager& channelManager, Logger& argLogger)
 : PORT(port), PASSWORD(passWord), userManager(userManager), channelManager(channelManager), logger(argLogger)
@@ -48,6 +48,7 @@ bool Network::init()
 
 	if (this->logger.shouldServerDown())
 	{
+		fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK);
 		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK);
 		return false;
@@ -58,39 +59,38 @@ bool Network::init()
 	this->fdServer = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fdServer < 0)
 	{
-		this->logger.errorLogging(string("[socket]") + strerror(errno));
+		this->logger.errorLogging(string("\033[31m[socket]\033[0m") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
 	}
 	if (setsockopt(this->fdServer, SOL_SOCKET, SO_REUSEADDR, &result, sizeof(result)))
 	{
-		this->logger.errorLogging(string("[setsockopt]") + strerror(errno));
+		this->logger.errorLogging(string("\033[31m[setsockopt]\033[0m") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
 	}
-	if (fcntl(this->fdServer, F_SETFL, O_NONBLOCK) < 0 |
-		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK) < 0 |
-		fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK) < 0)
+	if (fcntl(this->fdServer, F_SETFL, O_NONBLOCK) < 0 | fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK) < 0 |
+		fcntl(STDOUT_FILENO, F_SETFL, O_NONBLOCK) < 0 | fcntl(STDERR_FILENO, F_SETFL, O_NONBLOCK) < 0)
 	{
-		this->logger.errorLogging(string("[fcntl]") + strerror(errno));
+		this->logger.errorLogging(string("\033[31m[fcntl]\033[0m") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logger.logging("Socket init Success!");
+	this->logger.logging("\033[32mSocket init Success!\033[0m");
 	if (::bind(this->fdServer, reinterpret_cast<sockaddr*>(&this->addressServer), sizeof(this->addressServer)) < 0)
 	{
-		this->logger.errorLogging(string("[bind]") + strerror(errno));
+		this->logger.errorLogging(string("\033[31m[bind]\033[0m") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logger.logging("Socket binding Success!");
+	this->logger.logging("\033[32mSocket binding Success!\033[0m");
 	if(::listen(this->fdServer, 5) < 0)
 	{
-		this->logger.errorLogging(string("[listen]") + strerror(errno));
+		this->logger.errorLogging(string("\033[31m[listen]\033[0m") + strerror(errno));
 		this->logger.setServerDown(true);
 		return false;
 	}
-	this->logger.logging("Server is listening!");
+	this->logger.logging("\033[32mServer is listening!\033[0m");
 	return true;
 };
 
@@ -98,6 +98,7 @@ void Network::initFdSets()
 {
 	FD_ZERO(&this->rSet);
 	FD_ZERO(&this->wSet);
+	FD_SET(STDIN_FILENO, &this->rSet);
 	if (!this->logger.isLogEmpty())
 	{
 		FD_SET(STDOUT_FILENO, &this->wSet);
@@ -106,8 +107,8 @@ void Network::initFdSets()
 	{
 		FD_SET(STDERR_FILENO, &this->wSet);
 	}
-	map<int, User*>::iterator iter =  this->userManager.getAllUser().begin();
-	map<int, User*>::iterator iterEnd =  this->userManager.getAllUser().end();
+	map<int, User*>::iterator iter =  this->userManager.getUserListByFd().begin();
+	map<int, User*>::iterator iterEnd =  this->userManager.getUserListByFd().end();
 	FD_SET(this->fdServer, &this->rSet);
 	for (; iter != iterEnd; iter++)
 	{
@@ -211,7 +212,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		{
 			tempChunk.prefix.assign(cmd, 0, cmd.size());
 			this->commandQueue.push(tempChunk);
-			return ;
+			return;
 		}
 		else
 		{
@@ -223,7 +224,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	{
 		tempChunk.command.assign(cmd, 0, cmd.size());
 		this->commandQueue.push(tempChunk);
-		return ;
+		return;
 	}
 	else
 	{
@@ -236,14 +237,14 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		{
 			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
 			this->commandQueue.push(tempChunk);
-			return ;
+			return;
 		}
-		else
+		else if (cmd[0] != ':')
 		{
 			tempChunk.parameters.push_back(string(cmd, 0, cmd.find(' ')));
 			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
 		}
-		if (cmd[0] == ':')
+		else if (cmd[0] == ':')
 		{
 			size_t tempIdx = cmd.find_first_not_of(':');
 			if (tempIdx == string::npos)
@@ -255,7 +256,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 				tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);  // !!! out of range.
 			}
 			this->commandQueue.push(tempChunk);
-			return ;
+			return;
 		}
 		else if (cmd.size() == 0)
 		{
@@ -273,7 +274,7 @@ void Network::disconnectUser(User* user)
 
 	for (;iter != iterEnd; iter++)
 	{
-		string msg = UserManager::makeMessage(user, "QUIT", ":Quit: Leaving...", "");
+		string msg = UserManager::makeMessage(user, RPL_QUIT, ":Leaving...", "");
 		this->sendToOtherInChannel(*iter->second, userFd, msg);
 		this->channelManager.getChannel(iter->second->getChannelName())->deleteJoinUser(user);
 	}
@@ -338,7 +339,7 @@ void Network::recvActionPerUser(map<int, User*>& users)
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
 			// FIXME:
-			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
+			//std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -371,7 +372,7 @@ void Network::sendActionPerSendQueue()
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
 				// FIXME:
-				cout << "server send reply: " << endl << *iterVec << endl;
+				// cout << "server send reply: " << endl << *iterVec << endl;
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
@@ -391,7 +392,7 @@ void Network::sendActionPerSendQueue()
 	}
 }
 
-bool Network::IOMultiflexing()
+int Network::IOMultiflexing()
 {
 	string tempBuffer;
 
@@ -400,6 +401,11 @@ bool Network::IOMultiflexing()
 	{
 		this->logger.errorLogging(string("[select]") + strerror(errno));
 		this->logger.setServerDown(true);
+	}
+	if (FD_ISSET(STDIN_FILENO, &this->rSet))
+	{
+		while (getchar() != '\n');
+		return SERVERDOWN;
 	}
 	if (FD_ISSET(this->fdServer, &this->rSet))
 	{
@@ -430,10 +436,10 @@ bool Network::IOMultiflexing()
 		}
 		if (this->logger.shouldServerDown() == true)
 		{
-			return false;
+			return FALSE;
 		}
 	}
-	this->recvActionPerUser(this->userManager.getAllUser());
+	this->recvActionPerUser(this->userManager.getUserListByFd());
 	this->sendActionPerSendQueue();
-	return true;
+	return SUCCESS;
 }

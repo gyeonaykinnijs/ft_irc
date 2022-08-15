@@ -59,6 +59,16 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 			network.sendToOtherInChannel(*iter->second, user->getFd(), msg);
 		}
 	}
+	
+	userManager.getUserFdByName().erase(user->getNickname());
+	userManager.getUserFdByName()[nickname] = user->getFd();
+	map<string, Channel*>::iterator iter = user->getChannelList().begin();
+	map<string, Channel*>::iterator iterEnd = user->getChannelList().end();
+	for (;iter != iterEnd; iter++)
+	{
+		iter->second->getJoinUser().erase(user->getNickname());
+		iter->second->getJoinUser()[nickname] = user;
+	}
 	user->setNickOK(true);
 	user->setNickname(nickname);
 }

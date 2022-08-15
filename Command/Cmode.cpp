@@ -21,7 +21,7 @@ void Cmode::execute(ChannelManager &channelManager,
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	if (param.size() == 2)
+	if (param.size() == 2 || param.size() == 1)
 	{
 		return;
 	}

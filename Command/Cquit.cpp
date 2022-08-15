@@ -15,18 +15,16 @@ void Cquit::execute(ChannelManager &channelManager,
 		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
-	}	
-	std::string reason = param.empty() ? "Leaving..." : param[0];
-	reason = reason[0] == ':' ? reason.substr(1) : reason;
+	}
 	map<string, Channel*>::iterator iter = user->getChannelList().begin();
 	map<string, Channel*>::iterator iterEnd = user->getChannelList().end();
-
+	string last = commandChunk.parameterLast;
+	string reason = ":" + (last.size() == 0 ? "Leaving..." : last);
 	for (;iter != iterEnd; iter++)
 	{
-		string msg = UserManager::makeMessage(user, RPL_QUIT, ":Quit: Leaving...", "");
+		string msg = UserManager::makeMessage(user, RPL_QUIT, reason, "");
 		network.sendToOtherInChannel(*iter->second, user->getFd(), msg);
 	}
-
 	map<string, Channel *> channels = user->getChannelList();
 	map<string, Channel *>::iterator iter2 = channels.begin();
 	map<string, Channel *>::iterator iterEnd2 = channels.end();
@@ -36,6 +34,7 @@ void Cquit::execute(ChannelManager &channelManager,
 		channel = channelManager.getChannel(iter2->second->getChannelName());
 		channel->deleteJoinUser(user);
 	}
-	userManager.deleteUser(user->getFd());
-	close(user->getFd());
+	int fd = user->getFd();
+	userManager.deleteUser(fd);
+	close(fd);
 }

@@ -5,7 +5,14 @@ ChannelManager::ChannelManager()
 {}
 
 ChannelManager::~ChannelManager()
-{}
+{
+	map<string, Channel *>::iterator iter = this->channel_list.begin();
+	map<string, Channel *>::iterator iterEnd = this->channel_list.end();
+	for (; iter != iterEnd; iter++)
+	{
+		delete iter->second;
+	}
+}
 
 Channel* ChannelManager::getChannel(const string channelName)
 {
@@ -24,9 +31,4 @@ Channel* ChannelManager::createChannel(const string channelName, string passwd, 
 	this->channel_list[channel->getChannelName()] =  channel;
 	channel->addOperator(user->getFd());
 	return channel;
-}
-
-void ChannelManager::deleteChannel(string channelName)
-{
-	channel_list.erase(channelName);
 }

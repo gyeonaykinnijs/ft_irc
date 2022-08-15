@@ -1,7 +1,6 @@
 #include "Server.hpp"
 #include "../Command/Cjoin.hpp"
 #include "../Command/Ckick.hpp"
-// #include "../Command/Ckill.hpp"
 #include "../Command/Cnick.hpp"
 #include "../Command/Cop.hpp"
 #include "../Command/Cpass.hpp"
@@ -11,13 +10,17 @@
 #include "../Command/Cuser.hpp"
 #include "../Command/Cmode.hpp"
 #include "../Command/Cping.hpp"
+#include "../Command/Cpong.hpp"
 
 Server::Server(Logger& argLogger)
-: userManager(), channelManager(), network(0, "", userManager, channelManager, argLogger), logger(argLogger), PASSWORD("") { ;}
+: userManager(), channelManager(), network(0, "", userManager, channelManager, argLogger), logger(argLogger), PASSWORD("")
+{}
 
 Server::Server(const short port, const char* passWord, Logger& argLogger)
-: userManager(), channelManager(), network(port, passWord, userManager, channelManager, argLogger), logger(argLogger), PASSWORD(passWord) { ;}
+: userManager(), channelManager(), network(port, passWord, userManager, channelManager, argLogger), logger(argLogger), PASSWORD(passWord)
+{}
 
+// FIXME: leaks(command, user, channel들) , pong 대응
 bool Server::init()
 {
     ICommand *cpass = new Cpass();
@@ -31,6 +34,7 @@ bool Server::init()
     ICommand *cquit = new Cquit();
     ICommand *cmode = new Cmode();
     ICommand *cping = new Cping();
+    ICommand *cpong = new Cpong();
     
     commands.insert(make_pair("pass", cpass));
     commands.insert(make_pair("nick", cnick));
@@ -43,16 +47,25 @@ bool Server::init()
     commands.insert(make_pair("quit", cquit));
     commands.insert(make_pair("mode", cmode));
     commands.insert(make_pair("ping", cping));
-    return network.init();
+    commands.insert(make_pair("pong", cpong));
+    if (!network.init())
+    {
+        return false;
+    }
+    logger.logging("Press ENTER for server down >>");
+    return true;
 }
 
-bool Server::run()
+int Server::run()
 {
+    int rtValue;
+
     while (1)
     {
-        if (network.IOMultiflexing() == false)
+        rtValue = network.IOMultiflexing();
+        if (rtValue != SUCCESS)
         {
-            return false;
+            return rtValue;
         }
         while (1)
         {
@@ -82,24 +95,35 @@ bool Server::run()
                         {
                             user->setIsRegistered(true);
 							this->userManager.addUserFdByName(user);
-                            string msg = UserManager::makeMessage(NULL, RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
+                            string msg = UserManager::makeMessage(NULL, RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + SERVERNAME);
                             network.sendToUser(user->getFd(), msg);
                         }
                     }
                 }
                 else
                 {
-                    // FIXME:
-                    //std::cerr << "cmd error" << std::endl;
-                    this->logger.errorLogging("cmd error");
+                    User *user = userManager.getUserByFd(temp.fd);
+                    if (!user)
+					{
+						break;
+					}
+                    string msg = UserManager::makeMessage(NULL, ERR_UNKNOWNCOMMAND, temp.command, "Unknown Command");
+                    network.sendToUser(user->getFd(), msg);
                 }
             }
         
         }
     }
-    return true;
 }
 
 Server::~Server()
 {
+    map<string, ICommand *>::iterator iter = this->commands.begin();
+    map<string, ICommand *>::iterator iterEnd = this->commands.end();
+
+    for (; iter != iterEnd; iter++)
+    {
+        delete iter->second;
+    }
+
 }

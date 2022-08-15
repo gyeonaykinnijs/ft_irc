@@ -12,7 +12,12 @@
 
 using namespace std;
 
-#define ERROR 1
+//#define ERROR 1
+#define SUCCESS 1
+#define SERVERDOWN 0
+#define FALSE -1
+#define BUFFERSIZE 512
+#define SERVERNAME "ircserv"
 
 // Reply Code
 #define RPL_WELCOME "001"

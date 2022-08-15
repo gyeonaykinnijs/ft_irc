@@ -4,7 +4,14 @@ UserManager::UserManager()
 {}
 
 UserManager::~UserManager()
-{}
+{
+	map<int, User *>::iterator iter = this->userListByFd.begin();
+	map<int, User *>::iterator iterEnd = this->userListByFd.end();
+	for (; iter != iterEnd; iter++)
+	{
+		delete iter->second;
+	}
+}
 
 User* UserManager::getUserByNickname(const string nickname)
 {
@@ -22,9 +29,14 @@ User* UserManager::getUserByFd(int fd)
 	return this->userListByFd[fd];
 }
 
-map<int, User *> &UserManager::getAllUser()
+map<int, User *> &UserManager::getUserListByFd()
 {
 	return this->userListByFd;
+}
+
+map<string, int> &UserManager::getUserFdByName()
+{
+	return this->userFdByName;
 }
 
 void UserManager::addUser(User *user)
@@ -51,6 +63,7 @@ void UserManager::deleteUser(int fd)
 	{
 		this->userFdByName.erase(user->getNickname());
 		this->userListByFd.erase(fd);
+		delete user;
 	}
 }
 
@@ -60,7 +73,8 @@ string UserManager::makeMessage(User *user, string code, string target, string m
 	string buffer;
 	string colon = message.size() == 0 ? "" : " :";
 
-	prefix = user == NULL ? ":localhost " : ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 ";
+	//FIXME:
+	prefix = user == NULL ? string(":") + SERVERNAME + " " : ":" + user->getNickname() + "!" + user->getUserName() + "@" + SERVERNAME + " ";
 	buffer =  prefix + code + (code.size() ? " " : "") + target + colon + message + "\r\n";
 	return buffer;
 }

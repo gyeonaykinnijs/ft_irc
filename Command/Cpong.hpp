@@ -1,12 +1,11 @@
-#ifndef __CKILL_HPP__
-#define __CKILL_HPP__
+#ifndef __CPONG_HPP__
+#define __CPONG_HPP__
 
 #include <string>
-#include "./ICommand.hpp"
 
-using namespace std;
+#include "ICommand.hpp"
 
-class Ckill : public ICommand
+class Cpong : public ICommand
 {
 public:
 	void execute(ChannelManager &channelManager,
