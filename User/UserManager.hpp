@@ -17,7 +17,7 @@ public:
 	void addUserFdByName(User *user);
 	void addUserNickName(User *user);
 	void deleteUser(int fd);
-	static string makeMessage(string code, string target, string message);
+	static string makeMessage(User *user, string code, string target, string message);
 	bool hasNickname(const string nickName); 
 
 private:

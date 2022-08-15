@@ -82,7 +82,7 @@ bool Server::run()
                         {
                             user->setIsRegistered(true);
 							this->userManager.addUserFdByName(user);
-                            string msg = UserManager::makeMessage(RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
+                            string msg = UserManager::makeMessage(NULL, RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + "127.0.0.1");
                             network.sendToUser(user->getFd(), msg);
                         }
                     }

@@ -6,12 +6,12 @@
 class Cnick: public ICommand
 {
 public:
+	bool checkValidNickname(const string nickName);
 	void execute(ChannelManager &channelManager,
 					UserManager &userManager,
 					Network &network,
 					struct CommandChunk commandChunk);
 					
-	bool checkUserValidNickname(const string nickName);
 };
 
 #endif

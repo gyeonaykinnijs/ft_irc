@@ -9,13 +9,13 @@ void Cop::execute(ChannelManager &channelManager,
 	vector<string> param = commandChunk.parameters;
 	if (user->getIsRegistered() == false)
 	{
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param.size() < 3)
 	{	// 인자 부족
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -24,13 +24,13 @@ void Cop::execute(ChannelManager &channelManager,
 	map<string, User *> userList = channel->getJoinUser();
 	if (!channel)
 	{	// channel 없을 때
-		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (channel->getOperators().count(user->getFd()) == 0)
 	{	// 강퇴하는 사람이 방장인지 검사
-		string msg = UserManager::makeMessage(ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
+		string msg = UserManager::makeMessage(NULL, ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -39,13 +39,13 @@ void Cop::execute(ChannelManager &channelManager,
 		User *tempUser = userList[param[i]];
 		if (!tempUser)
 		{
-			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, param[i], "No Such User in Channel");
+			string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, param[i], "No Such User in Channel");
 			network.sendToUser(user->getFd(), msg);
 		}
 		else
 		{
 			channel->addOperator(tempUser->getFd());
-			string msg = UserManager::makeMessage(RPL_MODE, channel->getChannelName() + " +o " + param[0],  "");
+			string msg = UserManager::makeMessage(NULL, RPL_MODE, channel->getChannelName() + " +o " + param[0],  "");
 			network.sendToUser(user->getFd(), msg);
 		}
 	}

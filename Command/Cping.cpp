@@ -12,13 +12,13 @@ void Cping::execute(ChannelManager &channelManager,
 	if (user->getIsRegistered() == false)
 	{
 		
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}	
 	if (param.empty()) 
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}

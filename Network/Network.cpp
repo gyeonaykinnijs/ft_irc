@@ -202,7 +202,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	if (cmd.find("  ") != string::npos)
 	{
 		User *user = this->userManager.getUserByFd(fd);
-		this->sendToUser(user->getFd(), string(UserManager::makeMessage(ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
+		this->sendToUser(user->getFd(), string(UserManager::makeMessage(NULL, ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
 	} 
 	tempChunk.fd = fd;
 	if (cmd[0] == ':')
@@ -273,8 +273,8 @@ void Network::disconnectUser(User* user)
 
 	for (;iter != iterEnd; iter++)
 	{
-		string msg4 = UserManager::makeMessage("QUIT", ":Quit: Leaving...", "");
-		this->sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+		string msg = UserManager::makeMessage(user, "QUIT", ":Quit: Leaving...", "");
+		this->sendToOtherInChannel(*iter->second, userFd, msg);
 		this->channelManager.getChannel(iter->second->getChannelName())->deleteJoinUser(user);
 	}
 	this->sendMap.erase(userFd);

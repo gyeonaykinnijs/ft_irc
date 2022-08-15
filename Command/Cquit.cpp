@@ -12,7 +12,7 @@ void Cquit::execute(ChannelManager &channelManager,
 
 	if (user->getIsRegistered() == false)
 	{
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}	
@@ -23,8 +23,8 @@ void Cquit::execute(ChannelManager &channelManager,
 
 	for (;iter != iterEnd; iter++)
 	{
-		string msg4 = UserManager::makeMessage(RPL_QUIT, ":Quit: Leaving...", "");
-		network.sendToOtherInChannel(*iter->second, user->getFd(),":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg4);
+		string msg = UserManager::makeMessage(user, RPL_QUIT, ":Quit: Leaving...", "");
+		network.sendToOtherInChannel(*iter->second, user->getFd(), msg);
 	}
 
 	map<string, Channel *> channels = user->getChannelList();

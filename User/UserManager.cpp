@@ -54,12 +54,14 @@ void UserManager::deleteUser(int fd)
 	}
 }
 
-string UserManager::makeMessage( string code, string target, string message)
+string UserManager::makeMessage(User *user, string code, string target, string message)
 {
+	string prefix;
 	string buffer;
 	string colon = message.size() == 0 ? "" : " :";
 
-	buffer =  code + (code.size() ? " " : "") + target + colon + message + "\r\n";
+	prefix = user == NULL ? ":localhost " : ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 ";
+	buffer =  prefix + code + (code.size() ? " " : "") + target + colon + message + "\r\n";
 	return buffer;
 }
 

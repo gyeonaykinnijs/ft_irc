@@ -11,13 +11,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 
 	if (user->getIsRegistered() == false)
 	{	
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}	
 	if (param.size() < 1)
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -27,13 +27,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		Channel *targetChannel = channelManager.getChannel(target);
 		if (!targetChannel)
 		{
-			string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No such channel");
+			string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No such channel");
 			network.sendToUser(user->getFd(), msg);
 			return;
 		}
 		else if (targetChannel->getJoinUser().count(user->getNickname()) == 0)
 		{
-			string msg = UserManager::makeMessage(ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
+			string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
 			network.sendToUser(user->getFd(), msg);
 			return;
 		}
@@ -52,13 +52,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 						paramMsg += *iter + " ";	
 					}
 				}
-				msg = UserManager::makeMessage(RPL_PRIVMSG, targetChannel->getChannelName(), paramMsg);
+				msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), paramMsg);
 			}
 			else
 			{
-				msg = UserManager::makeMessage(RPL_PRIVMSG, targetChannel->getChannelName(), commandChunk.parameterLast);
+				msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), commandChunk.parameterLast);
 			}
-			network.sendToOtherInChannel(*targetChannel, user->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg);
+			network.sendToOtherInChannel(*targetChannel, user->getFd(), msg);
 			return ;
 		}
 	}
@@ -68,7 +68,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		User *targetUser = userManager.getUserByNickname(target);
 		if (!targetUser)
 		{
-			string msg = UserManager::makeMessage(ERR_NOSUCHNICK, user->getNickname(), "No Such Nick");
+			string msg = UserManager::makeMessage(NULL, ERR_NOSUCHNICK, user->getNickname(), "No Such Nick");
 			network.sendToUser(user->getFd(), msg);
 			return;
 		}
@@ -86,13 +86,13 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 						paramMsg += *iter + " ";	
 					}
 				}
-				string msg = UserManager::makeMessage(RPL_PRIVMSG, targetUser->getNickname(), paramMsg);
-				network.sendToUser(targetUser->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg);
+				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), paramMsg);
+				network.sendToUser(targetUser->getFd(), msg);
 			}
 			else
 			{
-				string msg = UserManager::makeMessage(RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast);
-				network.sendToUser(targetUser->getFd(), ":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + msg);
+				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast);
+				network.sendToUser(targetUser->getFd(), msg);
 			}
 			return ;
 		}

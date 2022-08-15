@@ -18,13 +18,13 @@ void Cpart::execute(ChannelManager &channelManager,
 
 	if (user->getIsRegistered() == false)
 	{
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}	
 	if (param.empty())
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -36,17 +36,17 @@ void Cpart::execute(ChannelManager &channelManager,
 	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel) 
 	{
-		string msg = UserManager::makeMessage(ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (!user->getChannel(channelName)) 
 	{
-		string msg = UserManager::makeMessage(ERR_NOTONCHANNEL, user->getNickname(), "Not On Channel");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTONCHANNEL, user->getNickname(), "Not On Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	string msg = UserManager::makeMessage(":" + user->getNickname() + "!" + user->getUserName() + "@127.0.0.1 " + RPL_PART, param[0], "");
+	string msg = UserManager::makeMessage(user, RPL_PART, param[0], "");
 	network.sendToChannel(*channel, msg);
 	channel->deleteJoinUser(user);
 	user->deleteChannel(channelName);

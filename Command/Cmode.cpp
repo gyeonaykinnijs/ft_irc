@@ -11,13 +11,13 @@ void Cmode::execute(ChannelManager &channelManager,
 
     if (user->getIsRegistered() == false)
 	{
-		string msg = UserManager::makeMessage(ERR_NOTREGISTERED, user->getNickname(), "You should register first");
+		string msg = UserManager::makeMessage(NULL, ERR_NOTREGISTERED, user->getNickname(), "You should register first");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param.empty())
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -27,13 +27,13 @@ void Cmode::execute(ChannelManager &channelManager,
 	}
 	if (param.size() != 3)
 	{
-		string msg = UserManager::makeMessage(ERR_NEEDMOREPARAMS, user->getNickname(), "Need Three parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Need Three parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (param[1] != "+o")
 	{
-		string msg = UserManager::makeMessage(ERR_UMODEUNKNOWNFLAG, user->getNickname(), "UNKNOWN FLAG ERROR");
+		string msg = UserManager::makeMessage(NULL, ERR_UMODEUNKNOWNFLAG, user->getNickname(), "UNKNOWN FLAG ERROR");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
@@ -42,9 +42,9 @@ void Cmode::execute(ChannelManager &channelManager,
 	map<string, User *> userList = channel->getJoinUser();
 	User *tempUser = userList[param[2]];
 	channel->addOperator(tempUser->getFd());
-	string msg = UserManager::makeMessage(RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
+	string msg = UserManager::makeMessage(NULL, RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
 	network.sendToUser(user->getFd(), msg);
-	string msg4 = UserManager::makeMessage(RPL_MODE, param[0], "");
-	network.sendToOtherInChannel(*channel, user->getFd(),":" + tempUser->getNickname() + "!" + tempUser->getUserName() + "@127.0.0.1 " + msg4);
+	string msg2 = UserManager::makeMessage(tempUser, RPL_MODE, param[0], "");
+	network.sendToOtherInChannel(*channel, user->getFd(), msg2);
 
 }
