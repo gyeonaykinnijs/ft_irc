@@ -7,7 +7,6 @@ void Cmode::execute(ChannelManager &channelManager,
 {
     User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	(void)channelManager;
 
     if (user->getIsRegistered() == false)
 	{
@@ -38,7 +37,7 @@ void Cmode::execute(ChannelManager &channelManager,
 		return;
 	}
 	const string channelName = param[0];
-	Channel *channel = user->getChannel(channelName);
+	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
@@ -53,12 +52,12 @@ void Cmode::execute(ChannelManager &channelManager,
 	}
 	if (channel->getJoinUser().count(param[2]) == 0)
 	{
-		string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
+		string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "Target Not In Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (channel->getOperators().count(user->getFd()) == 0)
-	{	// 강퇴하는 사람이 방장인지 검사
+	{	// 명령하는 사람이 방장인지 검사
 		string msg = UserManager::makeMessage(NULL, ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser(user->getFd(), msg);
 		return;

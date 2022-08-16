@@ -13,20 +13,16 @@ void Cuser::execute(ChannelManager &channelManager,
 	{		
 		string msg = UserManager::makeMessage(NULL, ERR_NOTCONNECTED, "*", "User should be connected first");
 		network.sendToUser(user->getFd(), msg);
-		return;
 	}
 	else if (user->getIsRegistered())
 	{
 		string msg = UserManager::makeMessage(NULL, ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered");
-		network.sendToUser(user->getFd(),
-							UserManager::makeMessage(NULL, ERR_ALREADYREGISTERED, user->getNickname(), "User is already registered"));
-		return;
+		network.sendToUser(user->getFd(), msg);
 	}
 	else if (param.size() < 3)
 	{
 		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
-		return;
 	}
 	else
 	{
@@ -42,3 +38,4 @@ void Cuser::execute(ChannelManager &channelManager,
 		user->setUserOK(true);
 	}
 }
+

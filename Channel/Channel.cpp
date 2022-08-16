@@ -56,8 +56,11 @@ int Channel::getMaxSizeUser() const
 
 void Channel::insertJoinUser(User* user) 
 {	
-	this->joinUser[user->getNickname()] = user;
-	this->curSizeUser++;
+	if (this->joinUser.count(user->getNickname()) == 0)
+	{
+		this->joinUser[user->getNickname()] = user;
+		this->curSizeUser++;
+	}
 }
 
 User* Channel::selectJoinUser(string userName)
@@ -69,6 +72,7 @@ void Channel::deleteJoinUser(User *user)
 {
 	joinUser.erase(user->getNickname());
 	this->curSizeUser--;
+	this->deleteOperator(user->getFd());
 }
 
 map<string, User *>& Channel::getJoinUser()

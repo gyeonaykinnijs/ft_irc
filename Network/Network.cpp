@@ -2,15 +2,12 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <iostream>
-#include <unistd.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include "../defines.hpp"
 #include "../User/User.hpp"
 #include "../User/UserManager.hpp"
 #include "../Channel/ChannelManager.hpp"
 #include <cerrno>
-#include <limit.h>
 
 using namespace std;
 
@@ -132,6 +129,7 @@ bool Network::AcceptUser()
 	{
 		this->logger.errorLogging(string("[setsockopt]") + strerror(errno));
 		this->logger.setServerDown(true);
+		return false;
 	}
 	this->userManager.makeUser(fdClient);
 	return true;
@@ -308,8 +306,15 @@ void Network::recvParsingAndLoadCommands(User* user, char* bufferRecv, size_t le
 			else if (user->getBuffer().size() > BUFFERSIZE - 2 && crlfIndex > BUFFERSIZE - 2)
 			{
 				pushCmdToQueue(user->getFd(), string(user->getBuffer(), 0, BUFFERSIZE - 2).append("\r\n"));
-				user->setBuffer("");
-				user->setIgnored(true);
+				if (crlfIndex != string::npos)
+				{
+					user->setBuffer(string(user->getBuffer().substr(crlfIndex + 2, user->getBuffer().size() - crlfIndex - 2)));
+				}
+				else
+				{
+					user->setBuffer("");
+					user->setIgnored(true);
+				}
 				break;
 			}
 			else
@@ -386,8 +391,8 @@ int Network::IOMultiflexing()
 {
 	string tempBuffer;
 
-	initFdSets();
-	if (::select(FD_SETSIZE, this->rSet, &this->wSet, NULL, NULL) < 0)
+	this->initFdSets();
+	if (::select(FD_SETSIZE, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
 		this->logger.errorLogging(string("[select]") + strerror(errno));
 		this->logger.setServerDown(true);
@@ -399,7 +404,10 @@ int Network::IOMultiflexing()
 	}
 	if (FD_ISSET(this->fdServer, &this->rSet))
 	{
-		this->AcceptUser();
+		if (!this->AcceptUser())
+		{
+			return SERVERDOWN;
+		}
 	}
 	if (FD_ISSET(STDOUT_FILENO, &this->wSet))
 	{

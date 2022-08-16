@@ -9,7 +9,9 @@ UserManager::~UserManager()
 	map<int, User *>::iterator iterEnd = this->userListByFd.end();
 	for (; iter != iterEnd; iter++)
 	{
+		int fd = iter->second->getFd();
 		delete iter->second;
+		close(fd);
 	}
 }
 
@@ -64,6 +66,7 @@ void UserManager::deleteUser(int fd)
 		this->userFdByName.erase(user->getNickname());
 		this->userListByFd.erase(fd);
 		delete user;
+		close(fd);
 	}
 }
 

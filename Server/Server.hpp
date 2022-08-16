@@ -14,6 +14,7 @@ public:
     Server(Logger& argLogger);
     Server(const short port, const char* passWord, Logger& argLogger);
     bool init();
+    void checkRegister(User* user);
     int run();
     ~Server();
 

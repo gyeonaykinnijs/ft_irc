@@ -38,9 +38,8 @@ void Cpart::execute(ChannelManager &channelManager,
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	string msg = UserManager::makeMessage(user, RPL_PART, param[0], "");
+	string msg = UserManager::makeMessage(user, RPL_PART, channelName, "");
 	network.sendToChannel(*channel, msg);
 	channel->deleteJoinUser(user);
 	user->deleteChannel(channelName);
-	channel->deleteOperator(user->getFd());
 }

@@ -55,6 +55,29 @@ bool Server::init()
     return true;
 }
 
+void Server::checkRegister(User* user)
+{
+    if (user->getPassOK() == false)
+    {
+        if (this->PASSWORD == user->getPasswd())
+        {
+            user->setPassOK(true);
+        }
+        else
+        {
+            string msg = UserManager::makeMessage(NULL, ERR_PASSWDMISMATCH, user->getNickname(), "Wrong Password");
+            network.sendToUser(user->getFd(), msg);
+        }
+    }
+    else if (user->getNickOK() == true && user->getUserOK() == true)
+    {
+        user->setIsRegistered(true);
+        this->userManager.addUserFdByName(user);
+        string msg = UserManager::makeMessage(NULL, RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + SERVERNAME);
+        network.sendToUser(user->getFd(), msg);
+    }
+}
+
 int Server::run()
 {
     int rtValue;
@@ -86,25 +109,7 @@ int Server::run()
 					}
 					if (user->getIsRegistered() == false)
                     {
-                        if (user->getPassOK() == false)
-                        {
-                            if (this->PASSWORD == user->getPasswd())
-                            {
-                                user->setPassOK(true);
-                            }
-                            else
-                            {
-                                string msg = UserManager::makeMessage(NULL, ERR_PASSWDMISMATCH, user->getNickname(), "Wrong Password");
-                                network.sendToUser(user->getFd(), msg);
-                            }
-                        }
-                        else if (user->getNickOK() == true && user->getUserOK() == true)
-                        {
-                            user->setIsRegistered(true);
-							this->userManager.addUserFdByName(user);
-                            string msg = UserManager::makeMessage(NULL, RPL_WELCOME, user->getNickname(), "Welcome to the Internet Relay Network " + user->getNickname() + "!" + user->getUserName() + "@" + SERVERNAME);
-                            network.sendToUser(user->getFd(), msg);
-                        }
+                        checkRegister(user);
                     }
                 }
                 else

@@ -35,25 +35,22 @@ void Cjoin::execute(ChannelManager &channelManager,
 	{
 		channel = channelManager.createChannel(param[0], password, user);
 	}
-	if (channel->getMaxSizeUser() > 0 && channel->getCurSizeUser() >= channel->getMaxSizeUser())
+	if (channel->getCurSizeUser() >= channel->getMaxSizeUser())
 	{	// channel 꽉 찼을 때
 		string msg = UserManager::makeMessage(NULL, ERR_CHANNELISFULL , user->getNickname(), "channel is full");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-
 	if (channel->getChannelKey() != password)
 	{	// 비밀번호 틀림
 		string msg = UserManager::makeMessage(NULL, ERR_BADCHANNELKEY , user->getNickname(), "no match password error");
 		network.sendToUser(user->getFd(), msg);
 		return;
-	} 
+	}
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
 	string msg = UserManager::makeMessage(user, RPL_JOIN, channel->getChannelName(), "");
-	string msg2 = UserManager::makeMessage(user, RPL_JOIN, channel->getChannelName(), "");
-	network.sendToOtherInChannel(*channel, user->getFd(), msg2);
-	network.sendToUser(user->getFd(), msg);
+	network.sendToChannel(*channel, msg);
 	string list = "";
 	map<string, User *> users = channel->getJoinUser();
 	map<string, User *>::iterator iter = users.begin();
@@ -70,8 +67,8 @@ void Cjoin::execute(ChannelManager &channelManager,
 		}
 		list += iter->second->getNickname();
 	}
-	string msg3 = UserManager::makeMessage(NULL, RPL_NAMREPLY, user->getNickname()+ " = " + channel->getChannelName(), list);
+	string msg2 = UserManager::makeMessage(NULL, RPL_NAMREPLY, user->getNickname()+ " = " + channel->getChannelName(), list);
+	network.sendToUser(user->getFd(), msg2);
+	string msg3 = UserManager::makeMessage(NULL, RPL_ENDOFNAMES, user->getNickname() + " " + channel->getChannelName(), "End of /NAMES list.");
 	network.sendToUser(user->getFd(), msg3);
-	string msg4 = UserManager::makeMessage(NULL, RPL_ENDOFNAMES, user->getNickname() + " " + channel->getChannelName(), "End of /NAMES list.");
-	network.sendToUser(user->getFd(), msg4);	
 }

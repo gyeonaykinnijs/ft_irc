@@ -7,7 +7,6 @@ void Ckick::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	(void)channelManager;
 	
 	if (user->getIsRegistered() == false)
 	{
@@ -21,16 +20,16 @@ void Ckick::execute(ChannelManager &channelManager,
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	string name = param[0];
+	string channelName = param[0];
 	string targetUser = param[1];
-	Channel *channel = user->getChannel(name);
+	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel)
 	{	// channel 없을 때
 		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	if (channel->getChannelName() != name)
+	if (!user->getChannel(channelName))
 	{	// 명령어 쓴 user가 channel의 멤버가 아닐 때
 		string msg = UserManager::makeMessage(NULL, ERR_NOTONCHANNEL, user->getNickname(), "User is Not in Channel");
 		network.sendToUser(user->getFd(), msg);
@@ -53,5 +52,4 @@ void Ckick::execute(ChannelManager &channelManager,
 	network.sendToChannel(*channel, msg);
 	target->deleteChannel(channel->getChannelName());
 	channel->deleteJoinUser(target);
-	channel->deleteOperator(target->getFd());
 }

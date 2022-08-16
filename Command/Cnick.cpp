@@ -2,7 +2,7 @@
 
 bool Cnick::checkValidNickname(const string nickname)
 {
-	if (!(nickname[0] > 'a' && nickname[0] < 'z') || (nickname[0] > 'A' && nickname[0] < 'Z'))
+	if (!((nickname[0] >= 'a' && nickname[0] <= 'z') || (nickname[0] >= 'A' && nickname[0] <= 'Z')))
 	{
 		return false;
 	}
@@ -59,7 +59,6 @@ void Cnick::execute(ChannelManager& channelManager, UserManager& userManager, Ne
 			network.sendToOtherInChannel(*iter->second, user->getFd(), msg);
 		}
 	}
-	
 	userManager.getUserFdByName().erase(user->getNickname());
 	userManager.getUserFdByName()[nickname] = user->getFd();
 	map<string, Channel*>::iterator iter = user->getChannelList().begin();
