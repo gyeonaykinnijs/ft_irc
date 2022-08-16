@@ -3,6 +3,7 @@
 void Cpass::execute(ChannelManager &channelManager, UserManager &userManager, Network &network, struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
+	vector<string> param = commandChunk.parameters;
 	(void)channelManager;
 	
 	if (user->getIsRegistered())
@@ -15,14 +16,19 @@ void Cpass::execute(ChannelManager &channelManager, UserManager &userManager, Ne
 		string msg = UserManager::makeMessage(NULL, ERR_ALREADYCONNECTED, "*", "User doesn't need password anymore");
 		network.sendToUser(user->getFd(), msg);
 	}
-	else if (commandChunk.parameters.empty())
+	else if (param.size() == 0)
 	{	// 인자 더 필요할 때
 		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);
 	}
+	else if (param.size() != 1 || commandChunk.parameterLast.size() != 0)
+	{
+		string msg = UserManager::makeMessage(NULL, ERR_TOOMANYPARAM, user->getNickname(), "Too Many Parameters");
+		network.sendToUser(user->getFd(), msg);
+	}
 	else
 	{
-		string password = commandChunk.parameters[0];
+		string password = param[0];
 		user->setPasswd(password);
 	}
 }

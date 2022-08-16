@@ -13,7 +13,7 @@ void Cop::execute(ChannelManager &channelManager,
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	if (param.size() < 3)
+	if (param.size() != 2)
 	{	// 인자 부족
 		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
 		network.sendToUser(user->getFd(), msg);

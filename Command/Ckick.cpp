@@ -53,5 +53,5 @@ void Ckick::execute(ChannelManager &channelManager,
 	network.sendToChannel(*channel, msg);
 	target->deleteChannel(channel->getChannelName());
 	channel->deleteJoinUser(target);
-	channel->deleteOperator(user->getFd());
+	channel->deleteOperator(target->getFd());
 }
