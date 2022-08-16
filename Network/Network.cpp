@@ -200,10 +200,12 @@ void Network::pushCmdToQueue(int fd, string cmd)
 {
 	CommandChunk tempChunk;
 
-	if (cmd.find("  ") != string::npos)
+	if (cmd.find("  ") != string::npos\
+	|| cmd.find(9) != string::npos || cmd.find(11) != string::npos || cmd.find(12) != string::npos)
 	{
 		User *user = this->userManager.getUserByFd(fd);
-		this->sendToUser(user->getFd(), string(UserManager::makeMessage(NULL, ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
+		this->sendToUser(user->getFd(), string(UserManager::makeMessage(NULL, ERR_WRONGPROTOCOL, user->getNickname(), "Wrong protocol")));
+		return ;
 	} 
 	tempChunk.fd = fd;
 	if (cmd[0] == ':')
@@ -233,7 +235,11 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	}
 	while (1)
 	{
-		if (cmd[0] == ':')
+		if (cmd.size() == 0)
+		{
+			break ;
+		}
+		else if (cmd[0] == ':')
 		{
 			// size_t tempIdx = cmd.find_first_not_of(':');
 			// if (tempIdx == string::npos)
@@ -253,10 +259,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
 			this->commandQueue.push(tempChunk);
 			return;
-		}
-		else if (cmd.size() == 0)
-		{
-			break ;
 		}
 		else// if (cmd[0] != ':')
 		{
