@@ -24,7 +24,7 @@ Channel* ChannelManager::getChannel(const string channelName)
 Channel* ChannelManager::createChannel(const string channelName, string passwd, User* user)
 {
 	Channel *channel = new Channel;
-	channel->setChannelName(channelName.substr(0, min(channelName.size(), 50)));
+	channel->setChannelName(channelName.substr(0, min(static_cast<int>(channelName.size()), 50)));
 	channel->setChannelKey(passwd);
 	channel->insertJoinUser(user);
 	channel->setCurSizeUser(channel->getCurSizeUser() + 1);

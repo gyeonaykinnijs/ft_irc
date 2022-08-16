@@ -50,8 +50,8 @@ void Cjoin::execute(ChannelManager &channelManager,
 	} 
 	channel->insertJoinUser(user);
 	user->addChannel(channel);
-	string msg = UserManager::makeMessage(user, RPL_JOIN, param[0], "");
-	string msg2 = UserManager::makeMessage(user, RPL_JOIN, param[0], "");
+	string msg = UserManager::makeMessage(user, RPL_JOIN, channel->getChannelName(), "");
+	string msg2 = UserManager::makeMessage(user, RPL_JOIN, channel->getChannelName(), "");
 	network.sendToOtherInChannel(*channel, user->getFd(), msg2);
 	network.sendToUser(user->getFd(), msg);
 	string list = "";
