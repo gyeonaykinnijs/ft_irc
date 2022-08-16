@@ -10,6 +10,7 @@
 #include "../User/UserManager.hpp"
 #include "../Channel/ChannelManager.hpp"
 #include <cerrno>
+#include <limit.h>
 
 using namespace std;
 
@@ -386,7 +387,7 @@ int Network::IOMultiflexing()
 	string tempBuffer;
 
 	initFdSets();
-	if (::select(MAX_SELECT_FD, &this->rSet, &this->wSet, NULL, NULL) < 0)
+	if (::select(FD_SETSIZE, this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
 		this->logger.errorLogging(string("[select]") + strerror(errno));
 		this->logger.setServerDown(true);

@@ -10,6 +10,7 @@
 #include "../Command/Cmode.hpp"
 #include "../Command/Cping.hpp"
 #include "../Command/Cpong.hpp"
+#include "../Command/Cnotice.hpp"
 
 Server::Server(Logger& argLogger)
 : userManager(), channelManager(), network(0, "", userManager, channelManager, argLogger), logger(argLogger), PASSWORD("")
@@ -26,6 +27,7 @@ bool Server::init()
     ICommand *cnick = new Cnick();
     ICommand *cuser = new Cuser();
     ICommand *cprivmsg = new Cprivmsg();
+    ICommand *cnotice = new Cnotice();
     ICommand *ckick = new Ckick();
     ICommand *cpart = new Cpart();
     ICommand *cquit = new Cquit();
@@ -38,6 +40,7 @@ bool Server::init()
     commands.insert(make_pair("user", cuser));
     commands.insert(make_pair("join", cjoin));
     commands.insert(make_pair("privmsg", cprivmsg));
+    commands.insert(make_pair("notice", cnotice));
     commands.insert(make_pair("kick", ckick));
     commands.insert(make_pair("part", cpart));
     commands.insert(make_pair("quit", cquit));

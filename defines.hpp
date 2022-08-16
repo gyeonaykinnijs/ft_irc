@@ -45,6 +45,7 @@ using namespace std;
 #define RPL_KICK "KICK"
 #define RPL_PRIVMSG "PRIVMSG"
 #define RPL_QUIT "QUIT"
+#define RPL_NOTICE "NOTICE"
 
 // Error code
 #define ERR_NOSUCHNICK "401"
