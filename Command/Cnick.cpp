@@ -6,7 +6,7 @@ bool Cnick::checkValidNickname(const string nickname)
 	{
 		return false;
 	}
-	if (nickname.find_first_not_of("abcdefghijklmnopqrstuvqwxyz0123456789[]-{}\\^`") != string::npos)
+	if (nickname.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvqwxyz0123456789[]-{}\\^`") != string::npos)
 	{
 		return false;
 	}

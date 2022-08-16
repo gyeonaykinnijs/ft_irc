@@ -7,8 +7,6 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
 	vector<string> param = commandChunk.parameters;
-	
-	
 	(void)channelManager;
 
 	if (user->getIsRegistered() == false)
@@ -24,10 +22,19 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		return;
 	}
 	string target = param[0];
-	// if (!commandChunk.parameterLast)
-	// {
-		
-	// }
+	string message;
+	vector<string>::iterator iter = param.begin();
+	vector<string>::iterator iterEnd = param.end();
+	iter++;
+	for (; iter != iterEnd; iter++)
+	{
+		message += *iter + " ";
+	}
+	if (commandChunk.parameterLast.size() != 0)
+	{
+		cout << commandChunk.parameterLast << endl;
+		message += ":" + commandChunk.parameterLast;
+	}
 	if (target[0] == '#')
 	{
 		Channel *targetChannel = channelManager.getChannel(target);
@@ -35,72 +42,30 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 		{
 			string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No such channel");
 			network.sendToUser(user->getFd(), msg);
-			return;
 		}
 		else if (targetChannel->getJoinUser().count(user->getNickname()) == 0)
 		{
 			string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
 			network.sendToUser(user->getFd(), msg);
-			return;
 		}
 		else
 		{
-			string msg = "";
-			if (commandChunk.parameterLast.empty() && !param[1].empty())
-			{
-				string paramMsg = "";
-				vector<string>::iterator iter = param.begin();
-				vector<string>::iterator iterEnd = param.end();
-				for (; iter != iterEnd; iter++)
-				{
-					if (iter != param.begin())
-					{
-						paramMsg += *iter + " ";	
-					}
-				}
-				msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), paramMsg);
-			}
-			else
-			{
-				msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), commandChunk.parameterLast);
-			}
+			string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetChannel->getChannelName(), message);
 			network.sendToOtherInChannel(*targetChannel, user->getFd(), msg);
-			return;
 		}
 	}
 	else
 	{
-
 		User *targetUser = userManager.getUserByNickname(target);
 		if (!targetUser)
 		{
 			string msg = UserManager::makeMessage(NULL, ERR_NOSUCHNICK, user->getNickname(), "No Such Nick");
 			network.sendToUser(user->getFd(), msg);
-			return;
 		}
 		else
-		{	
-			if (commandChunk.parameterLast.empty() && !param[1].empty())
-			{
-				string paramMsg = "";
-				vector<string>::iterator iter = param.begin();
-				vector<string>::iterator iterEnd = param.end();
-				for (; iter != iterEnd; iter++)
-				{
-					if (iter != param.begin())
-					{
-						paramMsg += *iter + " ";	
-					}
-				}
-				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), paramMsg);
-				network.sendToUser(targetUser->getFd(), msg);
-			}
-			else
-			{
-				string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), commandChunk.parameterLast.substr(1));
-				network.sendToUser(targetUser->getFd(), msg);
-			}
-			return;
+		{
+			string msg = UserManager::makeMessage(user, RPL_PRIVMSG, targetUser->getNickname(), message);
+			network.sendToUser(targetUser->getFd(), msg);
 		}
 	}
 }
