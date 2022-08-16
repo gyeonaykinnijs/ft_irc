@@ -233,7 +233,11 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	}
 	while (1)
 	{
-		if (cmd[0] == ':')
+		if (cmd.size() == 0)
+		{
+			break ;
+		}
+		else if (cmd[0] == ':')
 		{
 			// size_t tempIdx = cmd.find_first_not_of(':');
 			// if (tempIdx == string::npos)
@@ -253,10 +257,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
 			this->commandQueue.push(tempChunk);
 			return;
-		}
-		else if (cmd.size() == 0)
-		{
-			break ;
 		}
 		else// if (cmd[0] != ':')
 		{
