@@ -31,7 +31,7 @@ void Cmode::execute(ChannelManager &channelManager,
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
-	if (param[1] != "+o")
+	if (param[1] != "+o" && param[1] != "-o")
 	{
 		string msg = UserManager::makeMessage(NULL, ERR_UMODEUNKNOWNFLAG, user->getNickname(), "UNKNOWN FLAG ERROR");
 		network.sendToUser(user->getFd(), msg);
@@ -39,12 +39,45 @@ void Cmode::execute(ChannelManager &channelManager,
 	}
 	const string channelName = param[0];
 	Channel *channel = user->getChannel(channelName);
-	map<string, User *> userList = channel->getJoinUser();
-	User *tempUser = userList[param[2]];
-	channel->addOperator(tempUser->getFd());
-	string msg = UserManager::makeMessage(NULL, RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
-	network.sendToUser(user->getFd(), msg);
-	string msg2 = UserManager::makeMessage(tempUser, RPL_MODE, param[0], "");
-	network.sendToOtherInChannel(*channel, user->getFd(), msg2);
+	if (!channel)
+	{	// channel 없을 때
+		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
+		network.sendToUser(user->getFd(), msg);
+		return;
+	}
+	if (channel->getJoinUser().count(user->getNickname()) == 0)
+	{
+		string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
+		network.sendToUser(user->getFd(), msg);
+		return;
+	}
+	if (channel->getJoinUser().count(param[2]) == 0)
+	{
+		string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "User Not In Channel");
+		network.sendToUser(user->getFd(), msg);
+		return;
+	}
+	if (channel->getOperators().count(user->getFd()) == 0)
+	{	// 강퇴하는 사람이 방장인지 검사
+		string msg = UserManager::makeMessage(NULL, ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
+		network.sendToUser(user->getFd(), msg);
+		return;
+	}
 
+	if (param[1] == "+o")
+	{
+		map<string, User *> userList = channel->getJoinUser();
+		User *tempUser = userList[param[2]];
+		channel->addOperator(tempUser->getFd());
+		string msg = UserManager::makeMessage(NULL, RPL_MODE, channel->getChannelName() + " +o " + tempUser->getNickname(),  "");
+		network.sendToChannel(*channel, msg);
+	}
+	else
+	{
+		map<string, User *> userList = channel->getJoinUser();
+		User *tempUser = userList[param[2]];
+		channel->getOperators().erase(tempUser->getFd());
+		string msg = UserManager::makeMessage(NULL, RPL_MODE, channel->getChannelName() + " -o " + tempUser->getNickname(),  "");
+		network.sendToChannel(*channel, msg);
+	}
 }

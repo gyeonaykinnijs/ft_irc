@@ -6,9 +6,9 @@ void Cping::execute(ChannelManager &channelManager,
 					struct CommandChunk commandChunk)
 {
 	User *user = userManager.getUserByFd(commandChunk.fd);
-	vector<string> param = commandChunk.parameters;
+	string message = commandChunk.parameterLast;
 	(void)channelManager;
 
-	string msg = " PONG :" + param[0] + "\r\n";
+	string msg = "PONG" + string(message.size() == 0 ? "" : " ") + message  + "\r\n";
 	network.sendToUser(user->getFd(), msg);
 }
