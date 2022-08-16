@@ -2,7 +2,6 @@
 #include "../Command/Cjoin.hpp"
 #include "../Command/Ckick.hpp"
 #include "../Command/Cnick.hpp"
-#include "../Command/Cop.hpp"
 #include "../Command/Cpass.hpp"
 #include "../Command/Cpart.hpp"
 #include "../Command/Cprivmsg.hpp"
@@ -20,7 +19,6 @@ Server::Server(const short port, const char* passWord, Logger& argLogger)
 : userManager(), channelManager(), network(port, passWord, userManager, channelManager, argLogger), logger(argLogger), PASSWORD(passWord)
 {}
 
-// FIXME: leaks(command, user, channel들) , pong 대응
 bool Server::init()
 {
     ICommand *cpass = new Cpass();
@@ -29,7 +27,6 @@ bool Server::init()
     ICommand *cuser = new Cuser();
     ICommand *cprivmsg = new Cprivmsg();
     ICommand *ckick = new Ckick();
-    ICommand *cop = new Cop();
     ICommand *cpart = new Cpart();
     ICommand *cquit = new Cquit();
     ICommand *cmode = new Cmode();
@@ -42,7 +39,6 @@ bool Server::init()
     commands.insert(make_pair("join", cjoin));
     commands.insert(make_pair("privmsg", cprivmsg));
     commands.insert(make_pair("kick", ckick));
-    commands.insert(make_pair("op", cop));
     commands.insert(make_pair("part", cpart));
     commands.insert(make_pair("quit", cquit));
     commands.insert(make_pair("mode", cmode));
@@ -119,7 +115,6 @@ int Server::run()
                     network.sendToUser(user->getFd(), msg);
                 }
             }
-        
         }
     }
 }
@@ -133,5 +128,4 @@ Server::~Server()
     {
         delete iter->second;
     }
-
 }

@@ -26,7 +26,7 @@ class Network
 public:
 	Network();
 	Network(const short port, const char* passWord, UserManager& userManager, ChannelManager& channelManager, Logger& argLogger);
-	~Network(); //RAII
+	~Network();
 	bool init();
 	int IOMultiflexing();
 	bool sendToUser(int fd, const std::string& message);

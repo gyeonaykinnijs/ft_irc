@@ -4,6 +4,7 @@ User::User()
 {
 	this->nickname = "*";
 	this->userName = "";
+	this->realName = "";
 	this->passwd = "";
 	this->fd = 0;
 	this->buffer = "";

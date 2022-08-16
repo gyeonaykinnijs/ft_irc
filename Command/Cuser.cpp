@@ -31,10 +31,14 @@ void Cuser::execute(ChannelManager &channelManager,
 	else
 	{
 		user->setUserName(param[0]);
-		if (commandChunk.parameterLast.empty() && !param[1].empty())
-			user->setRealName(param[1]);
-		else 
+		if (commandChunk.parameterLast.size() == 0 && param.size() == 4)
+		{
+			user->setRealName(param[3]);
+		}
+		else if (commandChunk.parameterLast.size() != 0)
+		{
 			user->setRealName(commandChunk.parameterLast);
+		}
 		user->setUserOK(true);
 	}
 }

@@ -9,7 +9,6 @@
 #include "../User/User.hpp"
 #include "../User/UserManager.hpp"
 #include "../Channel/ChannelManager.hpp"
-
 #include <cerrno>
 
 using namespace std;
@@ -241,15 +240,6 @@ void Network::pushCmdToQueue(int fd, string cmd)
 		}
 		else if (cmd[0] == ':')
 		{
-			// size_t tempIdx = cmd.find_first_not_of(':');
-			// if (tempIdx == string::npos)
-			// {
-			// 	tempChunk.parameterLast = cmd;
-			// }
-			// else
-			// {
-				// tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);  // !!! out of range.
-			// }
 			tempChunk.parameterLast.assign(cmd, 1 , cmd.size() - 1);
 			this->commandQueue.push(tempChunk);
 			return;
@@ -260,7 +250,7 @@ void Network::pushCmdToQueue(int fd, string cmd)
 			this->commandQueue.push(tempChunk);
 			return;
 		}
-		else// if (cmd[0] != ':')
+		else
 		{
 			tempChunk.parameters.push_back(string(cmd, 0, cmd.find(' ')));
 			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
@@ -341,8 +331,6 @@ void Network::recvActionPerUser(map<int, User*>& users)
 		{
 			User* user = this->userManager.getUserByFd(iter->first);
 			lenRecv = ::recv(iter->first, bufferRecv, BUFFERSIZE, 0);
-			// FIXME:
-			std::cout << "client send command: " << endl << string(bufferRecv, 0, lenRecv) << endl;
 			if (lenRecv < 0)
 			{
 				++iter;
@@ -374,8 +362,6 @@ void Network::sendActionPerSendQueue()
 		{
 			for (vector<string>::iterator iterVec = iter->second.begin(); iterVec != iter->second.end();)
 			{
-				// FIXME:
-				cout << "server send reply: " << endl << *iterVec << endl;
 				if (::send(iter->first, iterVec->c_str(), iterVec->size(), 0) < 0)
 				{
 					User* user = this->userManager.getUserByFd(iter->first);
@@ -400,7 +386,7 @@ int Network::IOMultiflexing()
 	string tempBuffer;
 
 	initFdSets();
-	if (::select(64, &this->rSet, &this->wSet, NULL, NULL) < 0)
+	if (::select(MAX_SELECT_FD, &this->rSet, &this->wSet, NULL, NULL) < 0)
 	{
 		this->logger.errorLogging(string("[select]") + strerror(errno));
 		this->logger.setServerDown(true);

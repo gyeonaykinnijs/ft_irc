@@ -17,7 +17,7 @@ void Ckick::execute(ChannelManager &channelManager,
 	}
 	if (param.size() != 2)
 	{	// channel user 인자 두 개 있어야 함
-		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not enough parameters");
+		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not Proper parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}

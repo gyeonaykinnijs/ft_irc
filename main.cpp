@@ -17,17 +17,15 @@ int main(int ac, char **av)
     else
     {
         const short port = atoi(av[1]);
-        const char* passWord = av[2];
-        server = new Server(port, passWord, logger);
+        const char* password = av[2];
+        server = new Server(port, password, logger);
     }
     server->init();
     rtValue = server->run();
     delete server;
-
     if (rtValue == FALSE)
     {
         return 1;
     }
-    system("leaks ircserv");
     return 0;
 }

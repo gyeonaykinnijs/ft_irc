@@ -73,7 +73,6 @@ string UserManager::makeMessage(User *user, string code, string target, string m
 	string buffer;
 	string colon = message.size() == 0 ? "" : " :";
 
-	//FIXME:
 	prefix = user == NULL ? string(":") + SERVERNAME + " " : ":" + user->getNickname() + "!" + user->getUserName() + "@" + SERVERNAME + " ";
 	buffer =  prefix + code + (code.size() ? " " : "") + target + colon + message + "\r\n";
 	return buffer;
