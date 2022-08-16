@@ -32,8 +32,7 @@ void Cprivmsg::execute(ChannelManager &channelManager,
 	}
 	if (commandChunk.parameterLast.size() != 0)
 	{
-		cout << commandChunk.parameterLast << endl;
-		message += ":" + commandChunk.parameterLast;
+		message += (message.size() == 0 ? "" : ":") + commandChunk.parameterLast;
 	}
 	if (target[0] == '#')
 	{

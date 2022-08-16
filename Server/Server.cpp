@@ -87,9 +87,17 @@ int Server::run()
 					}
 					if (user->getIsRegistered() == false)
                     {
-                        if (user->getPassOK() == false && this->PASSWORD == user->getPasswd())
+                        if (user->getPassOK() == false)
                         {
-                            user->setPassOK(true);
+                            if (this->PASSWORD == user->getPasswd())
+                            {
+                                user->setPassOK(true);
+                            }
+                            else
+                            {
+                                string msg = UserManager::makeMessage(NULL, ERR_PASSWDMISMATCH, user->getNickname(), "Wrong Password");
+                                network.sendToUser(user->getFd(), msg);
+                            }
                         }
                         else if (user->getNickOK() == true && user->getUserOK() == true)
                         {
