@@ -200,10 +200,12 @@ void Network::pushCmdToQueue(int fd, string cmd)
 {
 	CommandChunk tempChunk;
 
-	if (cmd.find("  ") != string::npos)
+	if (cmd.find("  ") != string::npos\
+	|| cmd.find(9) != string::npos || cmd.find(11) != string::npos || cmd.find(12) != string::npos)
 	{
 		User *user = this->userManager.getUserByFd(fd);
-		this->sendToUser(user->getFd(), string(UserManager::makeMessage(NULL, ERR_UNKNOWNCOMMAND, user->getNickname(), "")));
+		this->sendToUser(user->getFd(), string(UserManager::makeMessage(NULL, ERR_WRONGPROTOCOL, user->getNickname(), "Wrong protocol")));
+		return ;
 	} 
 	tempChunk.fd = fd;
 	if (cmd[0] == ':')
