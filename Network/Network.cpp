@@ -233,34 +233,35 @@ void Network::pushCmdToQueue(int fd, string cmd)
 	}
 	while (1)
 	{
-		if (cmd.find(' ') == string::npos)
+		if (cmd[0] == ':')
 		{
-			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
+			// size_t tempIdx = cmd.find_first_not_of(':');
+			// if (tempIdx == string::npos)
+			// {
+			// 	tempChunk.parameterLast = cmd;
+			// }
+			// else
+			// {
+				// tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);  // !!! out of range.
+			// }
+			tempChunk.parameterLast.assign(cmd, 1 , cmd.size() - 1);
 			this->commandQueue.push(tempChunk);
 			return;
 		}
-		else if (cmd[0] != ':')
+		else if (cmd.find(' ') == string::npos)
 		{
-			tempChunk.parameters.push_back(string(cmd, 0, cmd.find(' ')));
-			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
-		}
-		else if (cmd[0] == ':')
-		{
-			size_t tempIdx = cmd.find_first_not_of(':');
-			if (tempIdx == string::npos)
-			{
-				tempChunk.parameterLast = cmd;
-			}
-			else
-			{
-				tempChunk.parameterLast.assign(cmd, tempIdx , cmd.size() - tempIdx);  // !!! out of range.
-			}
+			tempChunk.parameters.push_back(string(cmd, 0, cmd.size()));
 			this->commandQueue.push(tempChunk);
 			return;
 		}
 		else if (cmd.size() == 0)
 		{
 			break ;
+		}
+		else// if (cmd[0] != ':')
+		{
+			tempChunk.parameters.push_back(string(cmd, 0, cmd.find(' ')));
+			cmd.assign(cmd, cmd.find(' ') + 1, cmd.size() - cmd.find(' ') - 1);
 		}
 	}
 	this->commandQueue.push(tempChunk);
