@@ -65,7 +65,11 @@ void Channel::insertJoinUser(User* user)
 
 User* Channel::selectJoinUser(string userName)
 {
-	return joinUser[userName];
+	if (this->joinUser.count(userName) == 1)
+	{
+		return joinUser[userName];
+	}
+	return NULL;
 }
 
 void Channel::deleteJoinUser(User *user) 
