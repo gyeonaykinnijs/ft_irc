@@ -39,7 +39,7 @@ void Cmode::execute(ChannelManager &channelManager,
 	const string channelName = param[0];
 	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel)
-	{	// channel 없을 때
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
@@ -57,7 +57,7 @@ void Cmode::execute(ChannelManager &channelManager,
 		return;
 	}
 	if (channel->getOperators().count(user->getFd()) == 0)
-	{	// 명령하는 사람이 방장인지 검사
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser(user->getFd(), msg);
 		return;

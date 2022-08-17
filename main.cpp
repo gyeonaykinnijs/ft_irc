@@ -53,6 +53,5 @@ int main(int ac, char **av)
     {
         return 1;
     }
-    system("leaks ircserv");
     return 0;
 }

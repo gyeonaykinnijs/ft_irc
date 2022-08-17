@@ -15,7 +15,7 @@ void Ckick::execute(ChannelManager &channelManager,
 		return;
 	}
 	if (param.size() != 2)
-	{	// channel user 인자 두 개 있어야 함
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_NEEDMOREPARAMS, user->getNickname(), "Not Proper parameters");
 		network.sendToUser(user->getFd(), msg);
 		return;
@@ -24,26 +24,26 @@ void Ckick::execute(ChannelManager &channelManager,
 	string targetUser = param[1];
 	Channel *channel = channelManager.getChannel(channelName);
 	if (!channel)
-	{	// channel 없을 때
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_NOSUCHCHANNEL, user->getNickname(), "No Such Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (!user->getChannel(channelName))
-	{	// 명령어 쓴 user가 channel의 멤버가 아닐 때
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_NOTONCHANNEL, user->getNickname(), "User is Not in Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (channel->getOperators().count(user->getFd()) == 0)
-	{	// 강퇴하는 사람이 operator인지 검사
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_CHANOPRIVSNEEDED, user->getNickname(), "Need Operation");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	User *target = channel->selectJoinUser(targetUser);
 	if (!target)
-	{	// 내보내려는 user가 channel에 있는지 확인
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_USERNOTINCHANNEL, user->getNickname(), "Target User is Not in Channel");
 		network.sendToUser(user->getFd(), msg);
 		return;

@@ -25,7 +25,7 @@ void Cjoin::execute(ChannelManager &channelManager,
 	Channel *channel = user->getChannel(channelName);
 
 	if (channel)
-	{	// 이미 들어간 채널
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_USERONCHANNEL, user->getNickname(), "Already in the channel");
 		network.sendToUser(user->getFd(), msg);
 		return;
@@ -36,13 +36,13 @@ void Cjoin::execute(ChannelManager &channelManager,
 		channel = channelManager.createChannel(param[0], password, user);
 	}
 	if (channel->getCurSizeUser() >= channel->getMaxSizeUser())
-	{	// channel 꽉 찼을 때
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_CHANNELISFULL , user->getNickname(), "channel is full");
 		network.sendToUser(user->getFd(), msg);
 		return;
 	}
 	if (channel->getChannelKey() != password)
-	{	// 비밀번호 틀림
+	{
 		string msg = UserManager::makeMessage(NULL, ERR_BADCHANNELKEY , user->getNickname(), "no match password error");
 		network.sendToUser(user->getFd(), msg);
 		return;

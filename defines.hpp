@@ -20,7 +20,6 @@ using namespace std;
 #define MAX_SELECT_FD 64
 #define SERVERNAME "ircserv"
 
-
 // Reply Code
 #define RPL_WELCOME "001"
 #define RPL_YOURHOST "002"

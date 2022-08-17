@@ -70,9 +70,12 @@ User* Channel::selectJoinUser(string userName)
 
 void Channel::deleteJoinUser(User *user) 
 {
-	joinUser.erase(user->getNickname());
-	this->curSizeUser--;
-	this->deleteOperator(user->getFd());
+	if (this->joinUser.count(user->getNickname()) == 1)
+	{
+		joinUser.erase(user->getNickname());
+		this->curSizeUser--;
+		this->deleteOperator(user->getFd());
+	}
 }
 
 map<string, User *>& Channel::getJoinUser()

@@ -131,6 +131,12 @@ bool Network::AcceptUser()
 		this->logger.setServerDown(true);
 		return false;
 	}
+	if (fcntl(fdClient, F_SETFL, O_NONBLOCK) < 0)
+	{
+		this->logger.errorLogging(string("\033[31m[fcntl]\033[0m") + strerror(errno));
+		this->logger.setServerDown(true);
+		return false;
+	}
 	this->userManager.makeUser(fdClient);
 	return true;
 }
